@@ -56,10 +56,7 @@ public class Dungeon {
 		return dungeon_map[x + xsize * y];
 	}
  
-	//The RNG. the seed is based on seconds from the "java epoch" ( I think..)
-	//perhaps it's the same date as the unix epoch
 	private int getRand(int min, int max){
-		//the seed is based on current date and the old, already used seed
 		Date now = new Date();
 		long seed = now.getTime() + oldseed;
 		oldseed = seed;
@@ -69,12 +66,11 @@ public class Dungeon {
 		int i = randomizer.nextInt(n);
 		if (i < 0)
 			i = -i;
-		//System.out.println("seed: " + seed + "\tnum:  " + (min + i));
 		return min + i;
 	}
  
 	private boolean makeCorridor(int x, int y, int lenght, int direction){
-		//define the dimensions of the corridor (er.. only the width and height..)
+		//define the dimensions of the corridor
 		int len = getRand(2, lenght);
 		int floor = tileCorridor;
 		int dir = 0;

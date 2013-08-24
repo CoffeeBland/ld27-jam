@@ -75,13 +75,20 @@ public class World
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		grid = new Tile[8][12];
-		for (int x = 0; x < 8; x++)
-			for (int y = 0; y <12; y++)
-				if (Math.random() < 0.9)
-					grid[x][y] = new Tile(TileType.Test, x, y);
-				else
+		int xsize = gd.level.getWidth();
+		int ysize = gd.level.getHeight();
+		grid = new Tile[xsize][ysize];
+		for	(int x = 0; x < xsize; x++)
+		{
+			for (int y = 0; y < ysize; y++) 
+			{
+				int tileType = gd.level.getCell(x, y);
+				if (tileType == gd.level.dungeon.tileDirtWall)
 					grid[x][y] = new Tile(TileType.Test2, x, y);
+				else if (tileType != gd.level.dungeon.tileUnused)
+					grid[x][y] = new Tile(TileType.Test, x, y);
+			}
+		}
 		
 		character = new Entity(new Vector2f(0.1f, 0.1f), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
 		add(character);
