@@ -2,6 +2,8 @@ package ld27jam.entities;
 
 import java.util.*;
 
+import org.newdawn.slick.geom.Vector2f;
+
 public class Dungeon {
 	//max size of the map
 	private int xmax = 300; //300 columns
@@ -18,7 +20,7 @@ public class Dungeon {
 	//BTW, rooms are 1st priority so actually it's enough to just define the chance
 	//of generating a room
 	private int chanceRoom = 30; 
-	private int chanceCorridor = 30;
+	private int chanceCorridor = 70;
  
 	//our map
 	private int[] dungeon_map = { };
@@ -69,9 +71,54 @@ public class Dungeon {
 		return min + i;
 	}
  
+	private boolean checkPoint(int x, int y)
+	{
+		return getCell(x, y) == tileDirtFloor;
+	}
+	
+	public Vector2f getClosestFreeCell(int xs, int ys)
+	{
+		if (checkPoint(xs, ys) == true)
+		{
+		    return new Vector2f(xs, ys);
+		}
+
+		for (int d = 0; d<30; d++)
+		{
+		    for (int x = xs-d; x < xs+d+1; x++)
+		    {
+		        // Point to check: (x, ys - d) and (x, ys + d) 
+		        if (checkPoint(x, ys - d) == true)
+		        {
+		            return new Vector2f(x, ys - d);
+		        }
+
+		        if (checkPoint(x, ys + d) == true)
+		        {
+		            return new Vector2f(x, ys - d);
+		        }
+		    }
+
+		    for (int y = ys-d+1; y < ys+d; y++)
+		    {
+		        // Point to check = (xs - d, y) and (xs + d, y) 
+		        if (checkPoint(xs - d, y) == true)
+		        {
+		            return new Vector2f(xs - d, y);
+		        }
+
+		        if (checkPoint(xs - d, y) == true)
+		        {
+		            return new Vector2f(xs - d, y);
+		        }
+		    }
+		}
+		return new Vector2f(xs, ys);
+	}
+	
 	private boolean makeCorridor(int x, int y, int lenght, int direction){
 		//define the dimensions of the corridor
-		int len = getRand(2, lenght);
+		int len = getRand(3, lenght);
 		int floor = tileCorridor;
 		int wall = tileDirtWall;
 		int dir = 0;
@@ -98,7 +145,7 @@ public class Dungeon {
 			for (ytemp = y; ytemp > (y-len); ytemp--){
 				setCell(xtemp-2, ytemp, wall);
 				setCell(xtemp-1, ytemp, floor);
-				setCell(xtemp, ytemp, floor);
+				setCell(xtemp  , ytemp, floor);
 				setCell(xtemp+1, ytemp, floor);
 				setCell(xtemp+2, ytemp, wall);
 			}
@@ -134,7 +181,7 @@ public class Dungeon {
 			for (ytemp = y; ytemp < (y+len); ytemp++){
 				setCell(xtemp-2, ytemp, wall);
 				setCell(xtemp-1, ytemp, floor);
-				setCell(xtemp, ytemp, floor);
+				setCell(xtemp  , ytemp, floor);
 				setCell(xtemp+1, ytemp, floor);
 				setCell(xtemp+2, ytemp, wall);
 			}
@@ -152,7 +199,7 @@ public class Dungeon {
 			for (xtemp = x; xtemp > (x-len); xtemp--){
 				setCell(xtemp, ytemp-2, wall);
 				setCell(xtemp, ytemp-1, floor);
-				setCell(xtemp, ytemp, floor);
+				setCell(xtemp, ytemp  , floor);
 				setCell(xtemp, ytemp+1, floor);
 				setCell(xtemp, ytemp+2, wall);
 			}
@@ -349,7 +396,7 @@ public class Dungeon {
 		*******************************************************************************/
  
 		//start with making a room in the middle, which we can start building upon
-		makeRoom(xsize/2, ysize/2, 12, 10, getRand(0,3));
+		makeRoom((xsize/2)-6, (ysize/2)-5, 12, 10, getRand(0,3));
  
 		//keep count of the number of "objects" we've made
 		int currentFeatures = 1;
@@ -417,22 +464,34 @@ public class Dungeon {
 				//choose what to build now at our newly found place, and at what direction
 				int feature = getRand(0, 100);
 				if (feature <= chanceRoom){ //a new room
-					if (makeRoom((newx+xmod), (newy+ymod), getRand(9, 20), getRand(9, 30), validTile)){
+					if (makeRoom((newx+xmod), (newy+ymod), getRand(20, 30), getRand(20, 30), validTile)){
 						currentFeatures++; //add to our quota
  
 						//then we mark the wall opening with a door
-						setCell(newx, newy, tileDoor);
+						
+						// no now we surroung 9x9 block with floor
+						for (int x = 0; x < 3; x++) {
+							for (int y = 0; y < 3; y++) {
+								setCell(newx-1+x, newy-1+y, tileDirtFloor);
+							}
+						}
  
-						//clean up infront of the door so we can reach it
+						//clean up in front of the door so we can reach it
 						setCell((newx+xmod), (newy+ymod), tileDirtFloor);
 					}
 				}
 				else if (feature >= chanceRoom){ //new corridor
-					if (makeCorridor((newx+xmod), (newy+ymod), getRand(2, 20), validTile)){
+					if (makeCorridor((newx+xmod), (newy+ymod), getRand(9, 25), validTile)){
 						//same thing here, add to the quota and a door
 						currentFeatures++;
  
-						setCell(newx, newy, tileDoor);
+						//setCell(newx, newy, tileDoor);
+						// no now we surroung 9x9 block with floor
+						for (int x = 0; x < 3; x++) {
+							for (int y = 0; y < 3; y++) {
+								setCell(newx-1+x, newy-1+y, tileDirtFloor);
+							}
+						}
 					}
 				}
 			}
@@ -443,7 +502,7 @@ public class Dungeon {
 		All done with the building, let's finish this one off
 		*******************************************************************************/
  
-		//sprinkle out the bonusstuff (stairs, chests etc.) over the map
+		//sprinkle out the bonus stuff (stairs, chests etc.) over the map
 		int newx = 0;
 		int newy = 0;
 		int ways = 0; //from how many directions we can reach the random spot from
@@ -451,7 +510,7 @@ public class Dungeon {
 		while (state != 10){
 			for (int testing = 0; testing < 1000; testing++){
 				newx = getRand(1, xsize-1);
-				newy = getRand(1, ysize-2); //cheap bugfix, pulls down newy to 0<y<24, from 0<y<25
+				newy = getRand(1, ysize-2);
  
 				//System.out.println("x: " + newx + "\ty: " + newy);
 				ways = 4; //the lower the better
