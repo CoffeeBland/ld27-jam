@@ -73,6 +73,7 @@ public class Dungeon {
 		//define the dimensions of the corridor
 		int len = getRand(2, lenght);
 		int floor = tileCorridor;
+		int wall = tileDirtWall;
 		int dir = 0;
 		if (direction > 0 && direction < 4) dir = direction;
  
@@ -95,9 +96,11 @@ public class Dungeon {
  
 			//if we're still here, let's start building
 			for (ytemp = y; ytemp > (y-len); ytemp--){
+				setCell(xtemp-2, ytemp, wall);
 				setCell(xtemp-1, ytemp, floor);
 				setCell(xtemp, ytemp, floor);
 				setCell(xtemp+1, ytemp, floor);
+				setCell(xtemp+2, ytemp, wall);
 			}
 			break;
 		case 1:
@@ -111,9 +114,11 @@ public class Dungeon {
 				}
  
 				for (xtemp = x; xtemp < (x+len); xtemp++){
+					setCell(xtemp, ytemp-2, wall);
 					setCell(xtemp, ytemp-1, floor);
 					setCell(xtemp, ytemp, floor);
 					setCell(xtemp, ytemp+1, floor);
+					setCell(xtemp, ytemp+2, wall);
 				}
 			break;
 		case 2:
@@ -127,9 +132,11 @@ public class Dungeon {
 			}
  
 			for (ytemp = y; ytemp < (y+len); ytemp++){
+				setCell(xtemp-2, ytemp, wall);
 				setCell(xtemp-1, ytemp, floor);
 				setCell(xtemp, ytemp, floor);
 				setCell(xtemp+1, ytemp, floor);
+				setCell(xtemp+2, ytemp, wall);
 			}
 			break;
 		case 3:
@@ -143,9 +150,11 @@ public class Dungeon {
 			}
  
 			for (xtemp = x; xtemp > (x-len); xtemp--){
+				setCell(xtemp, ytemp-2, wall);
 				setCell(xtemp, ytemp-1, floor);
 				setCell(xtemp, ytemp, floor);
 				setCell(xtemp, ytemp+1, floor);
+				setCell(xtemp, ytemp+2, wall);
 			}
 			break;
 		}
@@ -490,7 +499,7 @@ public class Dungeon {
  
  
 		//all done with the map generation, tell the user about it and finish
-		System.out.println(msgNumObjects + currentFeatures);
+		//System.out.println(msgNumObjects + currentFeatures);
  
 		return true;
 	}
