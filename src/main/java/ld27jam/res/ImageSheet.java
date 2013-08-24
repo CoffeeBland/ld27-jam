@@ -1,5 +1,6 @@
 package ld27jam.res;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
@@ -48,6 +49,16 @@ public class ImageSheet
 		mFrameY = pFrameY % getFrameAmountY();
 	}
 	
+	private Color mColor = new Color(255, 255, 255);
+	public Color getColor()
+	{
+		return mColor;
+	}
+	public void setColor(Color pColor)
+	{
+		mColor = pColor;
+	}
+	
 	private static ImageSheet SHEET_IN_USE = null;
 	
 	protected Image[][] mFrames;
@@ -66,7 +77,7 @@ public class ImageSheet
 	
 	private void renderEmbedded(Vector2f pPosition)
 	{
-		getFrame().drawEmbedded(pPosition.x, pPosition.y);
+		getFrame().drawEmbedded(pPosition.x, pPosition.y, pPosition.x + getFrameWidth(), pPosition.y + getFrameHeight(), 0, 0, getFrameWidth(), getFrameHeight(), getColor());
 	}
 	
 	public void render(Vector2f pPosition)
