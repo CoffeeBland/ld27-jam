@@ -10,20 +10,20 @@ public class Main {
 	private static GameStateController gsc;
 
 	public static void main(String[] args) {
-		System.out.println("Starting v0.8 of ld26Jam by Paul (kiasaki and dagothig)");
+		System.out.println("Starting v0.1 of ld27Jam by Paul (kiasaki and dagothig)");
 		fullscreen = false;
 		try {
-			gsc = new GameStateController("LD26 Factorism - Kiasaki - Dagothig");
+			gsc = new GameStateController("LD27 10 seconds to insanity - Kiasaki - Dagothig");
 			app = new AppGameContainer(gsc);
 			if (!fullscreen){
-				app.setDisplayMode(1024,768, false);
+				app.setDisplayMode(800,600, false);
 			}else{
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
 			}
 			app.setForceExit(true);
 	        app.setShowFPS(false);
 	        app.setTargetFrameRate(60);
-			//app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
+			app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
 	        app.start();
 	    } catch (SlickException e) {
 			e.printStackTrace();
@@ -33,7 +33,7 @@ public class Main {
 	public static void toggleFullscreen(){
 		try {
 			if (fullscreen){
-				app.setDisplayMode(800,768, false);
+				app.setDisplayMode(800,600, false);
 				fullscreen = false;
 			}else{
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
