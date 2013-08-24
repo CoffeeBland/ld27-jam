@@ -1,4 +1,4 @@
-ld27-jam
+ld27jam
 ==================
 
 Ludum Dare Jam entry : To be named
