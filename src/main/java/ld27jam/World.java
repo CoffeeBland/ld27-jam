@@ -83,14 +83,17 @@ public class World
 			for (int y = 0; y < ysize; y++) 
 			{
 				int tileType = gd.level.getCell(x, y);
-				if (tileType == gd.level.dungeon.tileDirtWall || 
-					tileType == gd.level.dungeon.tileUnused)
-					grid[x][y] = new Tile(TileType.Test2, x, y);
-				else
-					grid[x][y] = new Tile(TileType.Test, x, y);
+				if (tileType == gd.level.dungeon.tileDirtWall)
+				{
+				  grid[x][y] = new Tile(TileType.Test2, x, y);
+				}
+				else if (tileType != gd.level.dungeon.tileUnused)
+				{
+				  grid[x][y] = new Tile(TileType.Test, x, y);
+				}
 			}
 		}
-		character = new Entity(new Vector2f(xsize / 2, xsize / 2), new Vector2f(0.8f, 0.8f), true, new Vector2f(-14, -64), new AnimatedSprite("res/sprites/sprite_still.png", 64, 80, 8));
+		character = new Entity(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
 		add(character);
 		
 		final World world = this;
