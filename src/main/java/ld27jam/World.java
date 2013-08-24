@@ -89,8 +89,7 @@ public class World
 					grid[x][y] = new Tile(TileType.Test, x, y);
 			}
 		}
-		
-		character = new Entity(new Vector2f(0.1f, 0.1f), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
+		character = new Entity(new Vector2f(xsize / 2, xsize / 2), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
 		add(character);
 		
 		final World world = this;
@@ -179,16 +178,16 @@ public class World
 		{
 			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1)); x >= 0 && y < grid[x].length; y++, x--)
 			{
-				Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
-				if (tilePos.x < SCREEN_TILE_SIZE.x || 
-				    tilePos.y < SCREEN_TILE_SIZE.y ||
-				    tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x ||
-				    tilePos.y > gc.getHeight() + WALL_HEIGHT)
-					return;
-				
 				Tile tile = grid[x][y];
 				if (tile != null)
 				{
+					Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
+					if (tilePos.x < - SCREEN_TILE_SIZE.x || 
+						tilePos.y < - SCREEN_TILE_SIZE.y ||
+						tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x ||
+						tilePos.y > gc.getHeight() + WALL_HEIGHT )
+							continue;
+					
 					if (tile.type.wallId == null)
 					{
 						tileSheet.setFrameX(tile.type.tileX);
@@ -198,6 +197,7 @@ public class World
 					else
 					{
 						wallSheet.setFrameX(tile.type.wallId);
+						wallSheet.getColor().a = 0.5f;
 						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
 						wallSheet.render(tilePos);
 					}
