@@ -19,6 +19,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class World
 {
+	private GameDirector gd;
+	
 	public static final Vector2f SCREEN_TILE_SIZE = new Vector2f(32, 16),
 								 SCREEN_HALF_TILE = new Vector2f(16, 8);
 	
@@ -96,8 +98,14 @@ public class World
 			entity.update(gc, sbg, delta, this);
 	}
 	
+	public void load(int level)
+	{
+		gd.level = new GameLevel(level);
+	}
+	
 	public World(GameDirector gd) throws SlickException
 	{
+		this.gd = gd;
 		spriteSheet = new ImageSheet(gd.spriteSheetLocation, (int)SCREEN_TILE_SIZE.x, (int)SCREEN_TILE_SIZE.y);
 	}
 }
