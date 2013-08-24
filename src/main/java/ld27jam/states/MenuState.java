@@ -28,9 +28,11 @@ public class MenuState extends BasicGameState {
 	public static final int ID = 2;
 	private GameContainer gc;
 	private StateBasedGame sbg;
-	UnicodeFont uFont = FontFactory.get().getFont(32, java.awt.Color.BLACK);
+	UnicodeFont uFont = FontFactory.get().getFont(48, java.awt.Color.WHITE);
 	UnicodeFont uFontSmall = FontFactory.get().getFont(18, java.awt.Color.WHITE);
-
+	UnicodeFont uFontSmallGray = FontFactory.get().getFont(18, java.awt.Color.GRAY);
+	private boolean playSelected = true;
+	
 	private Image gameLogo;
 
 	@Override
@@ -39,23 +41,47 @@ public class MenuState extends BasicGameState {
 		this.sbg = sbg;
 
 		//gameLogo = new Image("res/game_logo.png");
-
-		final StateBasedGame tSbg = sbg;
-
-		Input tI = gc.getInput();
-
 	}
 
 	@Override
-	public void keyReleased(int key, char c) 
+	public void keyReleased(int key, char c)
 	{
 		if (key == Input.KEY_ESCAPE)
 			exitGame();
+		if(key == Input.KEY_ENTER) 
+		{
+			if (playSelected)
+				((GameStateController)sbg).enterGameState(1);
+			else
+				exitGame();
+		}
+	}
+	
+	@Override
+	public void keyPressed(int key, char c)
+	{
+		if(key == Input.KEY_UP)
+			playSelected = true;
+		if(key == Input.KEY_DOWN)
+			playSelected = false;
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
-	{}
+	{
+		String title = "10 seconds to insanity";
+		uFont.drawString((gc.getWidth()/2)-(uFont.getWidth(title)/2), 50, title);
+		String credits = "A game by Guillaume, Frederic and Myriam";
+		uFontSmall.drawString((gc.getWidth()/2)-(uFontSmall.getWidth(credits)/2), gc.getHeight()-28, credits);
+		
+		drawCentered(playSelected ? uFontSmallGray : uFontSmall, 320, "Play");
+		drawCentered(!playSelected ? uFontSmallGray : uFontSmall, 380, "Exit");
+	}
+	
+	private void drawCentered(UnicodeFont font, int y, String text) 
+	{
+		font.drawString((gc.getWidth()/2)-(uFontSmall.getWidth(text)/2), y, text);
+	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int d) throws SlickException 
@@ -65,16 +91,6 @@ public class MenuState extends BasicGameState {
 	private void exitGame()
 	{
 		gc.exit();
-	}
-
-	private GameContainer getGameContainer()
-	{
-		return gc;
-	}
-
-	private StateBasedGame getStateBasedGame()
-	{
-		return sbg;
 	}
 
 	@Override

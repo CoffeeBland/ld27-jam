@@ -20,11 +20,7 @@ public class GameState extends BasicGameState {
 	private GameContainer gc;
 	private StateBasedGame sbg;
 
-	private World world;
-	public World getWorld()
-	{
-		return world;
-	}
+	private World world;	
 	private GameDirector gd;
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
@@ -33,6 +29,8 @@ public class GameState extends BasicGameState {
 		this.sbg = sbg;
 
 		gd = new GameDirector();
+		world = new World(gd);
+		world.init(gc, sbg);
 	}
 
 	@Override
@@ -45,7 +43,7 @@ public class GameState extends BasicGameState {
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
 	{
-		g.setColor(new Color(255, 255, 255));
+		g.setColor(new Color(255, 0, 255));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
 		world.render(gc, sbg, g);
 	}
@@ -61,13 +59,16 @@ public class GameState extends BasicGameState {
 	}
 
 	@Override
-	public void leave(GameContainer container, StateBasedGame game) throws SlickException 
+	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		gd = new GameDirector();
-		world = new World(gd);
-		world.init(gc, sbg);
+		init(gc, sbg);
 	}
 
+	public World getWorld()
+	{
+		return world;
+	}
+	
 	public int getID() {
 		return ID;
 	}
