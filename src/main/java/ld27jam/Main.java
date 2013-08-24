@@ -33,7 +33,7 @@ public class Main {
 	public static void toggleFullscreen(){
 		try {
 			if (fullscreen){
-				app.setDisplayMode(800,600, false);
+				app.setDisplayMode(800, 600, false);
 				fullscreen = false;
 			}else{
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);

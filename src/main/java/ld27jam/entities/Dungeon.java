@@ -17,7 +17,7 @@ public class Dungeon {
 	//define the %chance to generate either a room or a corridor on the map
 	//BTW, rooms are 1st priority so actually it's enough to just define the chance
 	//of generating a room
-	private int chanceRoom = 70; 
+	private int chanceRoom = 30; 
 	private int chanceCorridor = 30;
  
 	//our map
@@ -95,7 +95,9 @@ public class Dungeon {
  
 			//if we're still here, let's start building
 			for (ytemp = y; ytemp > (y-len); ytemp--){
+				setCell(xtemp-1, ytemp, floor);
 				setCell(xtemp, ytemp, floor);
+				setCell(xtemp+1, ytemp, floor);
 			}
 			break;
 		case 1:
@@ -109,7 +111,9 @@ public class Dungeon {
 				}
  
 				for (xtemp = x; xtemp < (x+len); xtemp++){
+					setCell(xtemp, ytemp-1, floor);
 					setCell(xtemp, ytemp, floor);
+					setCell(xtemp, ytemp+1, floor);
 				}
 			break;
 		case 2:
@@ -123,7 +127,9 @@ public class Dungeon {
 			}
  
 			for (ytemp = y; ytemp < (y+len); ytemp++){
+				setCell(xtemp-1, ytemp, floor);
 				setCell(xtemp, ytemp, floor);
+				setCell(xtemp+1, ytemp, floor);
 			}
 			break;
 		case 3:
@@ -137,7 +143,9 @@ public class Dungeon {
 			}
  
 			for (xtemp = x; xtemp > (x-len); xtemp--){
+				setCell(xtemp, ytemp-1, floor);
 				setCell(xtemp, ytemp, floor);
+				setCell(xtemp, ytemp+1, floor);
 			}
 			break;
 		}
@@ -147,12 +155,10 @@ public class Dungeon {
 	}
  
 	private boolean makeRoom(int x, int y, int xlength, int ylength, int direction){
-		//define the dimensions of the room, it should be at least 4x4 tiles (2x2 for walking on, the rest is walls)
 		int xlen = getRand(4, xlength);
 		int ylen = getRand(4, ylength);
-		//the tile type it's going to be filled with
-		int floor = tileDirtFloor; //jordgolv..
-		int wall = tileDirtWall; //jordv????gg
+		int floor = tileDirtFloor;
+		int wall = tileDirtWall;
 		//choose the way it's pointing at
 		int dir = 0;
 		if (direction > 0 && direction < 4) dir = direction;
@@ -254,7 +260,6 @@ public class Dungeon {
 		return true;
 	}
  
- 
 	//used to print the map on the screen
 	public void showDungeon(){
 		for (int y = 0; y < ysize; y++){
@@ -262,31 +267,31 @@ public class Dungeon {
 				//System.out.print(getCell(x, y));
 				switch(getCell(x, y)){
 				case tileUnused:
-					System.out.print(" ");
+					System.out.print("  ");
 					break;
 				case tileDirtWall:
-					System.out.print("+");
+					System.out.print("++");
 					break;
 				case tileDirtFloor:
-					System.out.print(".");
+					System.out.print("..");
 					break;
 				case tileStoneWall:
-					System.out.print("O");
+					System.out.print("OO");
 					break;
 				case tileCorridor:
-					System.out.print("#");
+					System.out.print("##");
 					break;
 				case tileDoor:
-					System.out.print("D");
+					System.out.print("DD");
 					break;
 				case tileUpStairs:
-					System.out.print("<");
+					System.out.print("<<");
 					break;
 				case tileDownStairs:
-					System.out.print(">");
+					System.out.print(">>");
 					break;
 				case tileChest:
-					System.out.print("*");
+					System.out.print("**");
 					break;
 				};
 			}
@@ -299,7 +304,6 @@ public class Dungeon {
 		if (inobj < 1) objects = 10;
 		else objects = inobj;
  
-		//justera kartans storlek, om den ????r st????rre eller mindre ????n "gr????nserna"
 		//adjust the size of the map, if it's smaller or bigger than the limits
 		if (inx < 3) xsize = 3;
 		else if (inx > xmax) xsize = xmax;
@@ -309,9 +313,9 @@ public class Dungeon {
 		else if (iny > ymax) ysize = ymax;
 		else ysize = iny;
  
-		System.out.println(msgXSize + xsize);
-		System.out.println(msgYSize + ysize);
-		System.out.println(msgMaxObjects + objects);
+		//System.out.println(msgXSize + xsize);
+		//System.out.println(msgYSize + ysize);
+		//System.out.println(msgMaxObjects + objects);
  
 		//redefine the map var, so it's adjusted to our new map size
 		dungeon_map = new int[xsize * ysize];
@@ -320,13 +324,14 @@ public class Dungeon {
 		for (int y = 0; y < ysize; y++){
 			for (int x = 0; x < xsize; x++){
 				//ie, making the borders of unwalkable walls
-				if (y == 0) setCell(x, y, tileStoneWall);
-				else if (y == ysize-1) setCell(x, y, tileStoneWall);
-				else if (x == 0) setCell(x, y, tileStoneWall);
-				else if (x == xsize-1) setCell(x, y, tileStoneWall);
+				//if (y == 0) setCell(x, y, tileStoneWall);
+				//else if (y == ysize-1) setCell(x, y, tileStoneWall);
+				//else if (x == 0) setCell(x, y, tileStoneWall);
+				//else if (x == xsize-1) setCell(x, y, tileStoneWall);
  
 				//and fill the rest with dirt
-				else setCell(x, y, tileUnused);
+				//else 
+				setCell(x, y, tileUnused);
 			}
 		}
  
@@ -335,12 +340,12 @@ public class Dungeon {
 		*******************************************************************************/
  
 		//start with making a room in the middle, which we can start building upon
-		makeRoom(xsize/2, ysize/2, 8, 6, getRand(0,3));
+		makeRoom(xsize/2, ysize/2, 12, 10, getRand(0,3));
  
 		//keep count of the number of "objects" we've made
-		int currentFeatures = 1; //+1 for the first room we just made
+		int currentFeatures = 1;
  
-		//then we sart the main loop
+		//then we start the main loop
 		for (int countingTries = 0; countingTries < 1000; countingTries++){
 			//check if we've reached our quota
 			if (currentFeatures == objects){
@@ -359,7 +364,6 @@ public class Dungeon {
 				newx = getRand(1, xsize-1);
 				newy = getRand(1, ysize-1);
 				validTile = -1;
-				//System.out.println("tempx: " + newx + "\ttempy: " + newy);
 				if (getCell(newx, newy) == tileDirtWall || getCell(newx, newy) == tileCorridor){
 					//check if we can reach the place
 					if (getCell(newx, newy+1) == tileDirtFloor || getCell(newx, newy+1) == tileCorridor){
@@ -404,7 +408,7 @@ public class Dungeon {
 				//choose what to build now at our newly found place, and at what direction
 				int feature = getRand(0, 100);
 				if (feature <= chanceRoom){ //a new room
-					if (makeRoom((newx+xmod), (newy+ymod), 8, 6, validTile)){
+					if (makeRoom((newx+xmod), (newy+ymod), getRand(9, 20), getRand(9, 30), validTile)){
 						currentFeatures++; //add to our quota
  
 						//then we mark the wall opening with a door
@@ -415,7 +419,7 @@ public class Dungeon {
 					}
 				}
 				else if (feature >= chanceRoom){ //new corridor
-					if (makeCorridor((newx+xmod), (newy+ymod), 6, validTile)){
+					if (makeCorridor((newx+xmod), (newy+ymod), getRand(2, 20), validTile)){
 						//same thing here, add to the quota and a door
 						currentFeatures++;
  
