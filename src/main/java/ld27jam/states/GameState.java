@@ -3,6 +3,7 @@ package ld27jam.states;
 import ld27jam.GameDirector;
 import ld27jam.World;
 import ld27jam.helpers.KeyListenerImpl;
+import ld27jam.input.InputController;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -32,6 +33,7 @@ public class GameState extends BasicGameState {
 		gd = new GameDirector();
 		world = new World(gd);
 		world.init(gc, sbg);
+		InputController.init(gc);
 	}
 
 	@Override
@@ -46,11 +48,13 @@ public class GameState extends BasicGameState {
 	{
 		g.setColor(new Color(50, 50, 70));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
-		world.render(gc, sbg, g, new Vector2f(-128, -92));
+		world.render(gc, sbg, g);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
+		InputController.update();
+		
 		world.update(gc, sbg, delta);
 	}
 

@@ -57,5 +57,4 @@ public class InputController
 		gamepadController.setInput(pGC.getInput());
 		pGC.getInput().addControllerListener(gamepadController);
 	}
-	
 }

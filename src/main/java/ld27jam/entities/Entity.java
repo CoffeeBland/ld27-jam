@@ -19,11 +19,12 @@ public class Entity extends Region
 	public static final float DISTANCE_TOLERANCE = 0.001f;
 	
 	public ImageSheet imageSheet;
+	public Vector2f visualDecal;
 	public boolean canBeCollided = true;
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera) throws SlickException
 	{
-		imageSheet.render(World.getScreenCoordinates(getPosition()).sub(camera));
+		imageSheet.render(World.getScreenCoordinates(getPosition()).add(visualDecal).sub(camera));
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException 
@@ -32,6 +33,14 @@ public class Entity extends Region
 	}
 	
 	public void move(Vector2f movement, World world)
+	{
+		if (getPosition().x + movement.x < 0 || getPosition().y + movement.y < 0)
+			return;
+		
+		moveForGrid(new Vector2f(movement.x, 0), world);
+		moveForGrid(new Vector2f(0, movement.y), world);
+	}
+	private void moveForGrid(Vector2f movement, World world)
 	{
 		AABB aabb = new Region(new Vector2f(getPosition().x + Math.min(0, movement.x), 
 				   				   getPosition().y + Math.min(0, movement.y)), 
@@ -178,5 +187,14 @@ public class Entity extends Region
 		}
 		
 		return col;
+	}
+
+	public Entity(Vector2f position, Vector2f size, boolean canBeCollided, Vector2f visualDecal, ImageSheet imageSheet)
+	{
+		setPosition(position);
+		setSize(size);
+		this.canBeCollided = canBeCollided;
+		this.visualDecal = visualDecal;
+		this.imageSheet = imageSheet;
 	}
 }

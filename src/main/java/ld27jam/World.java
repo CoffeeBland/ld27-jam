@@ -6,6 +6,9 @@ import java.util.Set;
 import ld27jam.entities.Entity;
 import ld27jam.entities.Tile;
 import ld27jam.entities.TileType;
+import ld27jam.input.ControlEvent;
+import ld27jam.input.KeyMapping;
+import ld27jam.res.AnimatedSprite;
 import ld27jam.res.ImageSheet;
 import ld27jam.spatialData.AABB;
 import ld27jam.spatialData.Region;
@@ -28,6 +31,18 @@ public class World
 	private SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
 	private Tile[][] grid;
 	private ImageSheet spriteSheet;
+	private Entity character;
+	
+	public void add(Entity entity)
+	{
+		entities.add(entity);
+		spatialMap.put(entity);
+	}
+	public void remove(Entity entity)
+	{
+		entities.remove(entity);
+		spatialMap.remove(entity);
+	}
 	
 	public Set<Entity> getEntitiesInRegion(AABB region)
 	{
@@ -41,10 +56,9 @@ public class World
 		    maxX = (int) Math.ceil(region.getRightX()),
 		    minY = (int) Math.floor(region.getPosition().y),
 		    maxY = (int) Math.ceil(region.getBottomY());
-		for (int x = minX; x < maxX; minX++)
-			for (int y = minY; y < maxY; minY++)
+		for (int x = minX; x < maxX; x++)
+			for (int y = minY; y < maxY; y++)
 				tiles.add(grid[x][y]);
-		
 		return tiles;
 	}
 	
@@ -67,10 +81,88 @@ public class World
 					grid[x][y] = new Tile(TileType.Test, x, y);
 				else
 					grid[x][y] = new Tile(TileType.Test2, x, y);
+		
+		character = new Entity(new Vector2f(0.1f, 0.1f), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
+		add(character);
+		
+		final World world = this;
+		KeyMapping.Left.subscribe(new ControlEvent()
+		{
+			@Override
+			public void keyDown() 
+			{
+				character.imageSheet.setFrameY(7);
+			}
+			@Override
+			public void keyUp()
+			{
+			}
+			@Override
+			public void keyIsDown() 
+			{
+				character.move(new Vector2f(-0.1f, 0.1f), world);
+				spatialMap.update(character);
+			}
+		});
+		KeyMapping.Right.subscribe(new ControlEvent()
+		{
+			@Override
+			public void keyDown() 
+			{
+				character.imageSheet.setFrameY(0);
+			}
+			@Override
+			public void keyUp()
+			{
+			}
+			@Override
+			public void keyIsDown() 
+			{
+				character.move(new Vector2f(0.1f, -0.1f), world);
+				spatialMap.update(character);
+			}
+		});
+		KeyMapping.Up.subscribe(new ControlEvent()
+		{
+			@Override
+			public void keyDown() 
+			{
+				character.imageSheet.setFrameY(1);
+			}
+			@Override
+			public void keyUp()
+			{
+			}
+			@Override
+			public void keyIsDown() 
+			{
+				character.move(new Vector2f(-0.1f, -0.1f), world);
+				spatialMap.update(character);
+			}
+		});
+		KeyMapping.Down.subscribe(new ControlEvent()
+		{
+			@Override
+			public void keyDown() 
+			{
+				character.imageSheet.setFrameY(4);
+			}
+			@Override
+			public void keyUp()
+			{
+			}
+			@Override
+			public void keyIsDown() 
+			{
+				character.move(new Vector2f(0.1f, 0.1f), world);
+				spatialMap.update(character);
+			}
+		});
 	}
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera) throws SlickException
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
 		AABB region = new Region(new Vector2f(), new Vector2f(1, 1));
+		Vector2f camera = getScreenCoordinates(new Vector2f(character.getPosition().x, character.getPosition().y)).add(SCREEN_HALF_TILE).sub(new Vector2f(gc.getWidth() / 2, gc.getHeight() / 2));
 		
 		for (int projection = 0; projection < grid.length + grid[0].length; projection++)
 		{
@@ -86,9 +178,15 @@ public class World
 				
 				region.getPosition().x = x;
 				region.getPosition().y = y;
+
 				for (Entity entity : spatialMap.get(region))
-					if (region.containsPoint(entity.getBottomRightPoint()))
+				{
+					if (region.getPosition().x < entity.getRightX() &&
+						region.getRightX() > entity.getPosition().x &&
+						region.getPosition().y < entity.getBottomY() &&
+						region.getBottomY() > entity.getPosition().y)
 						entity.render(gc, sbg, g, camera);
+				}	
 			}
 		}
 	}
