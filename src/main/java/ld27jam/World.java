@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ld27jam.entities.Entity;
-import ld27jam.entities.GridTile;
-import ld27jam.helpers.Renderable;
+import ld27jam.entities.Tile;
+import ld27jam.entities.TileType;
 import ld27jam.res.ImageSheet;
 import ld27jam.spatialData.AABB;
 import ld27jam.spatialData.Region;
@@ -24,13 +24,32 @@ public class World
 	
 	private Set<Entity> entities = new HashSet<Entity>();
 	private SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
-	private GridTile[][] grid;
+	private Tile[][] grid;
 	private ImageSheet spriteSheet;
-
-	public static Vector2f getScreenCoordinates(Vector2f pMapCoordinates)
+	
+	public Set<Entity> getEntitiesInRegion(AABB region)
 	{
-		return new Vector2f((pMapCoordinates.x - pMapCoordinates.y) * SCREEN_HALF_TILE.x,
-							(pMapCoordinates.x + pMapCoordinates.y) * SCREEN_HALF_TILE.y);
+		return spatialMap.get(region);
+	}
+	public Set<Tile> getTilesInRegion(AABB region)
+	{
+		Set<Tile> tiles = new HashSet<Tile>();
+		
+		int minX = (int) Math.floor(region.getPosition().x),
+		    maxX = (int) Math.ceil(region.getRightX()),
+		    minY = (int) Math.floor(region.getPosition().y),
+		    maxY = (int) Math.ceil(region.getBottomY());
+		for (int x = minX; x < maxX; minX++)
+			for (int y = minY; y < maxY; minY++)
+				tiles.add(grid[x][y]);
+		
+		return tiles;
+	}
+	
+	public static Vector2f getScreenCoordinates(Vector2f mapCoordinates)
+	{
+		return new Vector2f((mapCoordinates.x - mapCoordinates.y) * SCREEN_HALF_TILE.x,
+							(mapCoordinates.x + mapCoordinates.y) * SCREEN_HALF_TILE.y);
 	}
 	public Vector2f getMapCoordinates(Vector2f pScreenCoordinates)
 	{
@@ -39,13 +58,13 @@ public class World
 	
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		grid = new GridTile[8][12];
+		grid = new Tile[8][12];
 		for (int x = 0; x < 8; x++)
 			for (int y = 0; y <12; y++)
-				if (Math.random() < 0.5)
-					grid[x][y] = GridTile.Test;
+				if (Math.random() < 0.9)
+					grid[x][y] = new Tile(TileType.Test, x, y);
 				else
-					grid[x][y] = GridTile.Test2;
+					grid[x][y] = new Tile(TileType.Test2, x, y);
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera) throws SlickException
 	{
@@ -55,11 +74,11 @@ public class World
 		{
 			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1)); x >= 0 && y < grid[x].length; y++, x--)
 			{
-				GridTile tile = grid[x][y];
+				Tile tile = grid[x][y];
 				if (tile != null)
 				{
-					spriteSheet.setFrameX(tile.tileX);
-					spriteSheet.setFrameY(tile.tileY);
+					spriteSheet.setFrameX(tile.type.tileX);
+					spriteSheet.setFrameY(tile.type.tileY);
 					spriteSheet.render(getScreenCoordinates(new Vector2f(x, y)).sub(camera));
 				}
 				
