@@ -22,7 +22,8 @@ public class Main {
 			}
 			app.setForceExit(true);
 	        app.setShowFPS(false);
-			app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
+	        app.setTargetFrameRate(60);
+			//app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
 	        app.start();
 	    } catch (SlickException e) {
 			e.printStackTrace();
@@ -32,7 +33,7 @@ public class Main {
 	public static void toggleFullscreen(){
 		try {
 			if (fullscreen){
-				app.setDisplayMode(1024,768, false);
+				app.setDisplayMode(800,768, false);
 				fullscreen = false;
 			}else{
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);

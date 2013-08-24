@@ -27,44 +27,42 @@ public class GameState extends BasicGameState {
 	}
 	private GameDirector gd;
 
-	public void init(GameContainer gc, StateBasedGame sbg)
-			throws SlickException {
+	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
+	{
 		this.gc = gc;
 		this.sbg = sbg;
 
 		gd = new GameDirector();
-		world = new World(gd);
-		world.init(gc, sbg);
-
-		gc.setMinimumLogicUpdateInterval(1000/60);
-		gc.setMaximumLogicUpdateInterval(1000/60);
 	}
 
 	@Override
-	public void keyReleased(int key, char c) {
+	public void keyReleased(int key, char c) 
+	{
 		/*if (key == Input.KEY_ESCAPE) {
 			exitGame();
 		}*/
 	}
 
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
-			throws SlickException {
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
+	{
 		g.setColor(new Color(255, 255, 255));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
 		world.render(gc, sbg, g);
 	}
 
-	public void update(GameContainer gc, StateBasedGame sbg, int delta)
-			throws SlickException {
+	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
+	{
 		world.update(gc, sbg, delta);
 	}
 
-	public void exitGame(){
+	public void exitGame()
+	{
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
 	}
 
 	@Override
-	public void leave(GameContainer container, StateBasedGame game) throws SlickException {
+	public void leave(GameContainer container, StateBasedGame game) throws SlickException 
+	{
 		gd = new GameDirector();
 		world = new World(gd);
 		world.init(gc, sbg);

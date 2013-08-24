@@ -32,7 +32,7 @@ public class FontFactory {
 		tFont = tFontArr.get(pColor);
 		try {
 			if (tFont == null){
-				tFontArr.put(pColor, new UnicodeFont("res/fonts/slkscr.ttf", pSize, false, false));
+				tFontArr.put(pColor, new UnicodeFont("res/fonts/Pixel.ttf", pSize, false, false));
 				tFont = tFontArr.get(pColor);
 				tFont.getEffects().add(new ColorEffect(pColor));
 				tFont.addAsciiGlyphs();

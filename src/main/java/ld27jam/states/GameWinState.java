@@ -2,10 +2,6 @@ package ld27jam.states;
 
 import java.util.Random;
 
-import ld27jam.entity.Block;
-import ld27jam.entity.BlockColor;
-import ld27jam.entity.BlockImpl;
-import ld27jam.entity.BlockShape;
 import ld27jam.helpers.FontFactory;
 
 import org.newdawn.slick.Color;
@@ -30,41 +26,22 @@ public class GameWinState extends BasicGameState {
 	private UnicodeFont uFontSmall = FontFactory.get().getFont(18, java.awt.Color.WHITE);
 
 	@Override
-	public void init(GameContainer gc, StateBasedGame sbg)
-			throws SlickException {
+	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
+	{
 		this.gc = gc;
 		this.sbg = sbg;
 		this.started = System.currentTimeMillis();
 	}
 
 	@Override
-	public void keyReleased(int key, char c) {
-		if (key == Input.KEY_ESCAPE) {
+	public void keyReleased(int key, char c) 
+	{
+		if (key == Input.KEY_ESCAPE) 
 			exitGame();
-		}
 	}
 	@Override
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
-			throws SlickException {
-		// Block
-		Random r = new Random(gc.getTime()/100);
-		BlockColor[] colors = new BlockColor[(int)Math.ceil(gc.getWidth()/16)];
-		for (int x = 0; x < (int)Math.ceil(gc.getWidth()/16); x++)
-			colors[x] = BlockColor.values()[r.nextInt(BlockColor.values().length)];
-		for (int x = 0; x < (int)Math.ceil(gc.getWidth()/16); x++)
-		{
-			for (int y = 0; y < (gc.getHeight()/16) + 1; y++)
-			{
-				Block tmpB = new BlockImpl();
-				tmpB.setColor(colors[(x + y) % colors.length]);
-				tmpB.setShape(BlockShape.values()[r.nextInt(BlockShape.values().length)]);
-				tmpB.render(-(x*16), -(y*16));
-			}
-		}
-
-		g.setColor(new Color(0,0,0,0.75f));
-		g.fillOval(gc.getWidth()/2-400, gc.getHeight()/2-250, 800, 500);
-
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
+	{
 		// Game over
 		uFont.drawString(gc.getWidth()/2-(uFont.getWidth("CONGRATULATION")/2), gc.getHeight()/2-125, "CONGRATULATION");
 		uFont.drawString(gc.getWidth()/2-(uFont.getWidth("YOU WIN!")/2), gc.getHeight()/2, "YOU WIN!");
@@ -73,18 +50,19 @@ public class GameWinState extends BasicGameState {
 	}
 
 	@Override
-	public void update(GameContainer gc, StateBasedGame sbg, int delta)
-			throws SlickException {
+	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
+	{
 	}
 
-	public void exitGame(){
-		if (System.currentTimeMillis() - this.started > 2000){
+	public void exitGame()
+	{
+		if (System.currentTimeMillis() - this.started > 2000)
 			sbg.enterState(MenuState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
-		}
 	}
 
 	@Override
-	public int getID() {
+	public int getID() 
+	{
 		return ID;
 	}
 

@@ -1,25 +1,8 @@
 package ld27jam.helpers;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
-import ld27jam.entity.BlockColor;
-import ld27jam.entity.BlockShape;
-import ld27jam.entity.Factory;
-import ld27jam.entity.FactoryImpl;
-import ld27jam.entity.Machine;
-import ld27jam.entity.Pipe;
-import ld27jam.entity.Processor;
-import ld27jam.entity.ProcessorImpl;
-import ld27jam.entity.Router;
-
 public class SavingHelper
 {
+	/*
 	public Factory factory;
 	public int money, level;
 	public List<Processor> buildMenu = new ArrayList<Processor>();
@@ -218,4 +201,5 @@ public class SavingHelper
 
 		return state;
 	}
+	*/
 }
