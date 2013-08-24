@@ -26,7 +26,8 @@ public class World
 	private SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
 	private GridTile[][] grid;
 	private ImageSheet spriteSheet;
-
+	private GameDirector gd;
+	
 	public static Vector2f getScreenCoordinates(Vector2f pMapCoordinates)
 	{
 		return new Vector2f((pMapCoordinates.x - pMapCoordinates.y) * SCREEN_HALF_TILE.x,
@@ -77,8 +78,14 @@ public class World
 			entity.update(gc, sbg, delta, this);
 	}
 	
+	public void load(int level)
+	{
+		gd.level = new GameLevel(level);
+	}
+	
 	public World(GameDirector gd) throws SlickException
 	{
+		this.gd = gd;
 		spriteSheet = new ImageSheet(gd.spriteSheetLocation, (int)SCREEN_TILE_SIZE.x, (int)SCREEN_TILE_SIZE.y);
 	}
 }
