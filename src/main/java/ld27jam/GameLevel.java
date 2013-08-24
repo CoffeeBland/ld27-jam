@@ -17,7 +17,7 @@ public class GameLevel
 		
 		// Good now generate that maze
 		this.dungeon = new Dungeon();
-		this.dungeon.createDungeon(200, 200, 80);
+		this.dungeon.createDungeon(300, 300, 100);
 	}
 	
 	public int getHeight() 
