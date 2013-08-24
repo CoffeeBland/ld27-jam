@@ -24,13 +24,14 @@ public class World
 {
 	private GameDirector gd;
 	
-	public static final Vector2f SCREEN_TILE_SIZE = new Vector2f(32, 16),
-								 SCREEN_HALF_TILE = new Vector2f(16, 8);
+	public static final Vector2f SCREEN_TILE_SIZE = new Vector2f(32, 16);
+	public static final Vector2f SCREEN_HALF_TILE = new Vector2f(16, 8);
+	public static final int WALL_HEIGHT = 80;
 	
 	private Set<Entity> entities = new HashSet<Entity>();
 	private SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
 	private Tile[][] grid;
-	private ImageSheet spriteSheet;
+	private ImageSheet tileSheet, wallSheet;
 	private Entity character;
 	
 	public void add(Entity entity)
@@ -162,18 +163,37 @@ public class World
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
 		AABB region = new Region(new Vector2f(), new Vector2f(1, 1));
-		Vector2f camera = getScreenCoordinates(new Vector2f(character.getPosition().x, character.getPosition().y)).add(SCREEN_HALF_TILE).sub(new Vector2f(gc.getWidth() / 2, gc.getHeight() / 2));
+		Vector2f halfScreen = new Vector2f(gc.getWidth() / 2, gc.getHeight() / 2);
+		Vector2f camera = getScreenCoordinates(new Vector2f(character.getPosition().x, character.getPosition().y)).add(SCREEN_HALF_TILE).sub(halfScreen);
+		camera.x = Math.round(camera.x);
+		camera.y = Math.round(camera.y);
 		
 		for (int projection = 0; projection < grid.length + grid[0].length; projection++)
 		{
 			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1)); x >= 0 && y < grid[x].length; y++, x--)
 			{
+				Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
+				if (tilePos.x < SCREEN_TILE_SIZE.x || 
+				    tilePos.y < SCREEN_TILE_SIZE.y ||
+				    tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x ||
+				    tilePos.y > gc.getHeight() + WALL_HEIGHT)
+					return;
+				
 				Tile tile = grid[x][y];
 				if (tile != null)
 				{
-					spriteSheet.setFrameX(tile.type.tileX);
-					spriteSheet.setFrameY(tile.type.tileY);
-					spriteSheet.render(getScreenCoordinates(new Vector2f(x, y)).sub(camera));
+					if (tile.type.wallId == null)
+					{
+						tileSheet.setFrameX(tile.type.tileX);
+						tileSheet.setFrameY(tile.type.tileY);
+						tileSheet.render(tilePos);
+					}
+					else
+					{
+						wallSheet.setFrameX(tile.type.wallId);
+						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
+						wallSheet.render(tilePos);
+					}
 				}
 				
 				region.getPosition().x = x;
@@ -204,6 +224,8 @@ public class World
 	public World(GameDirector gd) throws SlickException
 	{
 		this.gd = gd;
-		spriteSheet = new ImageSheet(gd.spriteSheetLocation, (int)SCREEN_TILE_SIZE.x, (int)SCREEN_TILE_SIZE.y);
+		tileSheet = new ImageSheet(gd.spriteSheetLocation, (int)SCREEN_TILE_SIZE.x, (int)SCREEN_TILE_SIZE.y);
+		wallSheet = new ImageSheet(gd.wallSheetLocation, (int)SCREEN_TILE_SIZE.x, WALL_HEIGHT);
+		
 	}
 }
