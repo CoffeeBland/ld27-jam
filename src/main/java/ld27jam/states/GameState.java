@@ -9,6 +9,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
@@ -43,9 +44,9 @@ public class GameState extends BasicGameState {
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
 	{
-		g.setColor(new Color(255, 0, 255));
+		g.setColor(new Color(50, 50, 70));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
-		world.render(gc, sbg, g);
+		world.render(gc, sbg, g, new Vector2f(-128, -92));
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 

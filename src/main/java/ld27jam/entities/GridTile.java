@@ -2,7 +2,8 @@ package ld27jam.entities;
 
 public enum GridTile 
 {
-	Test(1, 0);
+	Test(0, 0),
+	Test2(1, 0);
 	
 	public int tileX, tileY;
 	
