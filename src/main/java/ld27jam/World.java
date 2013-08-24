@@ -90,7 +90,7 @@ public class World
 					grid[x][y] = new Tile(TileType.Test, x, y);
 			}
 		}
-		character = new Entity(new Vector2f(xsize / 2, xsize / 2), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
+		character = new Entity(new Vector2f(xsize / 2, xsize / 2), new Vector2f(0.8f, 0.8f), true, new Vector2f(-14, -64), new AnimatedSprite("res/sprites/sprite_still.png", 64, 80, 8));
 		add(character);
 		
 		final World world = this;
@@ -99,7 +99,6 @@ public class World
 			@Override
 			public void keyDown() 
 			{
-				character.imageSheet.setFrameY(7);
 			}
 			@Override
 			public void keyUp()
@@ -117,7 +116,6 @@ public class World
 			@Override
 			public void keyDown() 
 			{
-				character.imageSheet.setFrameY(0);
 			}
 			@Override
 			public void keyUp()
@@ -135,7 +133,6 @@ public class World
 			@Override
 			public void keyDown() 
 			{
-				character.imageSheet.setFrameY(1);
 			}
 			@Override
 			public void keyUp()
@@ -153,7 +150,6 @@ public class World
 			@Override
 			public void keyDown() 
 			{
-				character.imageSheet.setFrameY(4);
 			}
 			@Override
 			public void keyUp()
@@ -170,43 +166,71 @@ public class World
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
 		AABB region = new Region(new Vector2f(), new Vector2f(1, 1));
+		
 		Vector2f halfScreen = new Vector2f(gc.getWidth() / 2, gc.getHeight() / 2);
+		
 		Vector2f camera = getScreenCoordinates(new Vector2f(character.getPosition().x, character.getPosition().y)).add(SCREEN_HALF_TILE).sub(halfScreen);
 		camera.x = Math.round(camera.x);
 		camera.y = Math.round(camera.y);
 		
-		for (int projection = 0; projection < grid.length + grid[0].length; projection++)
+		Vector2f characterPosUnaltered = World.getScreenCoordinates(character.getPosition()).sub(camera);
+		Vector2f characterPos = characterPosUnaltered.copy().add(new Vector2f(0, SCREEN_TILE_SIZE.y));
+		characterPosUnaltered.y += 60;
+		
+		AABB characterSquare = new Region(characterPos, new Vector2f(SCREEN_TILE_SIZE.x, WALL_HEIGHT - SCREEN_HALF_TILE.y));
+		
+		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1;
+		for (int projection = (int)Math.floor(camera.y / SCREEN_HALF_TILE.y) - 1; 
+			 projection < grid.length + grid[0].length && projection < projectionHeight; 
+			 projection++)
 		{
-			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1)); x >= 0 && y < grid[x].length; y++, x--)
+			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1));
+				 x >= 0 && y < grid[x].length; 
+				 y++, x--)
 			{
+				// Do not draw stuff outside the camera
+				Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
+				if (tilePos.x < - SCREEN_TILE_SIZE.x)
+					break;
+				if (tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
+					continue;
+
+				
+				// Tile
 				Tile tile = grid[x][y];
 				if (tile != null)
 				{
-					Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
-					if (tilePos.x < - SCREEN_TILE_SIZE.x || 
-						tilePos.y < - SCREEN_TILE_SIZE.y ||
-						tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x ||
-						tilePos.y > gc.getHeight() + WALL_HEIGHT )
-							continue;
-					
+					float blackness = tilePos.distance(characterPosUnaltered) / 280;
 					if (tile.type.wallId == null)
 					{
 						tileSheet.setFrameX(tile.type.tileX);
 						tileSheet.setFrameY(tile.type.tileY);
+						tileSheet.getColor().r = 1.0f - blackness;
+						tileSheet.getColor().g = 0.9f - blackness;
+						tileSheet.getColor().b = 0.8f - blackness;
 						tileSheet.render(tilePos);
 					}
 					else
 					{
 						wallSheet.setFrameX(tile.type.wallId);
-						wallSheet.getColor().a = 0.5f;
+						wallSheet.getColor().r = 1.0f - blackness;
+						wallSheet.getColor().g = 0.9f - blackness;
+						wallSheet.getColor().b = 0.8f - blackness;
+						if (characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
+							wallSheet.getColor().a = 0.4f;
+						else
+							wallSheet.getColor().a = 1f;
 						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
 						wallSheet.render(tilePos);
+						
+						
 					}
 				}
 				
 				region.getPosition().x = x;
 				region.getPosition().y = y;
 
+				// Entities
 				for (Entity entity : spatialMap.get(region))
 				{
 					if (region.getPosition().x < entity.getRightX() &&

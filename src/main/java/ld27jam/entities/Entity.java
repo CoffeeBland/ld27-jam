@@ -24,7 +24,10 @@ public class Entity extends Region
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera) throws SlickException
 	{
-		imageSheet.render(World.getScreenCoordinates(getPosition()).add(visualDecal).sub(camera));
+		Vector2f pos = World.getScreenCoordinates(getPosition()).add(visualDecal).sub(camera);
+		pos.x = Math.round(pos.x);
+		pos.y = Math.round(pos.y);
+		imageSheet.render(pos);
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException 
