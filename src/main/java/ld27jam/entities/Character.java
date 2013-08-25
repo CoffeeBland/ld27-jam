@@ -22,7 +22,7 @@ public class Character extends Entity
 {
 	public static Sound HEARTBEAT, STATIC;
 	
-	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0, speed = 0.13f;
+	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0, speed = 0.12f;
 	public Color lightColor = new Color(255, 230, 180);
 	public boolean isMovingDiagonally;
 	public float maxSanity = 9.9999f;

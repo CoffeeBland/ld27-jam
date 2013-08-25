@@ -49,9 +49,9 @@ public class MenuState extends BasicGameState {
 	@Override
 	public void keyPressed(int key, char c)
 	{
-		if(key == Input.KEY_UP)
+		if(key == Input.KEY_W)
 			playSelected = true;
-		if(key == Input.KEY_DOWN)
+		if(key == Input.KEY_S)
 			playSelected = false;
 	}
 

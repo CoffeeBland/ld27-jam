@@ -6,8 +6,6 @@ import java.util.Set;
 import ld27jam.entities.Entity;
 import ld27jam.entities.Hourglass;
 import ld27jam.entities.Inventory;
-import ld27jam.entities.Item;
-import ld27jam.entities.ItemType;
 import ld27jam.entities.Tile;
 import ld27jam.entities.TileType;
 import ld27jam.res.ImageSheet;
@@ -113,10 +111,6 @@ public class World
 		character = new Character(startingPoint);
 		add(character);
 		character.init(this);
-		inventory.items.add(new Item(ItemType.Key));
-		inventory.items.add(new Item(ItemType.Key));
-		inventory.items.add(new Item(ItemType.Key));
-		inventory.items.add(new Item(ItemType.Key));
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
@@ -170,7 +164,7 @@ public class World
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
 						if (!tile.alwaysShow && characterView.containsPoint(tilePos))
-							wallSheet.getColor().a = tilePosScreen.distance(characterPosUnaltered) / 100f;
+							wallSheet.getColor().a = (tilePosScreen.distance(characterPosUnaltered) - 25f) / 75f;
 						else
 							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;
 						tilePosScreen.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;

@@ -12,14 +12,14 @@ public enum TileType
 	StartingPoint(1, true, true),
 	SpikeTrap(12, true, false),
 	SpikeTrapOpened(13, true, false),
-	ChestClosedTL(0, false, false),
-	ChestClosedTR(1, false, false),
-	ChestClosedBL(2, false, false),
-	ChestClosedBR(3, false, false),
-	ChestOpenedTL(4, false, false),
-	ChestOpenedTR(5, false, false),
-	ChestOpenedBL(6, false, false),
-	ChestOpenedBR(7, false, false);
+	ChestClosedWest(0, false, false),
+	ChestClosedNorth(1, false, false),
+	ChestClosedSouth(2, false, false),
+	ChestClosedEast(3, false, false),
+	ChestOpenedWest(4, false, false),
+	ChestOpenedNorth(5, false, false),
+	ChestOpenedSouth(6, false, false),
+	ChestOpenedEast(7, false, false);
 	
 	public int tileId;
 	public boolean canWalkOn, isFloor, isWall, alwaysShow;
