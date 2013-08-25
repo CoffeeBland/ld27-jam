@@ -82,6 +82,7 @@ public class World
 	{
 		int xsize = gd.level.getWidth();
 		int ysize = gd.level.getHeight();
+		Vector2f startingPoint = null;
 		grid = new Tile[xsize][ysize];
 		for	(int x = 0; x < xsize; x++)
 		{
@@ -89,9 +90,12 @@ public class World
 			{
 				TileType tileType = gd.level.getCell(x, y);
 				grid[x][y] = new Tile(tileType, x, y);
+				if (tileType == TileType.StartingPoint)
+					startingPoint = new Vector2f(x, y);
 			}
 		}
-		character = new Character(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2));
+		gd.level.dungeon = null;
+		character = new Character(startingPoint);
 		add(character);
 		character.init(this);
 		inventory.items.add(new Item(ItemType.Key));

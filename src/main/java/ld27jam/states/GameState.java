@@ -17,6 +17,7 @@ public class GameState extends BasicGameState {
 
 	public static final int ID = 3;
 	private StateBasedGame sbg;
+	private GameContainer gc;
 
 	private World world;	
 	private GameDirector gd;
@@ -24,7 +25,7 @@ public class GameState extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
 		this.sbg = sbg;
-
+		this.gc = gc;
 		gd = new GameDirector();
 		world = new World(gd);
 		world.init(gc, sbg);

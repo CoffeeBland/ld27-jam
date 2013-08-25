@@ -12,7 +12,7 @@ import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class LoadingState extends BasicGameState
 {
-	public static final int ID = 50;
+	public static final int ID = 12;
 	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
