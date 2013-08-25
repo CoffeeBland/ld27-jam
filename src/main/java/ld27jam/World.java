@@ -16,6 +16,7 @@ import ld27jam.spatialData.Region;
 import ld27jam.spatialData.SpatialMap;
 import ld27jam.entities.Character;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -129,12 +130,11 @@ public class World
 				if (tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
 					continue;
 
-				
+				float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 				// Tile
 				Tile tile = grid[x][y];
 				if (tile != null && tile.type != TileType.None)
 				{
-					float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 					if (tile.type.isFloor)
 					{
 						tileSheet.setFrameX(tile.type.tileId);
@@ -172,7 +172,12 @@ public class World
 						region.getRightX() >= bottomRight.x &&
 						region.getPosition().y < bottomRight.y &&
 						region.getBottomY() >= bottomRight.y)
-						entity.render(gc, sbg, g, camera);
+					{
+						Color color = new Color(Math.max(20f / 255f, character.lightColor.r - blackness),
+												Math.max(20f / 255f, character.lightColor.g - blackness),
+												Math.max(30f / 255f, character.lightColor.b - blackness));
+						entity.render(gc, sbg, g, camera, color);
+					}
 				}
 			}
 		}

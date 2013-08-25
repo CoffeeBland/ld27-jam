@@ -2,6 +2,7 @@ package ld27jam.entities;
 
 import java.util.Set;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -22,11 +23,12 @@ public class Entity extends Region
 	public Vector2f visualDecal;
 	public boolean canBeCollided = true;
 	
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera) throws SlickException
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera, Color color) throws SlickException
 	{
 		Vector2f pos = World.getScreenCoordinates(getPosition()).add(visualDecal).sub(camera);
 		pos.x = Math.round(pos.x);
 		pos.y = Math.round(pos.y);
+		imageSheet.setColor(color);
 		imageSheet.render(pos);
 	}
 
