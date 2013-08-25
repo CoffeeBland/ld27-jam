@@ -6,6 +6,8 @@ import ld27jam.input.KeyMapping;
 import ld27jam.res.AnimatedSprite;
 import ld27jam.res.ImageSheet;
 import ld27jam.res.Sounds;
+import ld27jam.spatialData.AABB;
+import ld27jam.spatialData.Region;
 import ld27jam.states.GameOverState;
 
 import org.newdawn.slick.Color;
@@ -50,56 +52,11 @@ public class Character extends Entity
 			catch(SlickException ex){}
 		}
 	}
-	
-	@Override
-	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
+	public void updateAnim()
 	{
-		sanity = Math.max(0, Math.min(maxSanity, sanity));
-		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(9.9999f - sanity)] * 60f);
-		
-		// Gameover check
-		if (sanity <= 0.0001f)
-		{
-			HEARTBEAT.play(0.5f, 1f);
-			HEARTBEAT.play(0.75f, 1f);
-			HEARTBEAT.play(1f, 1f);
-			HEARTBEAT.play(1.25f, 1f);
-			HEARTBEAT.play(1.5f, 1f);
-			HEARTBEAT.play(1.75f, 1f);
-			HEARTBEAT.play(2f, 1f);
-			sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
-			disposeOfEvents();
-		}
-		
-		else
-		{
-			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
-			if (invincibility > 0)
-			{
-				invincibility--;
-				sanityRatio *= Math.random();
-			}
-			lightMoment += 0.005f;
-			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
-			lightColor.r = sanityRatio * 0.4f + 0.6f;
-			lightColor.g = sanityRatio * 0.95f;
-			lightColor.b = sanityRatio * 0.4f + 0.35f;
-			lightBase = sanityRatio * 100 + 200;
-		}
-		
-		if (toNextHeartbeat > 0)
-			toNextHeartbeat--;
-		else
-		{
-			toNextHeartbeat = (int)(sanity * 5) + 20;
-			if (HEARTBEAT == null)
-				HEARTBEAT = Sounds.get("res/audio/Heartbeat.ogg");
-			HEARTBEAT.play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
-		}
-		
-		super.update(gc, sbg, delta, world);
 		isMovingDiagonally = true;
 		imageSheet = walkingSheet;
+		
 		// Up
 		if (KeyMapping.Up.isDown())
 			if (KeyMapping.Left.isDown())
@@ -139,18 +96,64 @@ public class Character extends Entity
 			imageSheet = stillSheet;
 			stillSheet.setFrameY(walkingSheet.getFrameY());
 		}
-		
-		checkForTraps(world);
 	}
-
-	public void checkForTraps(World world)
+	
+	public void gameover(StateBasedGame sbg)
+	{
+		HEARTBEAT.play(0.5f, 1f);
+		HEARTBEAT.play(0.75f, 1f);
+		HEARTBEAT.play(1f, 1f);
+		HEARTBEAT.play(1.25f, 1f);
+		HEARTBEAT.play(1.5f, 1f);
+		HEARTBEAT.play(1.75f, 1f);
+		HEARTBEAT.play(2f, 1f);
+		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
+		disposeOfEvents();
+	}
+	public void heartbeat() throws SlickException
+	{
+		if (toNextHeartbeat > 0)
+		toNextHeartbeat--;
+		else
+		{
+			toNextHeartbeat = (int)(sanity * 5) + 20;
+			if (HEARTBEAT == null)
+				HEARTBEAT = Sounds.get("res/audio/Heartbeat.ogg");
+			HEARTBEAT.play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
+		}
+	}
+	public void updateSanity(World world, StateBasedGame sbg)
+	{
+		sanity = Math.max(0, Math.min(maxSanity, sanity));
+		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(9.9999f - sanity)] * 60f);
+		
+		// Gameover check
+		if (sanity <= 0.0001f)
+			gameover(sbg);
+		else
+		{
+			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
+			if (invincibility > 0)
+			{
+				invincibility--;
+				sanityRatio *= Math.random();
+			}
+			lightMoment += 0.005f;
+			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
+			lightColor.r = sanityRatio * 0.4f + 0.6f;
+			lightColor.g = sanityRatio * 0.95f;
+			lightColor.b = sanityRatio * 0.4f + 0.35f;
+			lightBase = sanityRatio * 100 + 200;
+		}
+	}
+	public void checkForInteraction(World world)
 	{
 		for (Tile tile : world.getTilesInRegion(this))
 		{
 			switch(tile.type)
 			{
 				case SpikeTrap:
-					world.openSpikeAt(tile.x, tile.y);
+					world.changeTileTypeAt(tile.x, tile.y, TileType.SpikeTrapOpened);
 					hitSanity(0.5f, world, new Vector2f());
 					break;
 				case SpikeTrapOpened:
@@ -160,6 +163,41 @@ public class Character extends Entity
 					break;
 			}
 		}
+		AABB front = new Region(getPosition().copy(), getSize());
+		if (KeyMapping.Left.isDown())
+			front.getPosition().x -= getSize().x;
+		if (KeyMapping.Right.isDown())
+			front.getPosition().x += getSize().x;
+		if (KeyMapping.Up.isDown())
+			front.getPosition().y -= getSize().y;
+		if (KeyMapping.Down.isDown())
+			front.getPosition().y += getSize().y;
+		for (Tile tile : world.getTilesInRegion(front))
+		{
+			switch(tile.type)
+			{
+				case ChestClosedEast:
+					
+					break;
+				case ChestClosedWest:
+					break;
+				case ChestClosedNorth:
+					break;
+				case ChestClosedSouth:
+					break;
+			}
+		}
+	}
+	
+	@Override
+	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
+	{
+		updateSanity(world, sbg);
+		heartbeat();
+		updateAnim();
+		checkForInteraction(world);
+		
+		super.update(gc, sbg, delta, world);
 	}
 	
 	@Override

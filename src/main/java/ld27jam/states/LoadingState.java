@@ -17,7 +17,6 @@ public class LoadingState extends BasicGameState
 
 	public String string = "Generating level ... this may take a while";
 	Thread loadingThread;
-	int timer = 0;
 	
 	private boolean showingIntro = false;
 	private int showingIntroStep = 0;
@@ -59,7 +58,9 @@ public class LoadingState extends BasicGameState
 			if (showingIntro == false)
 				showingIntro = true;
 			if (showingIntroStep == 3)
+			{
 				sbg.enterState(GameState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 500));
+			}
 		}
 		else if (loadingThread == null)
 		{
@@ -91,7 +92,9 @@ public class LoadingState extends BasicGameState
 	{
 		if (sbg.getState(GameState.ID) == null)
 			sbg.addState(new GameState());
-		timer = 0;
+		showingIntro = false;
+		showingIntroStep = 0;
+		loadingThread = null;
 	}
 	
 	@Override

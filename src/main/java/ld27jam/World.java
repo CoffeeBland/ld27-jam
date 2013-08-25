@@ -36,12 +36,12 @@ public class World
 	private Character character;
 	private Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
-	private float shakeIntensity, shakeDuration;
+	private float shakeIntensity, shakeDuration, shake;
 	private Vector2f revealVision = new Vector2f(8, 8), halfReveal = revealVision.copy().scale(0.25f);
 	
 	public float getShake()
 	{
-		return (float) ((Math.random() - 0.5f) * shakeIntensity);
+		return shake;
 	}
 	public void setShake(float intensity, float duration)
 	{
@@ -78,9 +78,9 @@ public class World
 		return tiles;
 	}
 	
-	public void openSpikeAt(int x, int y)
+	public void changeTileTypeAt(int x, int y, TileType type)
 	{
-		grid[x][y] = TileType.SpikeTrapOpened;
+		grid[x][y] = type;
 	}
 	
 	public static Vector2f getScreenCoordinates(Vector2f mapCoordinates)
@@ -205,6 +205,7 @@ public class World
 			shakeDuration = 0;
 			shakeIntensity = 0;
 		}
+		shake = (float)((Math.random() - 0.5f) * shakeIntensity);
 		
 		for (Entity entity : entities)
 			entity.update(gc, sbg, delta, this);
