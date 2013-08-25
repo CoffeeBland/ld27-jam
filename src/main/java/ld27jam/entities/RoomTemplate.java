@@ -45,6 +45,8 @@ public class RoomTemplate {
 				return TileType.Floor;
 			case '+':
 				return TileType.Floor;
+			case 'S':
+				return TileType.StartingPoint;
 			default:
 				return TileType.None;
 		}
@@ -69,6 +71,22 @@ public class RoomTemplate {
 	public void setExitsOffset(Vector2f off)
 	{
 		this.exitsOffset = off;
+	}
+	
+	public static RoomTemplate getStartingRoom()
+	{
+		return new RoomTemplate("      +     \n" +
+								"    ffff    \n" +
+								"   ffffff   \n" +
+								"  ffffffff  \n" +
+								" ffffffffff \n" +
+								"ffffWfWffff+\n" +
+								"+ffffSffffff\n" +
+								"ffffWfWffff \n" +
+								" fffffffff  \n" +
+								"  fffffff   \n" +
+								"   fffff    \n" +
+								"    f+f     \n");
 	}
 	
 }

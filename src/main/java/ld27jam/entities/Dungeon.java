@@ -13,8 +13,8 @@ public class Dungeon {
 	public int ysize = 0;
 
 	public static long oldseed = 0;
- 
 	private TileType[][] dungeon = {};
+	private boolean startingPointSet = false;
  
 	public void setCell(int x, int y, TileType celltype){
 		dungeon[x][y] = celltype;
@@ -115,52 +115,52 @@ public class Dungeon {
 		}
 	}
  
-	public Vector2f wheres_empty_from(int x, int y) 
+	public Vector2f wheresEmptyFrom(int x, int y) 
 	{
-		if(this.north_from(x,y) == TileType.None) return new Vector2f(x,   y-1);
-		if(this.south_from(x,y) == TileType.None) return new Vector2f(x,   y+1);
-		if(this.west_from(x,y)  == TileType.None) return new Vector2f(x-1, y  );
-		if(this.east_from(x,y)  == TileType.None) return new Vector2f(x+1, y  );
+		if(this.northFrom(x,y) == TileType.None) return new Vector2f(x,   y-1);
+		if(this.southFrom(x,y) == TileType.None) return new Vector2f(x,   y+1);
+		if(this.westFrom(x,y)  == TileType.None) return new Vector2f(x-1, y  );
+		if(this.eastFrom(x,y)  == TileType.None) return new Vector2f(x+1, y  );
 		return null;
 	}
 	
-	private TileType east_from(int x, int y) 
+	private TileType eastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x+1][y] : null);
 	}
-	private TileType west_from(int x, int y) 
+	private TileType westFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x-1][y] : null);
 	}
-	private TileType north_from(int x, int y) 
+	private TileType northFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x][y-1] : null);
 	}
-	private TileType south_from(int x, int y) 
+	private TileType southFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x][y+1] : null);
 	}
 	
-	private TileType northeast_from(int x, int y) 
+	private TileType northeastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x+1][y-1] : null);
 	}
-	private TileType southeast_from(int x, int y) 
+	private TileType southeastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x+1][y+1] : null);
 	}
-	private TileType northwest_from(int x, int y) 
+	private TileType northwestFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x-1][y-1] : null);
 	}
-	private TileType southwest_from(int x, int y) 
+	private TileType southwestFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.dungeon[x-1][y+1] : null);
@@ -174,14 +174,14 @@ public class Dungeon {
 			{
 				if(dungeon[x][y] == TileType.Floor) 
 				{
-		          if(north_from(x,y) == TileType.None)     dungeon[x  ][y-1]   = TileType.Wall;
-		          if(south_from(x,y) == TileType.None)     dungeon[x  ][y+1]   = TileType.Wall;
-		          if(west_from(x,y) == TileType.None)      dungeon[x-1][y  ]   = TileType.Wall;
-		          if(east_from(x,y) == TileType.None)      dungeon[x+1][y  ]   = TileType.Wall;
-		          if(northeast_from(x,y) == TileType.None) dungeon[x+1][y-1]   = TileType.Wall;
-		          if(southeast_from(x,y) == TileType.None) dungeon[x+1][y+1]   = TileType.Wall;
-		          if(northwest_from(x,y) == TileType.None) dungeon[x-1][y-1]   = TileType.Wall;
-		          if(southwest_from(x,y) == TileType.None) dungeon[x-1][y+1]   = TileType.Wall;
+		          if(northFrom(x,y) == TileType.None)     dungeon[x  ][y-1]   = TileType.Wall;
+		          if(southFrom(x,y) == TileType.None)     dungeon[x  ][y+1]   = TileType.Wall;
+		          if(westFrom(x,y) == TileType.None)      dungeon[x-1][y  ]   = TileType.Wall;
+		          if(eastFrom(x,y) == TileType.None)      dungeon[x+1][y  ]   = TileType.Wall;
+		          if(northeastFrom(x,y) == TileType.None) dungeon[x+1][y-1]   = TileType.Wall;
+		          if(southeastFrom(x,y) == TileType.None) dungeon[x+1][y+1]   = TileType.Wall;
+		          if(northwestFrom(x,y) == TileType.None) dungeon[x-1][y-1]   = TileType.Wall;
+		          if(southwestFrom(x,y) == TileType.None) dungeon[x-1][y+1]   = TileType.Wall;
 		        }
 				// TODO else if door put wall
 			}
@@ -254,9 +254,16 @@ public class Dungeon {
 	        
 	        while( room_for_x > widest_width ) 
 	        {
-	          RoomTemplate a_room = templates[getRandTrue(0, templates.length-1)];
-	          rooms.add(a_room);
-	          room_for_x -= (a_room.getWidth() + spacing + 1);
+	        	RoomTemplate a_room;
+	        	if (y > this.ysize/2-20 && y < this.ysize/2+20 && room_for_x > this.xsize/2-20 && room_for_x < this.xsize/2+20 && startingPointSet == false)
+	        	{
+	        		a_room = RoomTemplate.getStartingRoom();
+	        		this.startingPointSet = true;
+	        	}
+	        	else
+	        		a_room = templates[getRandTrue(0, templates.length-1)];
+	        	rooms.add(a_room);
+	        	room_for_x -= (a_room.getWidth() + spacing + 1);
 	        }
 
 	        // tallest height just for this row
@@ -323,7 +330,7 @@ public class Dungeon {
 	    ArrayList<Vector2f[]> usable_room_exit_pairs = new ArrayList<Vector2f[]>();
 	    ArrayList<Vector2f> used_exits = new ArrayList<Vector2f>();
 	    for (Vector2f exit : room_exits) {
-			Vector2f wef = wheres_empty_from((int)exit.x, (int)exit.y);
+			Vector2f wef = wheresEmptyFrom((int)exit.x, (int)exit.y);
 			if (wef != null) usable_room_exit_pairs.add(new Vector2f[] {exit, wef});
 		}
 	 
