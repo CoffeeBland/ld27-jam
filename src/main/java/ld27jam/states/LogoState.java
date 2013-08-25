@@ -41,7 +41,7 @@ public class LogoState extends BasicGameState {
     public void update(GameContainer container, StateBasedGame sbg, int deltaMS) throws SlickException {
     	ColorTools.visualSeekAlpha(colMult, 1.0f, 0.02f);
     	Input input = container.getInput();
-        boolean skipToStart = input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) || input.isKeyDown(Input.KEY_SPACE) || input.isKeyDown(Input.KEY_ESCAPE);
+        boolean skipToStart = input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) || input.isKeyDown(Input.KEY_ENTER) || input.isKeyDown(Input.KEY_ESCAPE);
         boolean goToStartScreen = startTime + logoDuration < container.getTime();
         
         if (skipToStart || goToStartScreen) 

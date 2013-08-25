@@ -63,8 +63,8 @@ public class MenuState extends BasicGameState {
 		String credits = "A game by Guillaume, Frederic and Myriam";
 		uFontSmall.drawString((gc.getWidth()/2)-(uFontSmall.getWidth(credits)/2), gc.getHeight()-28, credits);
 		
-		drawCentered(playSelected ? uFontSmallGray : uFontSmall, 320, "Play", gc);
-		drawCentered(!playSelected ? uFontSmallGray : uFontSmall, 380, "Exit", gc);
+		drawCentered(!playSelected ? uFontSmallGray : uFontSmall, 320, "Play", gc);
+		drawCentered(playSelected ? uFontSmallGray : uFontSmall, 380, "Exit", gc);
 	}
 	
 	private void drawCentered(UnicodeFont font, int y, String text, GameContainer gc) 
