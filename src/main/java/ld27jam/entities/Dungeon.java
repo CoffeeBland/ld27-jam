@@ -1,5 +1,6 @@
 package ld27jam.entities;
 
+import java.io.EOFException;
 import java.util.*;
 
 import org.newdawn.slick.geom.Vector2f;
@@ -86,7 +87,14 @@ public class Dungeon {
 		{
 			for (int x = 0; x < xsize-1; x++)
 			{
-				//if ()
+				if (this.grid[x][y] == TileType.SpikeTrap)
+					System.out.print("x");
+				else if (!this.grid[x][y].canWalkOn && this.grid[x][y].isWall)
+					System.out.print("O");
+				else if (this.grid[x][y].canWalkOn)
+					System.out.print(".");
+				else
+					System.out.print(" ");
 			}
 			System.out.println();
 		}
@@ -161,7 +169,6 @@ public class Dungeon {
 		TileType.RockMossWall5,
 		TileType.RockMossWall6
 	};
-	
 	public static TileType getWallType()
 	{
 		if (Math.random() < 0.75)
@@ -169,7 +176,7 @@ public class Dungeon {
 		else
 			return mossWalls[getRand(0, mossWalls.length - 1)];
 	}
-
+	
 	private static TileType[] floors = new TileType[] 
 	{
 		TileType.Floor1,
@@ -179,10 +186,16 @@ public class Dungeon {
 		TileType.Floor5,
 		TileType.Floor6,
 	};
-	
 	public static TileType getFloorType()
 	{
-		return floors[getRand(0, floors.length - 1)];
+		if (Math.random() < 0.75)
+		{
+			return floors[getRand(0, 1)];
+		}
+		else
+		{
+			return floors[getRand(2, floors.length-1)];
+		}
 	}
 	
 	private void surroundEveryFloorWithWall()
@@ -392,20 +405,29 @@ public class Dungeon {
 			}
 		}
 	    
-	    TileType[][] smallDungeon = new TileType[this.xsize][this.ysize];
-	    for (int fx = 0; fx < smallDungeon.length; fx++) {
-			for (int fy = 0; fy < smallDungeon[fx].length; fy++) {
+	    TileType[][] smallDungeon = new TileType[this.xsize+30*2][this.ysize+30*2];
+	    // fill new dungeon
+	    for (int fx = 0; fx < smallDungeon.length; fx++) 
+ 		{
+ 			for (int fy = 0; fy < smallDungeon[fx].length; fy++) 
+ 			{
+ 				smallDungeon[fx][fy] = TileType.None;
+ 			}
+ 		}
+	    // copy current dungeon
+	    for (int fx = 0; fx < this.grid.length; fx++) {
+			for (int fy = 0; fy < this.grid[fx].length; fy++) {
 				// Here we can randomize few traps
 				if (getTileType(fx, fy) == TileType.CorridorFloor && Math.random() < 0.04)
-					smallDungeon[fx][fy] = TileType.SpikeTrap;
+					smallDungeon[fx+30][fy+30] = TileType.SpikeTrap;
 				else
-					smallDungeon[fx][fy] = getTileType(fx, fy);
+					smallDungeon[fx+30][fy+30] = getTileType(fx, fy);
 			}
 		}
 	    this.grid = smallDungeon;
 	    // x3 room + space for final room
-	    this.xsize = this.xsize*3 + 30*2;
-	    this.ysize = this.ysize*3 + 30*2;
+	    this.xsize = this.xsize*3 + 30*6;
+	    this.ysize = this.ysize*3 + 30*6;
 	    this.grid = new TileType[this.xsize][this.ysize];
 	    // fill dungeon with white space
  		for (int fx = 0; fx < this.grid.length; fx++) 
@@ -417,43 +439,44 @@ public class Dungeon {
  		}
  		// place final room
  		int finalRoomSide = getRand(0, 3);
- 		int finalRoomOffset = getRand(0, 86);
+ 		int finalRoomOffset = getRand(0, 85);
  		switch (finalRoomSide) {
 			case 0://north
-				drawRoom(smallDungeon, finalRoomOffset, 10, RoomTemplate.getFinishingRoom());
+				drawRoom(smallDungeon, finalRoomOffset, 15, RoomTemplate.getFinishingRoom());
 				break;
 			case 1:// east
-				drawRoom(smallDungeon, this.xsize-10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				drawRoom(smallDungeon, this.xsize/3-16, finalRoomOffset, RoomTemplate.getFinishingRoom());
 				break;
 			case 2:// south
-				drawRoom(smallDungeon, finalRoomOffset, this.ysize-10, RoomTemplate.getFinishingRoom());
+				drawRoom(smallDungeon, finalRoomOffset, this.ysize/3-16, RoomTemplate.getFinishingRoom());
 				break;
 			case 3:// west
-				drawRoom(smallDungeon, 10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				drawRoom(smallDungeon, 15, finalRoomOffset, RoomTemplate.getFinishingRoom());
 				break;
-		} 		
+		}
  		
  		// Supersize the grid
- 		for (int x2 = 0; x2 < smallDungeon.length; x2++) 
+ 		for (int x2 = 0; x2 < smallDungeon.length-30*2; x2++) 
 	    {
-			for (int y2 = 0; y2 < smallDungeon[x2].length; y2++) 
+			for (int y2 = 0; y2 < smallDungeon[x2].length-30*2; y2++) 
 			{
 				for (int x3 = 0; x3 < 3; x3++) 
 				{
 					for (int y3 = 0; y3 < 3; y3++) 
 					{
 						// Here we can randomize few chests
-						if (smallDungeon[x2][y2].isFloor && Math.random() < 0.001)
+						if (smallDungeon[x2+30][y2+30].isFloor && Math.random() < 0.001)
 							this.grid[x2*3+x3][y2*3+y3] = TileType.ChestClosedSouth;
+						else if (smallDungeon[x2+30][y2+30] == TileType.Floor || smallDungeon[x2+30][y2+30] == TileType.CorridorFloor)
+							this.grid[x2*3+x3][y2*3+y3] = getFloorType();
 						else
-							this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
+							this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2+30][y2+30];
 					}
 				}
 			}
 		}
  		
  		surroundEveryFloorWithWall();
-	    
 	}
 
 }
