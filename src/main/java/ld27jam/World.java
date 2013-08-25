@@ -168,7 +168,7 @@ public class World
 						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						if (characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
+						if (!tile.alwaysShow && characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
 							wallSheet.getColor().a = tilePos.distance(characterPosUnaltered) / 100f;
 						else
 							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;

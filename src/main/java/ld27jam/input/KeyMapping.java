@@ -3,18 +3,15 @@ package ld27jam.input;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.newdawn.slick.Input;
+
 public enum KeyMapping 
 {
-	Movement(44),
-	Offense(45),
-	Defense(46),
-	Other(47),
 	Action(48),
-	Jump(57),
-	Left(203),
-	Right(205),
-	Up(200),
-	Down(208),
+	Left(Input.KEY_A),
+	Right(Input.KEY_D),
+	Up(Input.KEY_W),
+	Down(Input.KEY_S),
 	Start(28),
 	Cancel(1);
 

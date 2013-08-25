@@ -59,19 +59,14 @@ public abstract class Entity extends Region
 			if (object != this && object.canBeCollided)
 				collision = shortestCollision(collision, determineCollision(object, collision.distance));
 		for (Tile tile : world.getTilesInRegion(aabb))
-			if (tile != null && tile != null) 
-				if (!tile.type.canWalkOn)
-					collision = shortestCollision(collision, determineCollision(new Region(tile.x, tile.y, tile.x + 1, tile.y + 1), collision.distance));
-				else
-					checkForWalkableTypeResolution(world, tile);
+			if (tile != null && tile != null && !tile.type.canWalkOn)
+				collision = shortestCollision(collision, determineCollision(new Region(tile.x, tile.y, tile.x + 1, tile.y + 1), collision.distance));
 		
 		Vector2f position = getPosition().copy().add(collision.distance);
 		if (!inCollision(world, position))
 			setPosition(position);
 	}
 	
-	public abstract void checkForWalkableTypeResolution(World world, Tile tile);
-
 	public boolean inCollision(World world, Vector2f position)
 	{
 		Set<? extends Entity> set = world.getEntitiesInRegion(new Region(position, getSize()));

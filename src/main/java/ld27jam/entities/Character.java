@@ -33,13 +33,14 @@ public class Character extends Entity
 	
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
 
-	public void hitSanity(int hitSanity, World world)
+	public void hitSanity(float hitSanity, World world, Vector2f knockback)
 	{
 		if (invincibility <= 0)
 		{
 			sanity -= hitSanity;
 			world.setShake(10, 15);
-			invincibility = 15;
+			invincibility = 30;
+			move(knockback, world);
 			try
 			{
 				if (STATIC == null)
@@ -49,30 +50,10 @@ public class Character extends Entity
 			catch(SlickException ex){}
 		}
 	}
-
-	@Override
-	public void checkForWalkableTypeResolution(World world, Tile tile) 
-	{
-		{
-			switch (tile.type)
-			{
-				case SpikeTrap:
-					world.openSpikeAt(tile.x, tile.y);
-				case SpikeTrapOpened:
-					if (this.containsPoint(new Vector2f(tile.x, tile.y)))
-						hitSanity(1, world);
-				default:
-					break;
-			}
-		}
-	}
 	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
-		if (Math.random() < 1f / 120f)
-			hitSanity(1, world);
-		
 		sanity = Math.max(0, Math.min(maxSanity, sanity));
 		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(9.9999f - sanity)] * 60f);
 		
@@ -157,6 +138,27 @@ public class Character extends Entity
 		{
 			imageSheet = stillSheet;
 			stillSheet.setFrameY(walkingSheet.getFrameY());
+		}
+		
+		checkForTraps(world);
+	}
+
+	public void checkForTraps(World world)
+	{
+		for (Tile tile : world.getTilesInRegion(this))
+		{
+			switch(tile.type)
+			{
+				case SpikeTrap:
+					world.openSpikeAt(tile.x, tile.y);
+					hitSanity(0.5f, world, new Vector2f());
+					break;
+				case SpikeTrapOpened:
+					hitSanity(0.5f, world, new Vector2f());
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	
