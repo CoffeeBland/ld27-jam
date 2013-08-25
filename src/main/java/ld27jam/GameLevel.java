@@ -18,7 +18,7 @@ public class GameLevel
 		changeTimeStage(1);
 		
 		// Good now generate that maze
-		RoomTemplate[] templates = new RoomTemplate[7];
+		RoomTemplate[] templates = new RoomTemplate[8];
 		templates[0] = new RoomTemplate(" +      \n" +
 										" ffffff+\n" +
 										" ffffff \n" +
@@ -52,9 +52,9 @@ public class GameLevel
 										" ff         ff \n" +
 										"+fff       fff+\n" +
 										" fffff   fffff \n" +
-										"   ffff ffff   \n" +
-										"    fffffff    \n" +
-										"   ffff ffff   \n" +
+										"   fffffffff   \n" +
+										"   ffffffff   \n" +
+										"   fffffffff   \n" +
 										" fffff   fffff \n" +
 										"+fff       fff+\n" +
 										" ff         ff \n" +
@@ -79,7 +79,25 @@ public class GameLevel
 										" fff        \n" +
 										"+fff        \n" +
 										" fff        \n" +
-										"  +  ");		
+										"  +  ");
+		templates[7] = new RoomTemplate(" +        + \n" +
+										"fff      fff\n" +
+										" fff    fff \n" +
+										" fff    fff \n" +
+										" fff    fff \n" +
+										" fff    fff \n" +
+										"  fff  fff  \n" +
+										"   ffffff   \n" +
+										"   +    +   ");
+		templates[7] = new RoomTemplate("      +      \n" +
+										"     fff    \n" +
+										"    fffff   \n" +
+										"   fffffff  \n" +
+										" +fffffffff+\n" +
+										"   fffffff  \n" +
+										"    fffff   \n" +
+										"     fff    \n" +
+										"      +     ");
 		
 		this.dungeon = new Dungeon();
 		this.dungeon.createDungeon(300, 300, templates);

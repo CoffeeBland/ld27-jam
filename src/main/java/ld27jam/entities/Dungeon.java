@@ -37,7 +37,7 @@ public class Dungeon {
  
 	private boolean checkPoint(int x, int y)
 	{
-		return getTileType(x, y) == TileType.Floor;
+		return getTileType(x, y) == TileType.Floor || getTileType(x, y) == TileType.CorridorFloor;
 	}
 	
 	public Vector2f getClosestFreeCell(int xs, int ys)
@@ -91,9 +91,15 @@ public class Dungeon {
 						System.out.print(".");
 						break;
 					case 1:
-						System.out.print("O");
+						System.out.print(".");
 						break;
 					case 2:
+						System.out.print("O");
+						break;
+					case 4:
+						System.out.print("x");
+						break;
+					default:
 						System.out.print(" ");
 						break;
 				};
@@ -159,7 +165,7 @@ public class Dungeon {
 	    {
 			for (int y = 0; y < grid[x].length; y++) 
 			{
-				if(grid[x][y] == TileType.Floor) 
+				if(grid[x][y].canWalkOn) 
 				{
 		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = TileType.Wall;
 		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = TileType.Wall;
@@ -181,9 +187,12 @@ public class Dungeon {
 		int start_y = Math.min(y1,y2);
 		int end_y = Math.max(y1,y2);
 
+		if (end_y - start_y + end_x - start_x > 20)
+			return false;
+		
 		for(int x = start_x; x <= end_x; x++) {
 			for(int y = start_y; y <= end_y; y++) {
-				if (this.grid[x][y] != TileType.None) return false;
+				if (this.grid[x][y] != TileType.None && this.grid[x][y] != TileType.CorridorFloor) return false;
 			}
 		}
 		return true;
@@ -197,14 +206,14 @@ public class Dungeon {
 	    y = y1;
 
 	    while( x != x2 || y != y2) {
-	      this.grid[x][y] = TileType.Floor;
+	      this.grid[x][y] = TileType.CorridorFloor;
 	      if(x != x2 && Math.random() > 0.5) {
 	        x += h_mod;
 	      } else if(y != y2) {
 	        y += v_mod;
 	      }
 	    }
-	    this.grid[x][y] = TileType.Floor;
+	    this.grid[x][y] = TileType.CorridorFloor;
 	}
 
 	// and here's the one generating the whole map
@@ -333,23 +342,27 @@ public class Dungeon {
 					Vector2f other_outer_exit = otherExit[1];
 					Vector2f this_orig = exit[0];
 					Vector2f this_exit = exit[1];
-					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y) ) {
-			            drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
-			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.Floor;
-			            this.grid[(int)other_orig.x][(int)other_orig.y] = TileType.Floor;
+					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y)) {
+						// We can now do a corridor here
+						drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
+			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.CorridorFloor;
+			            this.grid[(int)other_orig.x][(int)other_orig.y] = TileType.CorridorFloor;
 			            used_exits.add(this_orig);
 			            used_exits.add(other_orig);
+			            break;
 			        }
 				}
 			}
 		}
 	    
-	    
-	    
 	    TileType[][] smallDungeon = new TileType[this.xsize][this.ysize];
 	    for (int fx = 0; fx < smallDungeon.length; fx++) {
 			for (int fy = 0; fy < smallDungeon[fx].length; fy++) {
-				smallDungeon[fx][fy] = getTileType(fx, fy);
+				// Here we can randomize few traps
+				if (getTileType(fx, fy) == TileType.CorridorFloor && Math.random() < 0.04)
+					smallDungeon[fx][fy] = TileType.SpikeTrap;
+				else
+					smallDungeon[fx][fy] = getTileType(fx, fy);
 			}
 		}
 	    this.grid = smallDungeon;

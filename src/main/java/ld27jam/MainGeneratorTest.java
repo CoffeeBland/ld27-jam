@@ -23,68 +23,86 @@ public class MainGeneratorTest{
 		//convert a string to a int, if there's more then one arg
 		Dungeon generator = new Dungeon();
  
-		RoomTemplate[] templates = new RoomTemplate[7];
-		templates[0] = new RoomTemplate("W+WWWWWW\n" +
-										"Wffffff+\n" +
-										"WffffffW\n" +
-										"WWWWfffW\n" +
-										"   WfffW\n" +
-										"   +fffW\n" +
-										"   WW+WW");
-		templates[1] = new RoomTemplate("WWW+WWW\n" +
-										"Wfffff+\n" +
-										"WfffffW\n" +
-										"+fffffW\n" +
-										"WWW+WWW");
-		templates[2] = new RoomTemplate("WWW+W    \n" +
-										"WfffW    \n" +
-										"WfffW    \n" +
-										"+fffW    \n" +
-										"WfffWWWWW\n" +
-										"Wfffffff+\n" +
-										"WfffffffW\n" +
-										"W+WWWWWWW");
-		templates[3] = new RoomTemplate("WWW+WWWWWWW\n" +
-										"WfffffffffW\n" +
-										"Wfffffffff+\n" +
-										"WfffffffffW\n" +
-										"WfffffffffW\n" +
-										"+fffffffffW\n" +
-										"WfffffffffW\n" +
-										"WWWWW+WWWWW");
-				
-		templates[4] = new RoomTemplate("W+WW       WW+W\n" +
-										"WffWW     WWffW\n" +
-										"+fffWWW WWWfff+\n" +
-										"WfffffWWWfffffW\n" +
-										"WWWffffWffffWWW\n" +
-										"  WWfffffffWW  \n" +
-										"WWWffffWffffWWW\n" +
-										"WfffffWWWfffffW\n" +
-										"+fffWWW WWWfff+\n" +
-										"WffWW     WWffW\n" +
-										"W+WW       WW+W");
-		templates[5] = new RoomTemplate("WWW+WWW\n" +
-										"WfffffW\n" +
-										"WfffffW\n" +
-										"+fffffW\n" +
-										"WfffffW\n" +
-										"WfffffW\n" +
-										"WfffffW\n" +
-										"Wfffff+\n" +
-										"WfffffW\n" +
-										"WfffffW\n" +
-										"WW+WWWW");
-		templates[6] = new RoomTemplate("WWW+WWWWWWWW\n" +
-										"WffffffffffW\n" +
-										"Wffffffffff+\n" +
-										"WffffffWWWWW\n" +
-										"WffffffW    \n" +
-										"WffffffW    \n" +
-										"WfffWWWW    \n" +
-										"+fffW       \n" +
-										"WfffW       \n" +
-										"WW+WW");	
+		RoomTemplate[] templates = new RoomTemplate[8];
+		templates[0] = new RoomTemplate(" +      \n" +
+				" ffffff+\n" +
+				" ffffff \n" +
+				"    fff \n" +
+				"    fff \n" +
+				"   +fff \n" +
+				"     +  ");
+templates[1] = new RoomTemplate("   +   \n" +
+				" fffff+\n" +
+				" fffff \n" +
+				"+fffff \n" +
+				"   +   ");
+templates[2] = new RoomTemplate("   +     \n" +
+				" fff     \n" +
+				" fff     \n" +
+				"+fff     \n" +
+				" fff     \n" +
+				" fffffff+\n" +
+				" fffffff \n" +
+				" +       ");
+templates[3] = new RoomTemplate("   +       \n" +
+				" fffffffff \n" +
+				" fffffffff+\n" +
+				" fffffffff \n" +
+				" fffffffff \n" +
+				"+fffffffff \n" +
+				" fffffffff \n" +
+				"     +     ");
+
+templates[4] = new RoomTemplate(" +           + \n" +
+				" ff         ff \n" +
+				"+fff       fff+\n" +
+				" fffff   fffff \n" +
+				"   fffffffff   \n" +
+				"   fffffffff   \n" +
+				"   fffffffff   \n" +
+				" fffff   fffff \n" +
+				"+fff       fff+\n" +
+				" ff         ff \n" +
+				" +           + ");
+templates[5] = new RoomTemplate("   +   \n" +
+				" fffff \n" +
+				" fffff \n" +
+				"+fffff \n" +
+				" fffff \n" +
+				" fffff \n" +
+				" fffff \n" +
+				" fffff+\n" +
+				" fffff \n" +
+				" fffff \n" +
+				"  +    ");
+templates[6] = new RoomTemplate("   +        \n" +
+				" ffffffffff \n" +
+				" ffffffffff+\n" +
+				" ffffff     \n" +
+				" ffffff     \n" +
+				" ffffff     \n" +
+				" fff        \n" +
+				"+fff        \n" +
+				" fff        \n" +
+				"  +  ");
+templates[7] = new RoomTemplate(" +        + \n" +
+				"fff      fff\n" +
+				" fff    fff \n" +
+				" fff    fff \n" +
+				" fff    fff \n" +
+				" fff    fff \n" +
+				"  fff  fff  \n" +
+				"   ffffff   \n" +
+				"   +    +   ");
+templates[7] = new RoomTemplate("      +      \n" +
+				"     fff    \n" +
+				"    fffff   \n" +
+				"   fffffff  \n" +
+				" +fffffffff+\n" +
+				"   fffffff  \n" +
+				"    fffff   \n" +
+				"     fff    \n" +
+				"      +     ");
 		
 		//then we create a new dungeon map
 		generator.createDungeon(x, y, templates);	

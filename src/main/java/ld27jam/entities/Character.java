@@ -56,7 +56,7 @@ public class Character extends Entity
 		{
 			switch (tile.type)
 			{
-				case SpikeTrapClosed:
+				case SpikeTrap:
 					world.openSpikeAt(tile.x, tile.y);
 				case SpikeTrapOpened:
 					if (this.containsPoint(new Vector2f(tile.x, tile.y)))

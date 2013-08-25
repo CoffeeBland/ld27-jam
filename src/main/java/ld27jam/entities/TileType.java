@@ -2,11 +2,12 @@ package ld27jam.entities;
 
 public enum TileType 
 {
-	Floor(2, true, true),
-	Wall(9, false, false),
+	Floor(0, true, true),
+	CorridorFloor(8, true, true),
+	Wall(8, false, false),
 	None(0, false, true),
-	StartingPoint(0, true, true),
-	SpikeTrapClosed(0, true, true),
+	StartingPoint(9, true, false),
+	SpikeTrap(0, true, true),
 	SpikeTrapOpened(4, true, true),
 	ChestClosedTL(0, false, false),
 	ChestClosedTR(1, false, false),
