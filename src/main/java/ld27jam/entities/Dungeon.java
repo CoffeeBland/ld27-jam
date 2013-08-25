@@ -149,6 +149,10 @@ public class Dungeon {
 				setCell(xtemp+1, ytemp, floor);
 				setCell(xtemp+2, ytemp, wall);
 			}
+			// now cover the end of the corridor
+			for (x = 0; x < 5; x++) {
+				setCell(xtemp+2-x, y-len, wall);
+			}
 			break;
 		case 1:
 		//east
@@ -166,6 +170,11 @@ public class Dungeon {
 					setCell(xtemp, ytemp, floor);
 					setCell(xtemp, ytemp+1, floor);
 					setCell(xtemp, ytemp+2, wall);
+				}
+
+				// now cover the end of the corridor
+				for (y = 0; y < 5; y++) {
+					setCell(x+len, ytemp+2-y, wall);
 				}
 			break;
 		case 2:
@@ -185,6 +194,10 @@ public class Dungeon {
 				setCell(xtemp+1, ytemp, floor);
 				setCell(xtemp+2, ytemp, wall);
 			}
+			// now cover the end of the corridor
+			for (x = 0; x < 5; x++) {
+				setCell(xtemp+2-x, y+len, wall);
+			}
 			break;
 		case 3:
 		//west
@@ -202,6 +215,11 @@ public class Dungeon {
 				setCell(xtemp, ytemp  , floor);
 				setCell(xtemp, ytemp+1, floor);
 				setCell(xtemp, ytemp+2, wall);
+			}
+			
+			// now cover the end of the corridor
+			for (y = 0; y < 5; y++) {
+				setCell(x-len, ytemp+2-y, wall);
 			}
 			break;
 		}
