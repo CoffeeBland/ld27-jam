@@ -1,5 +1,6 @@
 package ld27jam.entities;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import ld27jam.spatialData.Region;
@@ -10,35 +11,17 @@ public class Dungeon {
 	//size of the map
 	public int xsize = 0;
 	public int ysize = 0;
-	public int[] lastRoom;
- 
-	//number of "objects" to generate on the map
-	private int objects = 0;
+
 	public static long oldseed = 0;
  
-	private TileType[] dungeon_map = { };
-	private HashMap<Vector2f, TileType> dungeon = new HashMap<Vector2f, TileType>();
-	private HashMap<Vector2f, Vector2f> dungeonRooms = new HashMap<Vector2f, Vector2f>(); 
+	private TileType[][] dungeon = {};
  
 	public void setCell(int x, int y, TileType celltype){
-		dungeon_map[x + xsize * y] = celltype;
+		dungeon[x][y] = celltype;
 	}
  
 	public TileType getTileType(int x, int y) {
-		for (Vector2f t : this.dungeon.keySet()) {
-			if (t.x == x && t.y == y)
-				return this.dungeon.get(t);
-		}
-		return TileType.None;
-	}
-
-	public int[] getRoom(int x, int y) {
-		for (Vector2f t : this.dungeonRooms.keySet()) {
-			Vector2f tSize = this.dungeonRooms.get(t);
-			if (x >= t.x && y >= t.y && x <= t.x + tSize.x && y <= t.y + tSize.y)
-				return new int[] { (int) t.x, (int) t.y, (int) tSize.x, (int) tSize.y };
-		}
-		return null;
+		return dungeon[x][y];
 	}
 	
 	private int getRand(int mean, int deviance){
@@ -49,6 +32,20 @@ public class Dungeon {
 		
 		this.oldseed = seed;
 		return rnd;
+	}
+	
+	private int getRandTrue(int min, int max)
+	{
+		Date now = new Date();
+		long seed = now.getTime() + oldseed;
+		oldseed = seed;
+ 
+		Random randomizer = new Random(seed);
+		int n = max - min + 1;
+		int i = randomizer.nextInt(n);
+		if (i < 0)
+			i = -i;
+		return min + i;
 	}
  
 	private boolean checkPoint(int x, int y)
@@ -98,14 +95,16 @@ public class Dungeon {
 	
 	public void showDungeon() 
 	{
-		for (int y = 0; y < ysize; y++){
-			for (int x = 0; x < xsize; x++){
+		for (int y = 0; y < ysize-1; y++)
+		{
+			for (int x = 0; x < xsize-1; x++)
+			{
 				switch(getTileType(x, y).ordinal()){
 					case 0:
-						System.out.print("#");
+						System.out.print(".");
 						break;
 					case 1:
-						System.out.print(".");
+						System.out.print("O");
 						break;
 					case 2:
 						System.out.print(" ");
@@ -116,113 +115,277 @@ public class Dungeon {
 		}
 	}
  
-	public int[] createRoom(Vector2f start)
+	public Vector2f wheres_empty_from(int x, int y) 
 	{
-		int width = Math.max(getRand(20, 10), 6);
-		int height = Math.max(getRand(20, 12), 6);
-		
-		this.dungeonRooms.put(start, new Vector2f(width, height));
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				// Lay the flooring
-				this.dungeon.put(new Vector2f(start.x + x, start.y + y), TileType.Floor);
-				// Wall the room
-				int yModif = 0;
-				int xModif = 0;
-				if (y == 0)
-					yModif = -1;
-				if (y == height-1)
-					yModif = 1;
-				if (x == 0)
-					xModif = -1;
-				if (x == width-1)
-					xModif = 1;
-				if (xModif == -1 || yModif == -1)
-				{
-					this.dungeon.put(new Vector2f(x+xModif, y+yModif), TileType.Wall);
-					this.dungeon.put(new Vector2f(x, y+yModif), TileType.Wall);
-					this.dungeon.put(new Vector2f(x+xModif, y), TileType.Wall);
-				}
-				else if (xModif != 0 || yModif != 0)
-					this.dungeon.put(new Vector2f(x+xModif,  y+yModif), TileType.Wall);
-			}
-		}
-		
-		// Start spacing the room away from the other one
-		int[] dirValues = { -1, 1 };
-		int xDir = dirValues[new Random(this.oldseed).nextInt(1)];
-		int yDir = dirValues[new Random(this.oldseed).nextInt(1)];
-		Region thisRoom = new Region(new Vector2f((int)start.x, (int)start.y), new Vector2f(width, height));
-		if (this.lastRoom != null) {
-			Region pastRoom = new Region(new Vector2f(lastRoom[0], lastRoom[1]), new Vector2f(lastRoom[2], lastRoom[3]));
-					
-			// Space it now
-			while (thisRoom.containsRegion(pastRoom)) 
-			{
-				System.out.println("Room: x:" + thisRoom.getPosition().x + " - y:" + thisRoom.getPosition().y + " - w:" + thisRoom.getSize().x + " h:" + thisRoom.getSize().y);
-				thisRoom.getPosition().x = thisRoom.getPosition().x + xDir;
-				thisRoom.getPosition().y = thisRoom.getPosition().y + yDir;
-			}
-		}
-		
-		System.out.println();
-		//System.out.println("Room: x:" + thisRoom.getPosition().x + " - y:" + thisRoom.getPosition().y + " - w:" + thisRoom.getSize().x + " h:" + thisRoom.getSize().y);
-		return new int[] { (int)thisRoom.getPosition().x, (int)thisRoom.getPosition().y, width, height };
+		if(this.north_from(x,y) == TileType.None) return new Vector2f(x,   y-1);
+		if(this.south_from(x,y) == TileType.None) return new Vector2f(x,   y+1);
+		if(this.west_from(x,y)  == TileType.None) return new Vector2f(x-1, y  );
+		if(this.east_from(x,y)  == TileType.None) return new Vector2f(x+1, y  );
+		return null;
 	}
 	
-	//and here's the one generating the whole map
-	public void createDungeon(int inx, int iny, int inobj){
+	private TileType east_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x+1][y] : null);
+	}
+	private TileType west_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x-1][y] : null);
+	}
+	private TileType north_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x][y-1] : null);
+	}
+	private TileType south_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x][y+1] : null);
+	}
+	
+	private TileType northeast_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x+1][y-1] : null);
+	}
+	private TileType southeast_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x+1][y+1] : null);
+	}
+	private TileType northwest_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x-1][y-1] : null);
+	}
+	private TileType southwest_from(int x, int y) 
+	{
+		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+				? this.dungeon[x-1][y+1] : null);
+	}
+	
+	private void surroundEveryFloorWithWall()
+	{
+	    for (int x = 0; x < dungeon.length; x++) 
+	    {
+			for (int y = 0; y < dungeon[x].length; y++) 
+			{
+				if(dungeon[x][y] == TileType.Floor) 
+				{
+		          if(north_from(x,y) == TileType.None)     dungeon[x  ][y-1]   = TileType.Wall;
+		          if(south_from(x,y) == TileType.None)     dungeon[x  ][y+1]   = TileType.Wall;
+		          if(west_from(x,y) == TileType.None)      dungeon[x-1][y  ]   = TileType.Wall;
+		          if(east_from(x,y) == TileType.None)      dungeon[x+1][y  ]   = TileType.Wall;
+		          if(northeast_from(x,y) == TileType.None) dungeon[x+1][y-1]   = TileType.Wall;
+		          if(southeast_from(x,y) == TileType.None) dungeon[x+1][y+1]   = TileType.Wall;
+		          if(northwest_from(x,y) == TileType.None) dungeon[x-1][y-1]   = TileType.Wall;
+		          if(southwest_from(x,y) == TileType.None) dungeon[x-1][y+1]   = TileType.Wall;
+		        }
+				// TODO else if door put wall
+			}
+		}
+	}
+	public boolean isClearFromTo(int x1, int y1, int x2, int y2) 
+	{
+		int start_x = Math.min(x1,x2);
+		int end_x = Math.max(x1,x2);
+		int start_y = Math.min(y1,y2);
+		int end_y = Math.max(y1,y2);
+
+		for(int x = start_x; x <= end_x; x++) {
+			for(int y = start_y; y <= end_y; y++) {
+				if (this.dungeon[x][y] != TileType.None) return false;
+			}
+		}
+		return true;
+	}
+	public void drawCorridorFromTo(int x1, int y1, int x2, int y2)
+	{
+		int h_mod, v_mod, x, y;
+	    h_mod = x1 < x2 ? 1 : -1;
+	    v_mod = y1 < y2 ? 1 : -1;
+	    x = x1;
+	    y = y1;
+
+	    while( x != x2 || y != y2) {
+	      this.dungeon[x][y] = TileType.Floor;
+	      if(x != x2 && Math.random() > 0.5) {
+	        x += h_mod;
+	      } else if(y != y2) {
+	        y += v_mod;
+	      }
+	    }
+	    this.dungeon[x][y] = TileType.Floor;
+	}
+
+	// and here's the one generating the whole map
+	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
 		this.ysize = iny;
-		this.objects = inobj;
-		this.dungeon = new HashMap<Vector2f, TileType>();
-		this.dungeonRooms = new HashMap<Vector2f, Vector2f>();
-		/*int sideLength = (int) Math.sqrt(objects); 
-		Vector2f[][] rooms = new Vector2f[sideLength][sideLength];
-		for (int x = 0; x < sideLength; x++) {
-			for (int y = 0; y < sideLength; y++) {
-				rooms[x][y] = new Vector2f(getRand(20, 1), getRand(10, 12));
-				System.out.println(rooms[x][y].x + " - " + rooms[x][y].y);
-			}
-		}*/
+		this.dungeon = new TileType[inx+1][iny+1];
 		
-		lastRoom = createRoom(new Vector2f(0,0));
-		int objectsDone = 1;
-		while (objectsDone < this.objects) 
+		int spacing = 3;
+		int tallest_height = 0; 
+		int widest_width = 0;
+		for (RoomTemplate t : templates) 
 		{
-			
-			int roomBorderBlocks = (lastRoom[2]*2) + (lastRoom[3]*2);
-			int doorLocation = new Random(this.oldseed).nextInt(roomBorderBlocks-1)+1;
-			if (doorLocation >= 1 && doorLocation <= lastRoom[2])
+			if (t.getWidth() > widest_width) widest_width = t.getWidth();
+			if (t.getHeight() > tallest_height) tallest_height = t.getHeight();
+		}
+		
+		// fill dungeon with white space
+		for (int x = 0; x < this.dungeon.length; x++) 
+		{
+			for (int y = 0; y < this.dungeon[x].length; y++) 
 			{
-				// top edge
-				lastRoom = createRoom(new Vector2f(doorLocation, lastRoom[1]-1));
-				objectsDone++;
-				continue;
-			}
-			else if (doorLocation >= lastRoom[2] + (lastRoom[3]*2))
-			{
-				// bottom edge
-				lastRoom = createRoom(new Vector2f(doorLocation - lastRoom[2] + (lastRoom[3]*2), lastRoom[1] + lastRoom[3]));
-				objectsDone++;
-				continue;
-			}
-			else if (doorLocation >= lastRoom[2] && doorLocation <= lastRoom[2] + lastRoom[3])
-			{
-				// right edge
-				lastRoom = createRoom(new Vector2f(lastRoom[0] + lastRoom[2], doorLocation - lastRoom[2]));
-				objectsDone++;
-				continue;
-			}
-			else if (doorLocation >= (lastRoom[2]*2) + lastRoom[3] && doorLocation <= (lastRoom[2]*2) + (lastRoom[3]*2))
-			{
-				// left edge
-				lastRoom = createRoom(new Vector2f(lastRoom[0], doorLocation - (lastRoom[2]*2) + lastRoom[3]));
-				objectsDone++;
-				continue;
+				this.dungeon[x][y] = TileType.None;
 			}
 		}
 		
+		int y = 0;
+	    ArrayList<Vector2f> room_exits = new ArrayList<Vector2f>();
+	    
+	    while (y < this.ysize)
+	    {
+	    	ArrayList<RoomTemplate> rooms = new ArrayList<RoomTemplate>();
+	        int room_for_x = this.xsize;
+	        
+	        while( room_for_x > widest_width ) 
+	        {
+	          RoomTemplate a_room = templates[getRandTrue(0, templates.length-1)];
+	          rooms.add(a_room);
+	          room_for_x -= (a_room.getWidth() + spacing + 1);
+	        }
+
+	        // tallest height just for this row
+	        int row_tallest_height = 0;
+	        for (RoomTemplate row_room : rooms) 
+	        {
+				if (row_room.getHeight() > row_tallest_height) row_tallest_height = row_room.getHeight();
+			}
+
+	        // 0 spaces on each end, at least 3 spaces in between each room
+	        int[] arr = new int[rooms.size()+2];
+	        for (int j = 0; j < arr.length; j++) 
+	        {
+				if (j == 0 || j == arr.length-1)
+					arr[j] = 0;
+				else
+					arr[j] = spacing;
+			}
+	        int[] gaps = arr;
+	        
+	        int num_unused_spaces = this.xsize - (spacing * rooms.size());
+	        for (RoomTemplate row_room : rooms) 
+	        {
+				num_unused_spaces -= row_room.getWidth();
+			}
+
+	        // randomly distribute extra spaces into gaps
+	        for (int i = 0; i < num_unused_spaces; i++) 
+	        {
+	          gaps[getRandTrue(0, gaps.length-1)] += 1;
+	        }
+
+	        // shift ahead past first gap
+	        int x = gaps[0];
+	        int index = 0;
+	        for (RoomTemplate row_room : rooms) 
+	        {
+				int extra_y_offset = getRandTrue(0, row_tallest_height - row_room.getHeight());
+				
+				for (int x_in_room = 0; x_in_room < row_room.getWidth(); x_in_room++) 
+				{
+					for (int y_in_room = 0; y_in_room < row_room.getHeight(); y_in_room++) 
+					{
+						this.dungeon[Math.min(x + x_in_room, this.xsize)][Math.min(y + y_in_room + extra_y_offset, this.ysize)] = row_room.getTileAtCell(x_in_room, y_in_room);
+					}
+				}
+				
+				
+				// collect exits
+				row_room.setExitsOffset(new Vector2f(x, y + extra_y_offset));
+				room_exits.addAll(row_room.exits());
+				
+				// shift past this room and then next gap
+		        x += row_room.getWidth() + gaps[index+1];
+		        index++;
+			}
+	        
+	        
+	        y += tallest_height;
+	        // 3 is our spacing + 1 to start a the right place
+	        y += spacing + 1;
+	    }// end loop rows
+	    
+	    ArrayList<Vector2f[]> usable_room_exit_pairs = new ArrayList<Vector2f[]>();
+	    ArrayList<Vector2f> used_exits = new ArrayList<Vector2f>();
+	    for (Vector2f exit : room_exits) {
+			Vector2f wef = wheres_empty_from((int)exit.x, (int)exit.y);
+			if (wef != null) usable_room_exit_pairs.add(new Vector2f[] {exit, wef});
+		}
+	 
+	    Collections.shuffle(usable_room_exit_pairs, new Random(oldseed));
+	    
+	    for (Vector2f[] exit : usable_room_exit_pairs) 
+	    {
+	    	for (Vector2f[] otherExit : usable_room_exit_pairs) 
+	    	{
+				if (!used_exits.contains(otherExit) && otherExit[0].x != exit[0].x && otherExit[0].y != exit[0].y)
+				{
+					Vector2f other_orig = otherExit[0];
+					Vector2f other_outer_exit = otherExit[1];
+					Vector2f this_orig = exit[0];
+					Vector2f this_exit = exit[1];
+					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y) ) {
+			            drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
+			            this.dungeon[(int)this_orig.x][(int)this_orig.y] = TileType.Floor;
+			            this.dungeon[(int)other_orig.x][(int)other_orig.y] = TileType.Floor;
+			            used_exits.add(this_orig);
+			            used_exits.add(other_orig);
+			        }
+				}
+			}
+		}
+	    
+	    
+	    
+	    TileType[][] smallDungeon = new TileType[this.xsize][this.ysize];
+	    for (int fx = 0; fx < smallDungeon.length; fx++) {
+			for (int fy = 0; fy < smallDungeon[fx].length; fy++) {
+				smallDungeon[fx][fy] = getTileType(fx, fy);
+			}
+		}
+	    this.dungeon = smallDungeon;
+	    this.xsize = this.xsize*3;
+	    this.ysize = this.ysize*3;
+	    this.dungeon = new TileType[this.xsize][this.ysize];
+	    // fill dungeon with white space
+ 		for (int fx = 0; fx < this.dungeon.length; fx++) 
+ 		{
+ 			for (int fy = 0; fy < this.dungeon[fx].length; fy++) 
+ 			{
+ 				this.dungeon[fx][fy] = TileType.None;
+ 			}
+ 		}
+ 		for (int x2 = 0; x2 < smallDungeon.length; x2++) 
+	    {
+			for (int y2 = 0; y2 < smallDungeon[x2].length; y2++) 
+			{
+				for (int x3 = 0; x3 < 3; x3++) 
+				{
+					for (int y3 = 0; y3 < 3; y3++) 
+					{
+						this.dungeon[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
+					}
+				}
+			}
+		}
+ 		
+ 		surroundEveryFloorWithWall();
+	    
 	}
 
 }

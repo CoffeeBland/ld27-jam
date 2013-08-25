@@ -1,6 +1,7 @@
 package ld27jam;
 
 import ld27jam.entities.Dungeon;
+import ld27jam.entities.RoomTemplate;
 import ld27jam.entities.TileType;
 
 public class GameLevel 
@@ -17,8 +18,71 @@ public class GameLevel
 		changeTimeStage(1);
 		
 		// Good now generate that maze
+		RoomTemplate[] templates = new RoomTemplate[7];
+		templates[0] = new RoomTemplate(" +      \n" +
+										" ffffff+\n" +
+										" ffffff \n" +
+										"    fff \n" +
+										"    fff \n" +
+										"   +fff \n" +
+										"     +  ");
+		templates[1] = new RoomTemplate("   +   \n" +
+										" fffff+\n" +
+										" fffff \n" +
+										"+fffff \n" +
+										"   +   ");
+		templates[2] = new RoomTemplate("   +     \n" +
+										" fff     \n" +
+										" fff     \n" +
+										"+fff     \n" +
+										" fff     \n" +
+										" fffffff+\n" +
+										" fffffff \n" +
+										" +       ");
+		templates[3] = new RoomTemplate("   +       \n" +
+										" fffffffff \n" +
+										" fffffffff+\n" +
+										" fffffffff \n" +
+										" fffffffff \n" +
+										"+fffffffff \n" +
+										" fffffffff \n" +
+										"     +     ");
+				
+		templates[4] = new RoomTemplate(" +           + \n" +
+										" ff         ff \n" +
+										"+fff       fff+\n" +
+										" fffff   fffff \n" +
+										"   ffff ffff   \n" +
+										"    fffffff    \n" +
+										"   ffff ffff   \n" +
+										" fffff   fffff \n" +
+										"+fff       fff+\n" +
+										" ff         ff \n" +
+										" +           + ");
+		templates[5] = new RoomTemplate("   +   \n" +
+										" fffff \n" +
+										" fffff \n" +
+										"+fffff \n" +
+										" fffff \n" +
+										" fffff \n" +
+										" fffff \n" +
+										" fffff+\n" +
+										" fffff \n" +
+										" fffff \n" +
+										"  +    ");
+		templates[6] = new RoomTemplate("   +        \n" +
+										" ffffffffff \n" +
+										" ffffffffff+\n" +
+										" ffffff     \n" +
+										" ffffff     \n" +
+										" ffffff     \n" +
+										" fff        \n" +
+										"+fff        \n" +
+										" fff        \n" +
+										"  +  ");		
+		
 		this.dungeon = new Dungeon();
-		this.dungeon.createDungeon(20, 20, 100);
+		this.dungeon.createDungeon(300, 300, templates);
 	}
 	
 	public int getHeight() 
@@ -47,4 +111,5 @@ public class GameLevel
 		// in ms
 		this.timeLeftToStage = this.timeStageDurations[this.timeStage-1] * 1000;
 	}
+	
 }

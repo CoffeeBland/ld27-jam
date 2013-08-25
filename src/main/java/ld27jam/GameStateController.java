@@ -47,7 +47,7 @@ public class GameStateController extends StateBasedGame {
 	public void enterGameState(int pLevelToLoad)
 	{
 		enterState(GameState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black));
-		((GameState)getState(GameState.ID)).getWorld().load(pLevelToLoad);
+		//((GameState)getState(GameState.ID)).getWorld().load(pLevelToLoad);
 	}
 
 	public void reinit(){
