@@ -159,6 +159,17 @@ public class Dungeon {
 				? this.grid[x-1][y+1] : null);
 	}
 	
+	private TileType getWallType()
+	{
+		double rnd = Math.random();
+		if (rnd < 0.3333d)
+			return TileType.RockWallv1;
+		else if (rnd < 0.6666d)
+			return TileType.RockWallv2;
+		else
+			return TileType.RockWallv3;
+	}
+	
 	private void surroundEveryFloorWithWall()
 	{
 	    for (int x = 0; x < grid.length; x++) 
@@ -167,14 +178,14 @@ public class Dungeon {
 			{
 				if(grid[x][y].canWalkOn) 
 				{
-		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = TileType.Wall;
-		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = TileType.Wall;
-		          if(westFrom(x,y) == TileType.None)      grid[x-1][y  ]   = TileType.Wall;
-		          if(eastFrom(x,y) == TileType.None)      grid[x+1][y  ]   = TileType.Wall;
-		          if(northeastFrom(x,y) == TileType.None) grid[x+1][y-1]   = TileType.Wall;
-		          if(southeastFrom(x,y) == TileType.None) grid[x+1][y+1]   = TileType.Wall;
-		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = TileType.Wall;
-		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = TileType.Wall;
+		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = getWallType();
+		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = getWallType();
+		          if(westFrom(x,y) == TileType.None)      grid[x-1][y  ]   = getWallType();
+		          if(eastFrom(x,y) == TileType.None)      grid[x+1][y  ]   = getWallType();
+		          if(northeastFrom(x,y) == TileType.None) grid[x+1][y-1]   = getWallType();
+		          if(southeastFrom(x,y) == TileType.None) grid[x+1][y+1]   = getWallType();
+		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = getWallType();
+		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = getWallType();
 		        }
 				// TODO else if door put wall
 			}

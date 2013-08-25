@@ -39,6 +39,7 @@ public class World
 	private Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration;
+	private Vector2f revealVision = new Vector2f(8, 8), halfReveal = revealVision.copy().scale(0.25f);
 	
 	public float getShake()
 	{
@@ -128,9 +129,8 @@ public class World
 		camera.y = Math.round(camera.y + getShake());
 		
 		Vector2f characterPosUnaltered = World.getScreenCoordinates(character.getPosition()).sub(camera);
-		Vector2f characterPos = characterPosUnaltered.copy().add(new Vector2f(0, SCREEN_TILE_SIZE.y));
 		
-		AABB characterSquare = new Region(characterPos, new Vector2f(SCREEN_TILE_SIZE.x, WALL_HEIGHT - SCREEN_HALF_TILE.y));
+		AABB characterView = new Region(character.getPosition().copy().sub(halfReveal), revealVision);
 		
 		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1;
 		for (int projection = (int)Math.floor(camera.y / SCREEN_HALF_TILE.y) - 1; 
@@ -142,13 +142,14 @@ public class World
 				 y++, x--)
 			{
 				// Do not draw stuff outside the camera
-				Vector2f tilePos = getScreenCoordinates(new Vector2f(x, y)).sub(camera);
-				if (tilePos.x < - SCREEN_TILE_SIZE.x)
+				Vector2f tilePos = new Vector2f(x, y);
+				Vector2f tilePosScreen = getScreenCoordinates(tilePos).sub(camera);
+				if (tilePosScreen.x < - SCREEN_TILE_SIZE.x)
 					break;
-				if (tilePos.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
+				if (tilePosScreen.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
 					continue;
 
-				float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
+				float blackness = tilePosScreen.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 				// Tile
 				TileType tile = grid[x][y];
 				if (tile != null && tile != TileType.None)
@@ -160,7 +161,7 @@ public class World
 						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
 						tileSheet.getColor().a = 1.2f - blackness * blackness * blackness;
-						tileSheet.render(tilePos);
+						tileSheet.render(tilePosScreen);
 					}
 					else
 					{
@@ -168,14 +169,12 @@ public class World
 						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						if (!tile.alwaysShow && characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
-							wallSheet.getColor().a = tilePos.distance(characterPosUnaltered) / 100f;
+						if (!tile.alwaysShow && characterView.containsPoint(tilePos))
+							wallSheet.getColor().a = tilePosScreen.distance(characterPosUnaltered) / 100f;
 						else
 							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;
-						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
-						wallSheet.render(tilePos);
-						
-						
+						tilePosScreen.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
+						wallSheet.render(tilePosScreen);
 					}
 				}
 				
