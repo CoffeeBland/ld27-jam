@@ -3,12 +3,10 @@ package ld27jam.states;
 import ld27jam.GameDirector;
 import ld27jam.World;
 import ld27jam.input.InputController;
-import ld27jam.res.Sounds;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -36,13 +34,6 @@ public class GameState extends BasicGameState {
 	@Override
 	public void keyReleased(int key, char c)
 	{
-		if (key == Input.KEY_ESCAPE) {
-			try
-			{
-				Sounds.startMusic("res/audio/ambient.mid", true);
-			}
-			catch(Exception ex){}
-		}
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
@@ -65,8 +56,10 @@ public class GameState extends BasicGameState {
 	}
 
 	@Override
-	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException 
+	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
+		if (this.sbg == null)
+			init(gc, sbg);
 	}
 
 	public World getWorld()

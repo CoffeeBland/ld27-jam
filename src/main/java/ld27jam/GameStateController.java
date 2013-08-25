@@ -2,17 +2,12 @@ package ld27jam;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.newdawn.easyogg.OggClip;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
-import org.newdawn.slick.state.transition.FadeInTransition;
-import org.newdawn.slick.state.transition.FadeOutTransition;
 
-import ld27jam.res.Sounds;
 import ld27jam.states.*;
 
 public class GameStateController extends StateBasedGame {
@@ -25,13 +20,12 @@ public class GameStateController extends StateBasedGame {
 
 	@Override
     public void initStatesList(GameContainer gc) throws SlickException {
-    	addState(new LoadingState());
     	addState(new LogoState());
-        addState(new MenuState());
-        addState(new GameState());
-        addState(new GameOverState());
-        addState(new GameWinState());
-        enterState(LoadingState.ID);
+    	addState(new MenuState());
+    	addState(new LoadingState());
+    	addState(new GameOverState());
+    	addState(new GameWinState());
+        enterState(LogoState.ID);
         this.gc = gc;
         
 		try 
@@ -43,10 +37,4 @@ public class GameStateController extends StateBasedGame {
 			e.printStackTrace();
 		}
     }
-
-	public void enterGameState(int pLevelToLoad) throws SlickException
-	{
-		enterState(GameState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black));
-		//((GameState)getState(GameState.ID)).init(gc, this);
-	}
 }

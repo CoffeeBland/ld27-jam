@@ -43,14 +43,16 @@ public class LogoState extends BasicGameState {
     	Input input = container.getInput();
         boolean skipToStart = input.isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) || input.isKeyDown(Input.KEY_SPACE) || input.isKeyDown(Input.KEY_ESCAPE);
         boolean goToStartScreen = startTime + logoDuration < container.getTime();
-        if (skipToStart || goToStartScreen) {
+        
+        if (skipToStart || goToStartScreen) 
+        {
             sbg.enterState(MenuState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
         }
     }
 
     @Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
-    	startTime = gc.getTime();
+    	startTime = gc.getTime();    	
 	}
 
 	public int getID() {

@@ -13,7 +13,6 @@ import org.newdawn.slick.geom.Vector2f;
 public class Inventory 
 {
 	public static Font whiteFont = FontFactory.get().getFont(16, java.awt.Color.white);
-	public static Font blackFont = FontFactory.get().getFont(16, java.awt.Color.black);
 	
 	public ImageSheet background;
 	public Vector2f position = new Vector2f(16, 16);

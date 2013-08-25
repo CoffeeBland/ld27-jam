@@ -1,7 +1,5 @@
 package ld27jam.states;
 
-import java.util.Random;
-
 import ld27jam.helpers.FontFactory;
 
 import org.newdawn.slick.Color;
@@ -18,7 +16,6 @@ import org.newdawn.slick.state.transition.FadeOutTransition;
 public class GameWinState extends BasicGameState {
 
 	public static final int ID = 5;
-	private GameContainer gc;
 	private StateBasedGame sbg;
 
 	private long started;
@@ -28,7 +25,6 @@ public class GameWinState extends BasicGameState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		this.gc = gc;
 		this.sbg = sbg;
 		this.started = System.currentTimeMillis();
 	}

@@ -167,12 +167,13 @@ public class World
 				// Entities
 				for (Entity entity : spatialMap.get(region))
 				{
-					if (region.getPosition().x < entity.getRightX() &&
-						region.getRightX() > entity.getPosition().x &&
-						region.getPosition().y < entity.getBottomY() &&
-						region.getBottomY() > entity.getPosition().y)
+					Vector2f bottomRight = entity.getBottomRightPoint();
+					if (region.getPosition().x < bottomRight.x &&
+						region.getRightX() >= bottomRight.x &&
+						region.getPosition().y < bottomRight.y &&
+						region.getBottomY() >= bottomRight.y)
 						entity.render(gc, sbg, g, camera);
-				}	
+				}
 			}
 		}
 		
