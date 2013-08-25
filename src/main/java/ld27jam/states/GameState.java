@@ -67,7 +67,6 @@ public class GameState extends BasicGameState {
 	@Override
 	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		init(gc, sbg);
 	}
 
 	public World getWorld()

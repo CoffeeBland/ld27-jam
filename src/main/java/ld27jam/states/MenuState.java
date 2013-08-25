@@ -51,7 +51,10 @@ public class MenuState extends BasicGameState {
 		if(key == Input.KEY_ENTER) 
 		{
 			if (playSelected)
-				((GameStateController)sbg).enterGameState(1);
+			{
+				try {((GameStateController)sbg).enterGameState(1);} 
+			    catch (SlickException e) { e.printStackTrace(); }
+			}
 			else
 				exitGame();
 		}

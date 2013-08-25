@@ -132,7 +132,7 @@ public class World
 				
 				// Tile
 				Tile tile = grid[x][y];
-				if (tile != null)
+				if (tile != null && tile.type != TileType.None)
 				{
 					float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 					if (tile.type.isFloor)

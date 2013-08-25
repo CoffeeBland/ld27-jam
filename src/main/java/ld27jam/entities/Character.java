@@ -1,9 +1,5 @@
 package ld27jam.entities;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-
 import ld27jam.World;
 import ld27jam.input.ControlEvent;
 import ld27jam.input.KeyMapping;
@@ -11,7 +7,6 @@ import ld27jam.res.AnimatedSprite;
 import ld27jam.res.Sounds;
 import ld27jam.states.GameOverState;
 
-import org.newdawn.easyogg.OggClip;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -25,8 +20,8 @@ public class Character extends Entity
 	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0, speed = 0.15f;
 	public Color lightColor = new Color(255, 230, 180);
 	public boolean isMovingDiagonally;
-	public float sanity = 10;
 	public float maxSanity = 10;
+	public float sanity = maxSanity;
 	public int toNextHeartbeat;
 
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
@@ -53,7 +48,7 @@ public class Character extends Entity
 		else
 		{
 			toNextHeartbeat = (int)(sanity * 5) + 20;
-			Sounds.get("res/audio/Heartbeat.ogg").play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
+			//Sounds.get("res/audio/Heartbeat.ogg").play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
 		}
 		
 		super.update(gc, sbg, delta, world);
@@ -181,6 +176,6 @@ public class Character extends Entity
 	
 	public Character(Vector2f position) throws SlickException
 	{
-		super(position, new Vector2f(0.8f, 0.8f), true, new Vector2f(-14, -64), new AnimatedSprite("res/sprites/CharacterStill.png", 64, 80, 8));
+		super(position, new Vector2f(0.8f, 0.8f), true, new Vector2f(-14, -64), new AnimatedSprite("res/sprites/CharacterWalk.png", 64, 80, 6));
 	}
 }

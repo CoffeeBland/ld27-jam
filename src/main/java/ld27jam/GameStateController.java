@@ -44,18 +44,9 @@ public class GameStateController extends StateBasedGame {
 		}
     }
 
-	public void enterGameState(int pLevelToLoad)
+	public void enterGameState(int pLevelToLoad) throws SlickException
 	{
 		enterState(GameState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black));
-		//((GameState)getState(GameState.ID)).getWorld().load(pLevelToLoad);
+		//((GameState)getState(GameState.ID)).init(gc, this);
 	}
-
-	public void reinit(){
-		try {
-			init(gc);
-		} catch (SlickException e) {
-			e.printStackTrace();
-		}
-	}
-
 }

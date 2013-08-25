@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project default="create_run_jar" name="Create Runnable Jar for Project ld26-Kiasaki-Dagothig with libraries in sub-folder">
-    <property name="build.dir" value="${user.home}/FactorismBuild/">
+<project default="create_run_jar" name="Create Runnable Jar for Project ld27-Kiasaki-Dagothig with libraries in sub-folder">
+    <property name="build.dir" value="${user.home}/Downloads/LD27Build/">
     </property>
 	<target name="create_run_jar">
-    	<jar destfile="${build.dir}Factorism.jar">
+    	<jar destfile="${build.dir}10SecToInsanity.jar">
             <manifest>
                 <attribute name="Main-Class" value="ld27jam.Main"/>
-                <attribute name="Class-Path" value=". lib/ibxm.jar lib/jinput.jar lib/lwjgl.jar lib/slick.jar"/>
+                <attribute name="Class-Path" value=". lib/ibxm.jar lib/jinput.jar lib/lwjgl.jar lib/slick.jar lib/easyogg.jar lib/jogg-0.0.7.jar lib/jorbis-0.0.15.jar"/>
             </manifest>
             <fileset dir="target/classes"/>
         </jar>
