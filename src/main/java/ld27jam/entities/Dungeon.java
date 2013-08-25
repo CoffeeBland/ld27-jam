@@ -372,6 +372,8 @@ public class Dungeon {
 				// Here we can randomize few traps
 				if (getTileType(fx, fy) == TileType.CorridorFloor && Math.random() < 0.04)
 					smallDungeon[fx][fy] = TileType.SpikeTrap;
+				if (getTileType(fx, fy) == TileType.Floor && Math.random() < 0.01)
+					smallDungeon[fx][fy] = TileType.ChestClosedSouth;
 				else
 					smallDungeon[fx][fy] = getTileType(fx, fy);
 			}
