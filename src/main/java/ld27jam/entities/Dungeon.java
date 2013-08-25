@@ -21,7 +21,7 @@ public class Dungeon {
 		return grid[x][y];
 	}
 		
-	private int getRand(int min, int max)
+	public static int getRand(int min, int max)
 	{
 		Date now = new Date();
 		long seed = now.getTime() + oldseed;
@@ -86,23 +86,7 @@ public class Dungeon {
 		{
 			for (int x = 0; x < xsize-1; x++)
 			{
-				switch(getTileType(x, y).ordinal()){
-					case 0:
-						System.out.print(".");
-						break;
-					case 1:
-						System.out.print(".");
-						break;
-					case 2:
-						System.out.print("O");
-						break;
-					case 4:
-						System.out.print("x");
-						break;
-					default:
-						System.out.print(" ");
-						break;
-				};
+				//if ()
 			}
 			System.out.println();
 		}
@@ -159,30 +143,46 @@ public class Dungeon {
 				? this.grid[x-1][y+1] : null);
 	}
 	
-	private TileType[] rockWalls = new TileType[] 
+	private static TileType[] rockWalls = new TileType[] 
 	{
-		TileType.RockWallv1,
-		TileType.RockWallv2,
-		TileType.RockWallv3,
-		TileType.RockWallv4,
-		TileType.RockWallv5,
-		TileType.RockWallv6
+		TileType.RockWall1,
+		TileType.RockWall2,
+		TileType.RockWall3,
+		TileType.RockWall4,
+		TileType.RockWall5,
+		TileType.RockWall6
 	};
-	private TileType[] mossWalls = new TileType[] 
+	private static TileType[] mossWalls = new TileType[] 
 	{
-		TileType.RockMossWallv1,
-		TileType.RockMossWallv2,
-		TileType.RockMossWallv3,
-		TileType.RockMossWallv4,
-		TileType.RockMossWallv5,
-		TileType.RockMossWallv6
+		TileType.RockMossWall1,
+		TileType.RockMossWall2,
+		TileType.RockMossWall3,
+		TileType.RockMossWall4,
+		TileType.RockMossWall5,
+		TileType.RockMossWall6
 	};
-	private TileType getWallType()
+	
+	public static TileType getWallType()
 	{
 		if (Math.random() < 0.75)
 			return rockWalls[getRand(0, rockWalls.length - 1)];
 		else
 			return mossWalls[getRand(0, mossWalls.length - 1)];
+	}
+
+	private static TileType[] floors = new TileType[] 
+	{
+		TileType.Floor1,
+		TileType.Floor2,
+		TileType.Floor3,
+		TileType.Floor4,
+		TileType.Floor5,
+		TileType.Floor6,
+	};
+	
+	public static TileType getFloorType()
+	{
+		return floors[getRand(0, floors.length - 1)];
 	}
 	
 	private void surroundEveryFloorWithWall()
@@ -243,6 +243,16 @@ public class Dungeon {
 	    this.grid[x][y] = TileType.CorridorFloor;
 	}
 
+	public TileType[][] drawRoom(TileType[][] containerGrid, int xStart, int yStart, RoomTemplate tmpl)
+	{
+		for (int x = 0; x < tmpl.getWidth(); x++) {
+			for (int y = 0; y < tmpl.getHeight(); y++) {
+				containerGrid[xStart + x][yStart + y] = tmpl.getTileAtCell(x, y);
+			}
+		}
+		return containerGrid;
+	}
+	
 	// and here's the one generating the whole map
 	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
@@ -406,6 +416,22 @@ public class Dungeon {
  			}
  		}
  		// place final room
+ 		int finalRoomSide = getRand(0, 3);
+ 		int finalRoomOffset = getRand(0, 86);
+ 		switch (finalRoomSide) {
+			case 0://north
+				drawRoom(smallDungeon, finalRoomOffset, 10, RoomTemplate.getFinishingRoom());
+				break;
+			case 1:// east
+				drawRoom(smallDungeon, this.xsize-10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+			case 2:// south
+				drawRoom(smallDungeon, finalRoomOffset, this.ysize-10, RoomTemplate.getFinishingRoom());
+				break;
+			case 3:// west
+				drawRoom(smallDungeon, 10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+		} 		
  		
  		// Supersize the grid
  		for (int x2 = 0; x2 < smallDungeon.length; x2++) 

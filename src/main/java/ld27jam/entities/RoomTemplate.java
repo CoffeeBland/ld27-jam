@@ -39,12 +39,12 @@ public class RoomTemplate {
 		char tile = template[x][y];
 		switch (tile) 
 		{
-			case 'W':
-				return TileType.Wall;
 			case 'f':
 				return TileType.Floor;
+			case 'e':
+				return TileType.EndRoomFloor;
 			case '+':
-				return TileType.Floor;
+				return TileType.Door;
 			case 'S':
 				return TileType.StartingPoint;
 			default:
@@ -80,13 +80,23 @@ public class RoomTemplate {
 								"   ffffff   \n" +
 								"  ffffffff  \n" +
 								" ffffffffff \n" +
-								"ffffWfWffff+\n" +
+								"fffffffffff+\n" +
 								"+ffffSffffff\n" +
-								"ffffWfWffff \n" +
+								"fffffffffff \n" +
 								" fffffffff  \n" +
 								"  fffffff   \n" +
 								"   fffff    \n" +
 								"    f+f     \n");
 	}
 	
+	public static RoomTemplate getFinishingRoom()
+	{
+		return new RoomTemplate(" ee   ee \n" +
+								" eee+eee \n" +
+								"  eeeee  \n" +
+								"  +eee+  \n" +
+								"  eeeee  \n" +
+								" eee+eee \n" +
+								" ee   ee ");
+	}
 }

@@ -37,7 +37,7 @@ public class World
 	public Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
-	private Vector2f revealVision = new Vector2f(8, 8), halfReveal = revealVision.copy().scale(0.25f);
+	private Vector2f revealVision = new Vector2f(10, 8), halfReveal = revealVision.copy().scale(0.25f);
 	
 	public float getShake()
 	{
