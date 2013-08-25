@@ -176,16 +176,17 @@ public class Dungeon {
 	    {
 			for (int y = 0; y < grid[x].length; y++) 
 			{
+				TileType tt = grid[x][y] == TileType.CorridorFloor ? TileType.CorridorWall : getWallType(); 
 				if(grid[x][y].canWalkOn) 
 				{
-		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = getWallType();
-		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = getWallType();
-		          if(westFrom(x,y) == TileType.None)      grid[x-1][y  ]   = getWallType();
-		          if(eastFrom(x,y) == TileType.None)      grid[x+1][y  ]   = getWallType();
-		          if(northeastFrom(x,y) == TileType.None) grid[x+1][y-1]   = getWallType();
-		          if(southeastFrom(x,y) == TileType.None) grid[x+1][y+1]   = getWallType();
-		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = getWallType();
-		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = getWallType();
+		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = tt;
+		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = tt;
+		          if(westFrom(x,y) == TileType.None)      grid[x-1][y  ]   = tt;
+		          if(eastFrom(x,y) == TileType.None)      grid[x+1][y  ]   = tt;
+		          if(northeastFrom(x,y) == TileType.None) grid[x+1][y-1]   = tt;
+		          if(southeastFrom(x,y) == TileType.None) grid[x+1][y+1]   = tt;
+		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = tt;
+		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = tt;
 		        }
 				// TODO else if door put wall
 			}
@@ -377,8 +378,9 @@ public class Dungeon {
 			}
 		}
 	    this.grid = smallDungeon;
-	    this.xsize = this.xsize*3;
-	    this.ysize = this.ysize*3;
+	    // x3 room + space for final room
+	    this.xsize = this.xsize*3 + 30*2;
+	    this.ysize = this.ysize*3 + 30*2;
 	    this.grid = new TileType[this.xsize][this.ysize];
 	    // fill dungeon with white space
  		for (int fx = 0; fx < this.grid.length; fx++) 
@@ -388,6 +390,9 @@ public class Dungeon {
  				this.grid[fx][fy] = TileType.None;
  			}
  		}
+ 		// place final room
+ 		
+ 		// Supersize the grid
  		for (int x2 = 0; x2 < smallDungeon.length; x2++) 
 	    {
 			for (int y2 = 0; y2 < smallDungeon[x2].length; y2++) 
@@ -396,7 +401,11 @@ public class Dungeon {
 				{
 					for (int y3 = 0; y3 < 3; y3++) 
 					{
-						this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
+						// Here we can randomize few chests
+						if (smallDungeon[x2][y2] == TileType.Floor && Math.random() < 0.001)
+							this.grid[x2*3+x3][y2*3+y3] = TileType.ChestClosedSouth;
+						else
+							this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
 					}
 				}
 			}
