@@ -4,15 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ld27jam.entities.Entity;
+import ld27jam.entities.Hourglass;
 import ld27jam.entities.Tile;
 import ld27jam.entities.TileType;
-import ld27jam.input.ControlEvent;
-import ld27jam.input.KeyMapping;
-import ld27jam.res.AnimatedSprite;
 import ld27jam.res.ImageSheet;
 import ld27jam.spatialData.AABB;
 import ld27jam.spatialData.Region;
 import ld27jam.spatialData.SpatialMap;
+import ld27jam.entities.Character;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -29,10 +28,11 @@ public class World
 	public static final int WALL_HEIGHT = 80;
 	
 	private Set<Entity> entities = new HashSet<Entity>();
-	private SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
+	public SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
 	private Tile[][] grid;
 	private ImageSheet tileSheet, wallSheet;
-	private Entity character;
+	private Character character;
+	private Hourglass hourglass = new Hourglass();
 	
 	public void add(Entity entity)
 	{
@@ -93,78 +93,9 @@ public class World
 				}
 			}
 		}
-		character = new Entity(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2), new Vector2f(0.7f, 0.7f), true, new Vector2f(-8, -30), new AnimatedSprite("res/sprites/tmpSheet.png", 48, 48, 8));
+		character = new Character(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2));
 		add(character);
-		
-		final World world = this;
-		KeyMapping.Left.subscribe(new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				character.move(new Vector2f(-0.1f, 0.1f), world);
-				spatialMap.update(character);
-			}
-		});
-		KeyMapping.Right.subscribe(new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				character.move(new Vector2f(0.1f, -0.1f), world);
-				spatialMap.update(character);
-			}
-		});
-		KeyMapping.Up.subscribe(new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				character.move(new Vector2f(-0.1f, -0.1f), world);
-				spatialMap.update(character);
-			}
-		});
-		KeyMapping.Down.subscribe(new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				character.move(new Vector2f(0.1f, 0.1f), world);
-				spatialMap.update(character);
-			}
-		});
+		character.init(this);
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
@@ -178,7 +109,6 @@ public class World
 		
 		Vector2f characterPosUnaltered = World.getScreenCoordinates(character.getPosition()).sub(camera);
 		Vector2f characterPos = characterPosUnaltered.copy().add(new Vector2f(0, SCREEN_TILE_SIZE.y));
-		characterPosUnaltered.y += 60;
 		
 		AABB characterSquare = new Region(characterPos, new Vector2f(SCREEN_TILE_SIZE.x, WALL_HEIGHT - SCREEN_HALF_TILE.y));
 		
@@ -203,24 +133,24 @@ public class World
 				Tile tile = grid[x][y];
 				if (tile != null)
 				{
-					float blackness = tilePos.distance(characterPosUnaltered) / 280;
+					float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 					if (tile.type.wallId == null)
 					{
 						tileSheet.setFrameX(tile.type.tileX);
 						tileSheet.setFrameY(tile.type.tileY);
-						tileSheet.getColor().r = 1.0f - blackness;
-						tileSheet.getColor().g = 0.9f - blackness;
-						tileSheet.getColor().b = 0.8f - blackness;
+						tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
+						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
+						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
 						tileSheet.render(tilePos);
 					}
 					else
 					{
 						wallSheet.setFrameX(tile.type.wallId);
-						wallSheet.getColor().r = 1.0f - blackness;
-						wallSheet.getColor().g = 0.9f - blackness;
-						wallSheet.getColor().b = 0.8f - blackness;
+						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
+						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
+						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
 						if (characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
-							wallSheet.getColor().a = 0.4f;
+							wallSheet.getColor().a = tilePos.distance(characterPosUnaltered) / 100f;
 						else
 							wallSheet.getColor().a = 1f;
 						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
@@ -244,6 +174,8 @@ public class World
 				}	
 			}
 		}
+		
+		hourglass.render(gc, character.sanity / character.maxSanity);
 	}
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{

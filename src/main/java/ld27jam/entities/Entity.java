@@ -57,7 +57,7 @@ public class Entity extends Region
 			if (object != this && object.canBeCollided)
 				collision = shortestCollision(collision, determineCollision(object, collision.distance));
 		for (Tile tile : world.getTilesInRegion(aabb))
-			if (!tile.type.canWalkOn)
+			if (tile != null && tile.type != null && !tile.type.canWalkOn)
 				collision = shortestCollision(collision, determineCollision(tile, collision.distance));
 			
 		Vector2f position = getPosition().copy().add(collision.distance);
