@@ -17,6 +17,9 @@
         <copy file="lib/jinput.jar" todir="${build.dir}lib"/>
         <copy file="lib/lwjgl.jar" todir="${build.dir}lib"/>
         <copy file="lib/slick.jar" todir="${build.dir}lib"/>
+        <copy file="lib/easyogg.jar" todir="${build.dir}lib"/>
+        <copy file="lib/jogg-0.0.7.jar" todir="${build.dir}lib"/>
+        <copy file="lib/jorbis-0.0.15.jar" todir="${build.dir}lib"/>
 
 	    <copy todir="${build.dir}">
 	      <fileset dir="lib/natives"/>
