@@ -142,10 +142,9 @@ public class World
 				if (tile != null)
 				{
 					float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
-					if (tile.type.wallId == null)
+					if (tile.type.isFloor)
 					{
-						tileSheet.setFrameX(tile.type.tileX);
-						tileSheet.setFrameY(tile.type.tileY);
+						tileSheet.setFrameX(tile.type.tileId);
 						tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
@@ -154,7 +153,7 @@ public class World
 					}
 					else
 					{
-						wallSheet.setFrameX(tile.type.wallId);
+						wallSheet.setFrameX(tile.type.tileId);
 						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);

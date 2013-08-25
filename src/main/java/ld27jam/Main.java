@@ -22,7 +22,7 @@ public class Main {
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
 			}
 			app.setForceExit(true);
-	        app.setShowFPS(true);
+	        app.setShowFPS(false);
 	        app.setTargetFrameRate(60);
 			app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
 	        app.start();    

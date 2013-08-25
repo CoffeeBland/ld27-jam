@@ -1,11 +1,17 @@
 package ld27jam.entities;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import ld27jam.World;
 import ld27jam.input.ControlEvent;
 import ld27jam.input.KeyMapping;
 import ld27jam.res.AnimatedSprite;
+import ld27jam.res.Sounds;
 import ld27jam.states.GameOverState;
 
+import org.newdawn.easyogg.OggClip;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -21,6 +27,7 @@ public class Character extends Entity
 	public boolean isMovingDiagonally;
 	public float sanity = 10;
 	public float maxSanity = 10;
+	public int toNextHeartbeat;
 
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
 	
@@ -37,9 +44,17 @@ public class Character extends Entity
 			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
 			lightColor.r = sanityRatio * 0.4f + 0.6f;
 			lightColor.g = sanityRatio * 0.95f;
-			lightColor.b = sanityRatio * 0.3f + 0.45f;
+			lightColor.b = sanityRatio * 0.4f + 0.35f;
 			lightBase = sanityRatio * 100 + 200;
-		}	
+		}
+		
+		if (toNextHeartbeat > 0)
+			toNextHeartbeat--;
+		else
+		{
+			toNextHeartbeat = (int)(sanity * 5) + 20;
+			Sounds.get("res/audio/Heartbeat.ogg").play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
+		}
 		
 		super.update(gc, sbg, delta, world);
 		isMovingDiagonally = true;
