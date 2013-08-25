@@ -1,6 +1,7 @@
 package ld27jam;
 
 import ld27jam.entities.Dungeon;
+import ld27jam.entities.TileType;
 
 public class GameLevel 
 {
@@ -17,7 +18,7 @@ public class GameLevel
 		
 		// Good now generate that maze
 		this.dungeon = new Dungeon();
-		this.dungeon.createDungeon(300, 300, 100);
+		this.dungeon.createDungeon(20, 20, 100);
 	}
 	
 	public int getHeight() 
@@ -30,9 +31,9 @@ public class GameLevel
 		return dungeon.xsize;
 	}
 	
-	public int getCell(int x, int y)
+	public TileType getCell(int x, int y)
 	{
-		return dungeon.getCell(x, y);
+		return dungeon.getTileType(x, y);
 	}
 	
 	public void changeTimeStage(int newTimeStage) 

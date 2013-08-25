@@ -2,8 +2,10 @@ package ld27jam.entities;
 
 public enum TileType 
 {
-	Test(0, true, true),
-	Test2(8, false, false),
+
+	Floor(0, true, true),
+	Wall(8, false, false),
+	None(0, false, false),
 	ChestClosedTL(0, false, false),
 	ChestClosedTR(1, false, false),
 	ChestClosedBL(2, false, false),

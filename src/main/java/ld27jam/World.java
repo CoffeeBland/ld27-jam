@@ -86,12 +86,12 @@ public class World
 		{
 			for (int y = 0; y < ysize; y++) 
 			{
-				int tileType = gd.level.getCell(x, y);
-				if (tileType == gd.level.dungeon.tileDirtWall)
+				TileType tileType = gd.level.getCell(x, y);
+				if (tileType == TileType.Wall)
 				{
 				  grid[x][y] = new Tile(TileType.Test2, x, y);
 				}
-				else if (tileType != gd.level.dungeon.tileUnused)
+				else if (tileType != TileType.None)
 				{
 				  grid[x][y] = new Tile(TileType.Test, x, y);
 				}
