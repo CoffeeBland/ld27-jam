@@ -18,7 +18,7 @@ public class MainGeneratorTest{
 	
 	public static void main(String[] args){
 		//initial stuff used in making the map
-		int x = 120; int y = 120;
+		int x = 60; int y = 60;
  
 		//convert a string to a int, if there's more then one arg
 		Dungeon generator = new Dungeon();
