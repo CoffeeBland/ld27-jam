@@ -37,7 +37,7 @@ public class World
 	public Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
-	private Vector2f revealVision = new Vector2f(10, 8), halfReveal = revealVision.copy().scale(0.25f);
+	private Vector2f revealDecal = new Vector2f(0, 16);
 	
 	public float getShake()
 	{
@@ -82,6 +82,21 @@ public class World
 	{
 		grid[x][y] = type;
 	}
+	public void propagateTileChangeAt(int x, int y, TileType oldType, TileType newType)
+	{
+		if (grid[x][y] == oldType)
+			grid[x][y] = newType;
+		else
+			return;
+		if (x > 0)
+			propagateTileChangeAt(x - 1, y, oldType, newType);
+		if (y > 0)
+			propagateTileChangeAt(x, y - 1, oldType, newType);
+		if (x + 1 < grid.length)
+			propagateTileChangeAt(x + 1, y, oldType, newType);
+		if (y + 1 < grid[x].length)
+			propagateTileChangeAt(x, y + 1, oldType, newType);
+	}
 	
 	public static Vector2f getScreenCoordinates(Vector2f mapCoordinates)
 	{
@@ -122,9 +137,8 @@ public class World
 		camera.x = Math.round(camera.x + getShake());
 		camera.y = Math.round(camera.y + getShake());
 		
-		Vector2f characterPosUnaltered = World.getScreenCoordinates(character.getPosition()).sub(camera);
-		
-		AABB characterView = new Region(character.getPosition().copy().sub(halfReveal), revealVision);
+		Vector2f characterPos = World.getScreenCoordinates(character.getPosition()).sub(camera),
+				 characterPosDecal = characterPos.copy().add(revealDecal);
 		
 		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1;
 		for (int projection = (int)Math.floor(camera.y / SCREEN_HALF_TILE.y) - 1; 
@@ -143,7 +157,7 @@ public class World
 				if (tilePosScreen.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
 					continue;
 
-				float blackness = tilePosScreen.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
+				float blackness = tilePosScreen.distance(characterPos) / character.lightBase + character.lightVariation;
 				// Tile
 				TileType tile = grid[x][y];
 				if (tile != null && tile != TileType.None)
@@ -163,8 +177,14 @@ public class World
 						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						if (!tile.alwaysShow && characterView.containsPoint(tilePos))
-							wallSheet.getColor().a = (tilePosScreen.distance(characterPosUnaltered) - 25f) / 75f;
+						if (!tile.alwaysShow)
+						{
+							float distX = (tilePosScreen.x - characterPosDecal.x) / 2,
+								  distY = tilePosScreen.y - characterPosDecal.y;
+							if (distY < 0)
+								distY *= distY;
+							wallSheet.getColor().a = ((distX * distX + distY * distY) - 100) / 10000;
+						}
 						else
 							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;
 						tilePosScreen.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;

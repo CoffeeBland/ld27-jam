@@ -245,11 +245,11 @@ public class Dungeon {
 
 	public TileType[][] drawRoom(TileType[][] containerGrid, int xStart, int yStart, RoomTemplate tmpl)
 	{
-		for (int x = 0; x < tmpl.getWidth(); x++) {
+		/*for (int x = 0; x < tmpl.getWidth(); x++) {
 			for (int y = 0; y < tmpl.getHeight(); y++) {
 				containerGrid[xStart + x][yStart + y] = tmpl.getTileAtCell(x, y);
 			}
-		}
+		}*/
 		return containerGrid;
 	}
 	

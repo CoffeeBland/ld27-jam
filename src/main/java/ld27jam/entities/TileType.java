@@ -32,7 +32,9 @@ public enum TileType
 	RockMossWall5(22, false, false, false),
 	RockMossWall6(23, false, false, false),
 	
-	Door(0, true, true),
+	OpenedDoor(3, true, true),
+	Door(0, false, false),
+	LockedDoor(0, false, false),
 	
 	SpikeTrap(10, true, false),
 	SpikeTrapOpened(11, true, false),

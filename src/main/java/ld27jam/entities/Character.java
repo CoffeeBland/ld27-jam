@@ -193,6 +193,17 @@ public class Character extends Entity
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedSouth);
 					world.inventory.items.add(new Item(ItemType.Key));
 					break;
+				case Door:
+					world.propagateTileChangeAt(tile.x, tile.y, TileType.Door, TileType.OpenedDoor);
+					break;
+				case LockedDoor:
+					boolean hasKey = false;
+					for (Item item : world.inventory.items)
+						if (item.type == ItemType.Key)
+							hasKey = true;
+					if (hasKey)
+						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoor, TileType.OpenedDoor);
+					break;
 				default:
 					break;
 			}
