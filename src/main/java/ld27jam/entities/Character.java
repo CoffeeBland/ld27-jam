@@ -27,21 +27,21 @@ public class Character extends Entity
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
-		sanity -= 1f / 60f;
-		if (sanity < 0)
-			sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.white, 500), new FadeInTransition(Color.white, 500));
+		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(10 - sanity)] * 60f);
+		if (sanity <= 0.0001f)
+			sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
+		else
+		{
+			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
+			lightMoment += 0.005f;
+			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
+			lightColor.r = sanityRatio * 0.4f + 0.6f;
+			lightColor.g = sanityRatio * 0.95f;
+			lightColor.b = sanityRatio * 0.3f + 0.45f;
+			lightBase = sanityRatio * 100 + 200;
+		}	
 		
 		super.update(gc, sbg, delta, world);
-		
-		float sanityRatio = (30 - maxSanity / sanity) / 30;
-		
-		lightMoment += 0.005f;
-		lightVariation = (float) Math.sin(lightMoment) * 0.05f;
-		lightColor.r = sanityRatio * 0.2f + 0.8f;
-		lightColor.g = sanityRatio * 0.95f;
-		lightColor.b = sanityRatio * 0.3f + 0.45f;
-		lightBase = sanityRatio * 50 + 250;
-		
 		isMovingDiagonally = true;
 		// Up
 		if (KeyMapping.Up.isDown())

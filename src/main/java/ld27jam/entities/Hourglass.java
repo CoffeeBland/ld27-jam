@@ -1,6 +1,7 @@
 package ld27jam.entities;
 
-import ld27jam.helpers.FontFactory;
+import java.text.DecimalFormat;
+
 import ld27jam.res.Images;
 
 import org.newdawn.slick.Color;
@@ -15,6 +16,7 @@ public class Hourglass
 	public Color splashColor = new Color(70, 60, 80);
 	public int hourglassWidth = 32, hourglassHeight = 64;
 	public Vector2f distanceToUpperRightCorner = new Vector2f(16, 16);
+	public DecimalFormat format = new DecimalFormat("0.00");
 	
 	public void render(GameContainer gc, float sanityRatio) throws SlickException
 	{
@@ -48,7 +50,7 @@ public class Hourglass
 		
 		image.endUse();
 		
-		float timer = Math.round(sanityRatio * 100f) / 10f;
-		FontFactory.get().getFont(16, java.awt.Color.white).drawString(x1 + 4, y2 + 8, ((Float)timer).toString());
+		float timer = Math.round(sanityRatio * 1000f) / 100f;
+		Inventory.whiteFont.drawString(x1, y2 + 8, format.format(timer));
 	}
 }

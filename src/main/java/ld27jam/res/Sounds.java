@@ -24,6 +24,7 @@ public class Sounds
 		
 		Sound sound = new Sound(pRef);
 		mSounds.put(pRef, sound);
+		
 		return sound;
 	}
 	

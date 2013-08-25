@@ -1,5 +1,10 @@
 package ld27jam;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.newdawn.easyogg.OggClip;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -7,6 +12,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import ld27jam.res.Sounds;
 import ld27jam.states.*;
 
 public class GameStateController extends StateBasedGame {
@@ -27,6 +33,15 @@ public class GameStateController extends StateBasedGame {
         addState(new GameWinState());
         enterState(LoadingState.ID);
         this.gc = gc;
+        
+		try 
+		{
+	        new OggClip(new FileInputStream("res/audio/horrorambient.ogg")).loop();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
     }
 
 	public void enterGameState(int pLevelToLoad)

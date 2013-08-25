@@ -7,7 +7,7 @@ public class GameLevel
 	public int difficulty;
 	public int timeStage;
 	public int timeLeftToStage;
-	public int[] timeStageDurations = {1, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
+	public int[] timeStageDurations = {1, 2, 4, 6, 8, 11, 14, 17, 20, 30};
 	public Dungeon dungeon;
 	
 	public GameLevel(int level)

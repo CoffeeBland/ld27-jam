@@ -5,6 +5,9 @@ import java.util.Set;
 
 import ld27jam.entities.Entity;
 import ld27jam.entities.Hourglass;
+import ld27jam.entities.Inventory;
+import ld27jam.entities.Item;
+import ld27jam.entities.ItemType;
 import ld27jam.entities.Tile;
 import ld27jam.entities.TileType;
 import ld27jam.res.ImageSheet;
@@ -21,7 +24,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class World
 {
-	private GameDirector gd;
+	public GameDirector gd;
 	
 	public static final Vector2f SCREEN_TILE_SIZE = new Vector2f(32, 16);
 	public static final Vector2f SCREEN_HALF_TILE = new Vector2f(16, 8);
@@ -32,6 +35,7 @@ public class World
 	private Tile[][] grid;
 	private ImageSheet tileSheet, wallSheet;
 	private Character character;
+	private Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	
 	public void add(Entity entity)
@@ -96,6 +100,10 @@ public class World
 		character = new Character(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2));
 		add(character);
 		character.init(this);
+		inventory.items.add(new Item(ItemType.Key));
+		inventory.items.add(new Item(ItemType.Key));
+		inventory.items.add(new Item(ItemType.Key));
+		inventory.items.add(new Item(ItemType.Key));
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
@@ -141,6 +149,7 @@ public class World
 						tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
+						tileSheet.getColor().a = 1.2f - blackness * blackness * blackness;
 						tileSheet.render(tilePos);
 					}
 					else
@@ -152,7 +161,7 @@ public class World
 						if (characterSquare.containsRegion(new Region(tilePos, SCREEN_TILE_SIZE)))
 							wallSheet.getColor().a = tilePos.distance(characterPosUnaltered) / 100f;
 						else
-							wallSheet.getColor().a = 1f;
+							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;
 						tilePos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
 						wallSheet.render(tilePos);
 						
@@ -176,6 +185,7 @@ public class World
 		}
 		
 		hourglass.render(gc, character.sanity / character.maxSanity);
+		inventory.render();
 	}
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
