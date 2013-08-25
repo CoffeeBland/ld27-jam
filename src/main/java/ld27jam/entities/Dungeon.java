@@ -21,7 +21,7 @@ public class Dungeon {
 		return grid[x][y];
 	}
 		
-	private int getRandTrue(int min, int max)
+	public static int getRandTrue(int min, int max)
 	{
 		Date now = new Date();
 		long seed = now.getTime() + oldseed;
@@ -86,23 +86,7 @@ public class Dungeon {
 		{
 			for (int x = 0; x < xsize-1; x++)
 			{
-				switch(getTileType(x, y).ordinal()){
-					case 0:
-						System.out.print(".");
-						break;
-					case 1:
-						System.out.print(".");
-						break;
-					case 2:
-						System.out.print("O");
-						break;
-					case 4:
-						System.out.print("x");
-						break;
-					default:
-						System.out.print(" ");
-						break;
-				};
+				//if ()
 			}
 			System.out.println();
 		}
@@ -159,7 +143,7 @@ public class Dungeon {
 				? this.grid[x-1][y+1] : null);
 	}
 	
-	private TileType getWallType()
+	public static TileType getWallType()
 	{
 		double rnd = Math.random();
 		if (rnd < 0.3333d)
@@ -228,6 +212,16 @@ public class Dungeon {
 	    this.grid[x][y] = TileType.CorridorFloor;
 	}
 
+	public TileType[][] drawRoom(TileType[][] containerGrid, int xStart, int yStart, RoomTemplate tmpl)
+	{
+		for (int x = 0; x < tmpl.getWidth(); x++) {
+			for (int y = 0; y < tmpl.getHeight(); y++) {
+				containerGrid[xStart + x][yStart + y] = tmpl.getTileAtCell(x, y);
+			}
+		}
+		return containerGrid;
+	}
+	
 	// and here's the one generating the whole map
 	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
@@ -391,6 +385,22 @@ public class Dungeon {
  			}
  		}
  		// place final room
+ 		int finalRoomSide = getRandTrue(0, 3);
+ 		int finalRoomOffset = getRandTrue(0, 86);
+ 		switch (finalRoomSide) {
+			case 0://north
+				drawRoom(smallDungeon, finalRoomOffset, 10, RoomTemplate.getFinishingRoom());
+				break;
+			case 1:// east
+				drawRoom(smallDungeon, this.xsize-10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+			case 2:// south
+				drawRoom(smallDungeon, finalRoomOffset, this.ysize-10, RoomTemplate.getFinishingRoom());
+				break;
+			case 3:// west
+				drawRoom(smallDungeon, 10, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+		} 		
  		
  		// Supersize the grid
  		for (int x2 = 0; x2 < smallDungeon.length; x2++) 

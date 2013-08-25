@@ -40,11 +40,13 @@ public class RoomTemplate {
 		switch (tile) 
 		{
 			case 'W':
-				return TileType.CorridorWall;
+				return Dungeon.getWallType();
 			case 'f':
 				return TileType.Floor;
+			case 'e':
+				return TileType.EndRoomFloor;
 			case '+':
-				return TileType.Floor;
+				return TileType.Door;
 			case 'S':
 				return TileType.StartingPoint;
 			default:
@@ -91,13 +93,13 @@ public class RoomTemplate {
 	
 	public static RoomTemplate getFinishingRoom()
 	{
-		return new RoomTemplate(" ff   ff \n" +
-								" fff+fff \n" +
-								"  fffff  \n" +
-								"  +fff+  \n" +
-								"  fffff  \n" +
-								" fff+fff \n" +
-								" ff   ff ");
+		return new RoomTemplate(" ee   ee \n" +
+								" eee+eee \n" +
+								"  eeeee  \n" +
+								"  +eee+  \n" +
+								"  eeeee  \n" +
+								" eee+eee \n" +
+								" ee   ee ");
 	}
 	
 }
