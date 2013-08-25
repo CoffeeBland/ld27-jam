@@ -87,14 +87,7 @@ public class World
 			for (int y = 0; y < ysize; y++) 
 			{
 				TileType tileType = gd.level.getCell(x, y);
-				if (tileType == TileType.Wall)
-				{
-				  grid[x][y] = new Tile(TileType.Test2, x, y);
-				}
-				else if (tileType != TileType.None)
-				{
-				  grid[x][y] = new Tile(TileType.Test, x, y);
-				}
+				grid[x][y] = new Tile(tileType, x, y);
 			}
 		}
 		character = new Character(gd.level.dungeon.getClosestFreeCell(xsize / 2, xsize / 2));
