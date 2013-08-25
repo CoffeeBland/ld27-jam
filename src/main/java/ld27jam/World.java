@@ -94,6 +94,7 @@ public class World
 					startingPoint = new Vector2f(x, y);
 			}
 		}
+		gd.level.dungeon = null;
 		character = new Character(startingPoint);
 		add(character);
 		character.init(this);
