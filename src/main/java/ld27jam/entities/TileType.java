@@ -4,7 +4,7 @@ public enum TileType
 {
 	Floor(0, true, true),
 	CorridorFloor(0, true, true),
-	Wall(8, false, false, false),
+	CorridorWall(8, false, false, false),
 	RockWallv1(9, false, false, false),
 	RockWallv2(10, false, false, false),
 	RockWallv3(11, false, false, false),
