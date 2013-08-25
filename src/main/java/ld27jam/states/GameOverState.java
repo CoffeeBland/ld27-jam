@@ -1,6 +1,7 @@
 package ld27jam.states;
 
 import ld27jam.helpers.FontFactory;
+import ld27jam.res.Sounds;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -45,10 +46,30 @@ public class GameOverState extends BasicGameState {
 		uFontSmall.drawString(gc.getWidth()/2-(uFontSmall.getWidth("Press escape...")/2), gc.getHeight()/2+125, "Press escape to continue...");
 	}
 
+	float pitch = 0.5f, volume = 0.4f;
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
-
+		if (!Sounds.get("res/audio/StaticOver.ogg").playing())
+		{
+			Sounds.get("res/audio/StaticOver.ogg").play(pitch, volume);
+			if (pitch < 0.5f)
+				pitch += 0.1f;
+			if (volume < 1)
+				volume += 0.2f;
+		}
+	}
+	
+	@Override
+	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException
+	{
+		pitch = 0.5f;
+		volume = 0.1f;
+	}
+	@Override
+	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException
+	{
+		Sounds.get("res/audio/StaticOver.ogg").stop();
 	}
 
 	public void exitGame()

@@ -10,6 +10,7 @@ import ld27jam.states.GameOverState;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Vector2f;
@@ -19,26 +20,72 @@ import org.newdawn.slick.state.transition.FadeOutTransition;
 
 public class Character extends Entity
 {
-	public static Sound HEARTBEAT;
+	public static Sound HEARTBEAT, STATIC;
 	
 	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0, speed = 0.13f;
 	public Color lightColor = new Color(255, 230, 180);
 	public boolean isMovingDiagonally;
-	public float maxSanity = 10;
+	public float maxSanity = 9.9999f;
 	public float sanity = maxSanity;
 	public int toNextHeartbeat;
+	public int invincibility;
 	public ImageSheet stillSheet, walkingSheet;
 	
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
+
+	public void hitSanity(int hitSanity, World world)
+	{
+		if (invincibility <= 0)
+		{
+			sanity -= hitSanity;
+			world.setShake(10, 15);
+			invincibility = 15;
+			try
+			{
+				if (STATIC == null)
+					STATIC = Sounds.get("res/audio/Static.ogg");
+				STATIC.play(1, 0.75f);
+			}
+			catch(SlickException ex){}
+		}
+	}
+
+	@Override
+	public void checkForWalkableTypeResolution(World world, Tile tile) 
+	{
+		{
+			switch (tile.type)
+			{
+				case SpikeTrapClosed:
+					world.openSpikeAt(tile.x, tile.y);
+				case SpikeTrapOpened:
+					if (this.containsPoint(new Vector2f(tile.x, tile.y)))
+						hitSanity(1, world);
+				default:
+					break;
+			}
+		}
+	}
 	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
-		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(10 - sanity)] * 60f);
+		if (Math.random() < 1f / 120f)
+			hitSanity(1, world);
+		
+		sanity = Math.max(0, Math.min(maxSanity, sanity));
+		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(9.9999f - sanity)] * 60f);
 		
 		// Gameover check
 		if (sanity <= 0.0001f)
 		{
+			HEARTBEAT.play(0.5f, 1f);
+			HEARTBEAT.play(0.75f, 1f);
+			HEARTBEAT.play(1f, 1f);
+			HEARTBEAT.play(1.25f, 1f);
+			HEARTBEAT.play(1.5f, 1f);
+			HEARTBEAT.play(1.75f, 1f);
+			HEARTBEAT.play(2f, 1f);
 			sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
 			disposeOfEvents();
 		}
@@ -46,6 +93,11 @@ public class Character extends Entity
 		else
 		{
 			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
+			if (invincibility > 0)
+			{
+				invincibility--;
+				sanityRatio *= Math.random();
+			}
 			lightMoment += 0.005f;
 			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
 			lightColor.r = sanityRatio * 0.4f + 0.6f;
@@ -106,6 +158,13 @@ public class Character extends Entity
 			imageSheet = stillSheet;
 			stillSheet.setFrameY(walkingSheet.getFrameY());
 		}
+	}
+	
+	@Override
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f camera, Color color) throws SlickException
+	{
+		if (invincibility % 2 == 0)
+			super.render(gc, sbg, g, camera, color);
 	}
 	
 	ControlEvent left, right, up, down;

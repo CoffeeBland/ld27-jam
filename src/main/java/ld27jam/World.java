@@ -38,6 +38,17 @@ public class World
 	private Character character;
 	private Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
+	private float shakeIntensity, shakeDuration;
+	
+	public float getShake()
+	{
+		return (float) ((Math.random() - 0.5f) * shakeIntensity);
+	}
+	public void setShake(float intensity, float duration)
+	{
+		shakeIntensity = intensity;
+		shakeDuration = duration;
+	}
 	
 	public void add(Entity entity)
 	{
@@ -66,6 +77,11 @@ public class World
 			for (int y = minY; y < maxY; y++)
 				tiles.add(new Tile(grid[x][y], x, y));
 		return tiles;
+	}
+	
+	public void openSpikeAt(int x, int y)
+	{
+		grid[x][y] = TileType.SpikeTrapOpened;
 	}
 	
 	public static Vector2f getScreenCoordinates(Vector2f mapCoordinates)
@@ -108,8 +124,8 @@ public class World
 		Vector2f halfScreen = new Vector2f(gc.getWidth() / 2, gc.getHeight() / 2);
 		
 		Vector2f camera = getScreenCoordinates(new Vector2f(character.getPosition().x, character.getPosition().y)).add(SCREEN_HALF_TILE).sub(halfScreen);
-		camera.x = Math.round(camera.x);
-		camera.y = Math.round(camera.y);
+		camera.x = Math.round(camera.x + getShake());
+		camera.y = Math.round(camera.y + getShake());
 		
 		Vector2f characterPosUnaltered = World.getScreenCoordinates(character.getPosition()).sub(camera);
 		Vector2f characterPos = characterPosUnaltered.copy().add(new Vector2f(0, SCREEN_TILE_SIZE.y));
@@ -189,6 +205,14 @@ public class World
 	}
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
+		if (shakeDuration > 0)
+			shakeDuration--;
+		else
+		{
+			shakeDuration = 0;
+			shakeIntensity = 0;
+		}
+		
 		for (Entity entity : entities)
 			entity.update(gc, sbg, delta, this);
 	}
