@@ -13,15 +13,15 @@ public class Dungeon {
 	public int ysize = 0;
 
 	public static long oldseed = 0;
-	private TileType[][] dungeon = {};
+	public TileType[][] grid = {};
 	private boolean startingPointSet = false;
  
 	public void setCell(int x, int y, TileType celltype){
-		dungeon[x][y] = celltype;
+		grid[x][y] = celltype;
 	}
  
 	public TileType getTileType(int x, int y) {
-		return dungeon[x][y];
+		return grid[x][y];
 	}
 	
 	private int getRand(int mean, int deviance){
@@ -127,61 +127,61 @@ public class Dungeon {
 	private TileType eastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x+1][y] : null);
+				? this.grid[x+1][y] : null);
 	}
 	private TileType westFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x-1][y] : null);
+				? this.grid[x-1][y] : null);
 	}
 	private TileType northFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x][y-1] : null);
+				? this.grid[x][y-1] : null);
 	}
 	private TileType southFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x][y+1] : null);
+				? this.grid[x][y+1] : null);
 	}
 	
 	private TileType northeastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x+1][y-1] : null);
+				? this.grid[x+1][y-1] : null);
 	}
 	private TileType southeastFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x+1][y+1] : null);
+				? this.grid[x+1][y+1] : null);
 	}
 	private TileType northwestFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x-1][y-1] : null);
+				? this.grid[x-1][y-1] : null);
 	}
 	private TileType southwestFrom(int x, int y) 
 	{
 		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
-				? this.dungeon[x-1][y+1] : null);
+				? this.grid[x-1][y+1] : null);
 	}
 	
 	private void surroundEveryFloorWithWall()
 	{
-	    for (int x = 0; x < dungeon.length; x++) 
+	    for (int x = 0; x < grid.length; x++) 
 	    {
-			for (int y = 0; y < dungeon[x].length; y++) 
+			for (int y = 0; y < grid[x].length; y++) 
 			{
-				if(dungeon[x][y] == TileType.Floor) 
+				if(grid[x][y] == TileType.Floor) 
 				{
-		          if(northFrom(x,y) == TileType.None)     dungeon[x  ][y-1]   = TileType.Wall;
-		          if(southFrom(x,y) == TileType.None)     dungeon[x  ][y+1]   = TileType.Wall;
-		          if(westFrom(x,y) == TileType.None)      dungeon[x-1][y  ]   = TileType.Wall;
-		          if(eastFrom(x,y) == TileType.None)      dungeon[x+1][y  ]   = TileType.Wall;
-		          if(northeastFrom(x,y) == TileType.None) dungeon[x+1][y-1]   = TileType.Wall;
-		          if(southeastFrom(x,y) == TileType.None) dungeon[x+1][y+1]   = TileType.Wall;
-		          if(northwestFrom(x,y) == TileType.None) dungeon[x-1][y-1]   = TileType.Wall;
-		          if(southwestFrom(x,y) == TileType.None) dungeon[x-1][y+1]   = TileType.Wall;
+		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = TileType.Wall;
+		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = TileType.Wall;
+		          if(westFrom(x,y) == TileType.None)      grid[x-1][y  ]   = TileType.Wall;
+		          if(eastFrom(x,y) == TileType.None)      grid[x+1][y  ]   = TileType.Wall;
+		          if(northeastFrom(x,y) == TileType.None) grid[x+1][y-1]   = TileType.Wall;
+		          if(southeastFrom(x,y) == TileType.None) grid[x+1][y+1]   = TileType.Wall;
+		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = TileType.Wall;
+		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = TileType.Wall;
 		        }
 				// TODO else if door put wall
 			}
@@ -196,7 +196,7 @@ public class Dungeon {
 
 		for(int x = start_x; x <= end_x; x++) {
 			for(int y = start_y; y <= end_y; y++) {
-				if (this.dungeon[x][y] != TileType.None) return false;
+				if (this.grid[x][y] != TileType.None) return false;
 			}
 		}
 		return true;
@@ -210,21 +210,21 @@ public class Dungeon {
 	    y = y1;
 
 	    while( x != x2 || y != y2) {
-	      this.dungeon[x][y] = TileType.Floor;
+	      this.grid[x][y] = TileType.Floor;
 	      if(x != x2 && Math.random() > 0.5) {
 	        x += h_mod;
 	      } else if(y != y2) {
 	        y += v_mod;
 	      }
 	    }
-	    this.dungeon[x][y] = TileType.Floor;
+	    this.grid[x][y] = TileType.Floor;
 	}
 
 	// and here's the one generating the whole map
 	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
 		this.ysize = iny;
-		this.dungeon = new TileType[inx+1][iny+1];
+		this.grid = new TileType[inx+1][iny+1];
 		
 		int spacing = 3;
 		int tallest_height = 0; 
@@ -236,11 +236,11 @@ public class Dungeon {
 		}
 		
 		// fill dungeon with white space
-		for (int x = 0; x < this.dungeon.length; x++) 
+		for (int x = 0; x < this.grid.length; x++) 
 		{
-			for (int y = 0; y < this.dungeon[x].length; y++) 
+			for (int y = 0; y < this.grid[x].length; y++) 
 			{
-				this.dungeon[x][y] = TileType.None;
+				this.grid[x][y] = TileType.None;
 			}
 		}
 		
@@ -307,7 +307,7 @@ public class Dungeon {
 				{
 					for (int y_in_room = 0; y_in_room < row_room.getHeight(); y_in_room++) 
 					{
-						this.dungeon[Math.min(x + x_in_room, this.xsize)][Math.min(y + y_in_room + extra_y_offset, this.ysize)] = row_room.getTileAtCell(x_in_room, y_in_room);
+						this.grid[Math.min(x + x_in_room, this.xsize)][Math.min(y + y_in_room + extra_y_offset, this.ysize)] = row_room.getTileAtCell(x_in_room, y_in_room);
 					}
 				}
 				
@@ -348,8 +348,8 @@ public class Dungeon {
 					Vector2f this_exit = exit[1];
 					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y) ) {
 			            drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
-			            this.dungeon[(int)this_orig.x][(int)this_orig.y] = TileType.Floor;
-			            this.dungeon[(int)other_orig.x][(int)other_orig.y] = TileType.Floor;
+			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.Floor;
+			            this.grid[(int)other_orig.x][(int)other_orig.y] = TileType.Floor;
 			            used_exits.add(this_orig);
 			            used_exits.add(other_orig);
 			        }
@@ -365,16 +365,16 @@ public class Dungeon {
 				smallDungeon[fx][fy] = getTileType(fx, fy);
 			}
 		}
-	    this.dungeon = smallDungeon;
+	    this.grid = smallDungeon;
 	    this.xsize = this.xsize*3;
 	    this.ysize = this.ysize*3;
-	    this.dungeon = new TileType[this.xsize][this.ysize];
+	    this.grid = new TileType[this.xsize][this.ysize];
 	    // fill dungeon with white space
- 		for (int fx = 0; fx < this.dungeon.length; fx++) 
+ 		for (int fx = 0; fx < this.grid.length; fx++) 
  		{
- 			for (int fy = 0; fy < this.dungeon[fx].length; fy++) 
+ 			for (int fy = 0; fy < this.grid[fx].length; fy++) 
  			{
- 				this.dungeon[fx][fy] = TileType.None;
+ 				this.grid[fx][fy] = TileType.None;
  			}
  		}
  		for (int x2 = 0; x2 < smallDungeon.length; x2++) 
@@ -385,7 +385,7 @@ public class Dungeon {
 				{
 					for (int y3 = 0; y3 < 3; y3++) 
 					{
-						this.dungeon[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
+						this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];
 					}
 				}
 			}

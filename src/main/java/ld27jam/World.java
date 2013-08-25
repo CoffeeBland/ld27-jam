@@ -33,7 +33,7 @@ public class World
 	
 	private Set<Entity> entities = new HashSet<Entity>();
 	public SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
-	private Tile[][] grid;
+	private TileType[][] grid;
 	private ImageSheet tileSheet, wallSheet;
 	private Character character;
 	private Inventory inventory = new Inventory();
@@ -64,7 +64,7 @@ public class World
 		    maxY = (int) Math.ceil(region.getBottomY());
 		for (int x = minX; x < maxX; x++)
 			for (int y = minY; y < maxY; y++)
-				tiles.add(grid[x][y]);
+				tiles.add(new Tile(grid[x][y], x, y));
 		return tiles;
 	}
 	
@@ -83,14 +83,12 @@ public class World
 		int xsize = gd.level.getWidth();
 		int ysize = gd.level.getHeight();
 		Vector2f startingPoint = null;
-		grid = new Tile[xsize][ysize];
+		grid = gd.level.dungeon.grid;
 		for	(int x = 0; x < xsize; x++)
 		{
 			for (int y = 0; y < ysize; y++) 
 			{
-				TileType tileType = gd.level.getCell(x, y);
-				grid[x][y] = new Tile(tileType, x, y);
-				if (tileType == TileType.StartingPoint)
+				if (grid[x][y] == TileType.StartingPoint)
 					startingPoint = new Vector2f(x, y);
 			}
 		}
@@ -136,12 +134,12 @@ public class World
 
 				float blackness = tilePos.distance(characterPosUnaltered) / character.lightBase + character.lightVariation;
 				// Tile
-				Tile tile = grid[x][y];
-				if (tile != null && tile.type != TileType.None)
+				TileType tile = grid[x][y];
+				if (tile != null && tile != TileType.None)
 				{
-					if (tile.type.isFloor)
+					if (tile.isFloor)
 					{
-						tileSheet.setFrameX(tile.type.tileId);
+						tileSheet.setFrameX(tile.tileId);
 						tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
@@ -150,7 +148,7 @@ public class World
 					}
 					else
 					{
-						wallSheet.setFrameX(tile.type.tileId);
+						wallSheet.setFrameX(tile.tileId);
 						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
 						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
 						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
