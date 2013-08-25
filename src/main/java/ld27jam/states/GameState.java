@@ -58,8 +58,6 @@ public class GameState extends BasicGameState {
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException 
 	{
-		if (this.sbg == null)
-			init(gc, sbg);
 	}
 
 	public World getWorld()
