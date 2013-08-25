@@ -12,8 +12,6 @@ import ld27jam.states.*;
 
 public class GameStateController extends StateBasedGame {
 
-	private GameContainer gc;
-
 	public GameStateController(String name) {
 		super(name);
 	}
@@ -26,7 +24,6 @@ public class GameStateController extends StateBasedGame {
     	addState(new GameOverState());
     	addState(new GameWinState());
         enterState(LogoState.ID);
-        this.gc = gc;
         
 		try 
 		{

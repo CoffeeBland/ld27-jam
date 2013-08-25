@@ -1,6 +1,5 @@
 package ld27jam;
 
-import org.newdawn.easyogg.OggClip;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 

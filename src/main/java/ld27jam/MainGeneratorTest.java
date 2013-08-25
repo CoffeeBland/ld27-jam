@@ -18,15 +18,9 @@ public class MainGeneratorTest{
 	
 	public static void main(String[] args){
 		//initial stuff used in making the map
-		int x = 120; int y = 120; int dungeon_objects = 33;
+		int x = 120; int y = 120;
  
 		//convert a string to a int, if there's more then one arg
-		if (args.length >= 1)
-			dungeon_objects = Integer.parseInt(args[0]);
-		if (args.length >= 2)
-			x = Integer.parseInt(args[1]);
-		if (args.length >= 3)
-			y = Integer.parseInt(args[2]);
 		Dungeon generator = new Dungeon();
  
 		RoomTemplate[] templates = new RoomTemplate[7];

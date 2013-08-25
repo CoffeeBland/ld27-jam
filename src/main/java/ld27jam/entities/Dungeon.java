@@ -1,9 +1,6 @@
 package ld27jam.entities;
 
-import java.lang.reflect.Array;
 import java.util.*;
-
-import ld27jam.spatialData.Region;
 
 import org.newdawn.slick.geom.Vector2f;
 
@@ -23,17 +20,7 @@ public class Dungeon {
 	public TileType getTileType(int x, int y) {
 		return grid[x][y];
 	}
-	
-	private int getRand(int mean, int deviance){
-		Date now = new Date();
-		long seed = now.getTime() + oldseed;
-	
-		int rnd = (int) Math.abs( (new Random(seed)).nextGaussian() * mean + deviance );
 		
-		this.oldseed = seed;
-		return rnd;
-	}
-	
 	private int getRandTrue(int min, int max)
 	{
 		Date now = new Date();

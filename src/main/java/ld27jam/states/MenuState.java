@@ -1,7 +1,5 @@
 package ld27jam.states;
 
-
-import ld27jam.GameStateController;
 import ld27jam.helpers.FontFactory;
 
 import org.newdawn.slick.Color;
