@@ -15,30 +15,35 @@ public class Inventory
 	public static Font whiteFont = FontFactory.get().getFont(16, java.awt.Color.white);
 	
 	public ImageSheet background;
-	public Vector2f position = new Vector2f(16, 16);
+	public Vector2f position = new Vector2f(16, 16), itemDecal = new Vector2f(4, 16);
 	public Set<Item> items = new HashSet<Item>();
 	
 	public void render() throws SlickException
 	{
-		Vector2f pos = new Vector2f(position.x, position.y), itemDecal = new Vector2f(4, 8);
-		for (Item item : items)
+		Vector2f pos = new Vector2f(position.x, position.y);
+		
+		// Background
+		background.setFrameY(0);
+		background.render(pos);
+		pos.y += 32;
+
+		background.setFrameY(1);
+		for (int repeat = 1; repeat < items.size(); repeat++)
 		{
-			if (pos.y == position.y)
-				background.setFrameY(0);
-			else
-				background.setFrameY(1);
-			background.render(pos);
-			item.render(pos.copy().add(itemDecal));
-			pos.y += 32;
-		}
-		if (pos.y == position.y)
-		{
-			background.setFrameY(0);
 			background.render(pos);
 			pos.y += 32;
 		}
 		background.setFrameY(2);
 		background.render(pos);
+		
+		// Items		
+		pos.y = position.y;
+		for (Item item : items)
+		{
+			item.render(pos.copy().add(itemDecal));
+			pos.y += 32;
+		}
+
 	}
 	
 	public Inventory() throws SlickException

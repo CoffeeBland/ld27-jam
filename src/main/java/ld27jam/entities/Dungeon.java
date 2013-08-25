@@ -21,7 +21,7 @@ public class Dungeon {
 		return grid[x][y];
 	}
 		
-	private int getRandTrue(int min, int max)
+	private int getRand(int min, int max)
 	{
 		Date now = new Date();
 		long seed = now.getTime() + oldseed;
@@ -37,7 +37,7 @@ public class Dungeon {
  
 	private boolean checkPoint(int x, int y)
 	{
-		return getTileType(x, y) == TileType.Floor || getTileType(x, y) == TileType.CorridorFloor;
+		return getTileType(x, y).isFloor || getTileType(x, y) == TileType.CorridorFloor;
 	}
 	
 	public Vector2f getClosestFreeCell(int xs, int ys)
@@ -159,15 +159,30 @@ public class Dungeon {
 				? this.grid[x-1][y+1] : null);
 	}
 	
+	private TileType[] rockWalls = new TileType[] 
+	{
+		TileType.RockWallv1,
+		TileType.RockWallv2,
+		TileType.RockWallv3,
+		TileType.RockWallv4,
+		TileType.RockWallv5,
+		TileType.RockWallv6
+	};
+	private TileType[] mossWalls = new TileType[] 
+	{
+		TileType.RockMossWallv1,
+		TileType.RockMossWallv2,
+		TileType.RockMossWallv3,
+		TileType.RockMossWallv4,
+		TileType.RockMossWallv5,
+		TileType.RockMossWallv6
+	};
 	private TileType getWallType()
 	{
-		double rnd = Math.random();
-		if (rnd < 0.3333d)
-			return TileType.RockWallv1;
-		else if (rnd < 0.6666d)
-			return TileType.RockWallv2;
+		if (Math.random() < 0.75)
+			return rockWalls[getRand(0, rockWalls.length - 1)];
 		else
-			return TileType.RockWallv3;
+			return mossWalls[getRand(0, mossWalls.length - 1)];
 	}
 	
 	private void surroundEveryFloorWithWall()
@@ -176,7 +191,7 @@ public class Dungeon {
 	    {
 			for (int y = 0; y < grid[x].length; y++) 
 			{
-				TileType tt = grid[x][y] == TileType.CorridorFloor ? TileType.CorridorWall : getWallType(); 
+				TileType tt = grid[x][y] == TileType.CorridorFloor ? getWallType() : getWallType(); 
 				if(grid[x][y].canWalkOn) 
 				{
 		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = tt;
@@ -269,7 +284,7 @@ public class Dungeon {
 	        		this.startingPointSet = true;
 	        	}
 	        	else
-	        		a_room = templates[getRandTrue(0, templates.length-1)];
+	        		a_room = templates[getRand(0, templates.length-1)];
 	        	rooms.add(a_room);
 	        	room_for_x -= (a_room.getWidth() + spacing + 1);
 	        }
@@ -301,7 +316,7 @@ public class Dungeon {
 	        // randomly distribute extra spaces into gaps
 	        for (int i = 0; i < num_unused_spaces; i++) 
 	        {
-	          gaps[getRandTrue(0, gaps.length-1)] += 1;
+	          gaps[getRand(0, gaps.length-1)] += 1;
 	        }
 
 	        // shift ahead past first gap
@@ -309,7 +324,7 @@ public class Dungeon {
 	        int index = 0;
 	        for (RoomTemplate row_room : rooms) 
 	        {
-				int extra_y_offset = getRandTrue(0, row_tallest_height - row_room.getHeight());
+				int extra_y_offset = getRand(0, row_tallest_height - row_room.getHeight());
 				
 				for (int x_in_room = 0; x_in_room < row_room.getWidth(); x_in_room++) 
 				{
@@ -402,7 +417,7 @@ public class Dungeon {
 					for (int y3 = 0; y3 < 3; y3++) 
 					{
 						// Here we can randomize few chests
-						if (smallDungeon[x2][y2] == TileType.Floor && Math.random() < 0.001)
+						if (smallDungeon[x2][y2].isFloor && Math.random() < 0.001)
 							this.grid[x2*3+x3][y2*3+y3] = TileType.ChestClosedSouth;
 						else
 							this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2][y2];

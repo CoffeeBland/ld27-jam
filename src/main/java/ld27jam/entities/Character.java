@@ -163,6 +163,7 @@ public class Character extends Entity
 					break;
 			}
 		}
+		
 		AABB front = new Region(getPosition().copy(), getSize());
 		if (KeyMapping.Left.isDown())
 			front.getPosition().x -= getSize().x;
@@ -177,13 +178,22 @@ public class Character extends Entity
 			switch(tile.type)
 			{
 				case ChestClosedEast:
-					
+					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedEast);
+					world.inventory.items.add(new Item(ItemType.Key));
 					break;
 				case ChestClosedWest:
+					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedWest);
+					world.inventory.items.add(new Item(ItemType.Key));
 					break;
 				case ChestClosedNorth:
+					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedNorth);
+					world.inventory.items.add(new Item(ItemType.Key));
 					break;
 				case ChestClosedSouth:
+					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedSouth);
+					world.inventory.items.add(new Item(ItemType.Key));
+					break;
+				default:
 					break;
 			}
 		}

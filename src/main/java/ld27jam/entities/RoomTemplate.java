@@ -40,7 +40,7 @@ public class RoomTemplate {
 		switch (tile) 
 		{
 			case 'W':
-				return TileType.CorridorWall;
+				return TileType.Wall;
 			case 'f':
 				return TileType.Floor;
 			case '+':
@@ -87,17 +87,6 @@ public class RoomTemplate {
 								"  fffffff   \n" +
 								"   fffff    \n" +
 								"    f+f     \n");
-	}
-	
-	public static RoomTemplate getFinishingRoom()
-	{
-		return new RoomTemplate(" ff   ff \n" +
-								" fff+fff \n" +
-								"  fffff  \n" +
-								"  +fff+  \n" +
-								"  fffff  \n" +
-								" fff+fff \n" +
-								" ff   ff ");
 	}
 	
 }
