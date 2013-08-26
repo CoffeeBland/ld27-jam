@@ -36,7 +36,7 @@ public class LoadingState extends BasicGameState
 				message = "Welcome dear player, this game is called\n"+
 						  "10 seconds to insanity\n"+
 						  "\n"+
-						  "The goal is to raom the dungeon you woke up in\n"+
+						  "The goal is to roam the dungeon. You woke up in\n"+
 						  "in search of the diamond room. Once reached you will go onward\n"+
 						  "to the next level!\n\nTowards the surface!";
 			else if (showingIntroStep == 2)

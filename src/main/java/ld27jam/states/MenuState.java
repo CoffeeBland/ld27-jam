@@ -49,9 +49,9 @@ public class MenuState extends BasicGameState {
 	@Override
 	public void keyPressed(int key, char c)
 	{
-		if(key == Input.KEY_W)
+		if(key == Input.KEY_W || key == Input.KEY_UP)
 			playSelected = true;
-		if(key == Input.KEY_S)
+		if(key == Input.KEY_S || key == Input.KEY_DOWN)
 			playSelected = false;
 	}
 
@@ -67,7 +67,7 @@ public class MenuState extends BasicGameState {
 		drawCentered(playSelected ? uFontSmallGray : uFontSmall, 380, "Exit", gc);
 	}
 	
-	private void drawCentered(UnicodeFont font, int y, String text, GameContainer gc) 
+	public static void drawCentered(UnicodeFont font, int y, String text, GameContainer gc) 
 	{
 		font.drawString((gc.getWidth()/2)-(font.getWidth(text)/2), y, text);
 	}
