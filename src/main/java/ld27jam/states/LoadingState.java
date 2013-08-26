@@ -33,10 +33,22 @@ public class LoadingState extends BasicGameState
 		{
 			String message = "";
 			if (showingIntroStep == 1) 
-				message = "Intro1\ndsadas";
+				message = "Welcome dear player, this game is called\n"+
+						  "10 seconds to insanity\n"+
+						  "\n"+
+						  "The goal is to raom the dungeon you woke up in\n"+
+						  "in search of the diamond room. Once reached you will go onward\n"+
+						  "to the next level!\n\nTowards the surface!";
 			else if (showingIntroStep == 2)
-				message = "Intro2\n\nDerp!";
-			drawCentered(MenuState.uFontSmall, 120, message, gc);
+				message = "But beware!\n\n"+
+						  "There will be traps, and locked door,\n"+
+						  "and even monsters!\n\n"+
+						  "To move use             : W A S D\n"+
+						  "To paude the game press : ESC\n"+
+						  "To loot a chest         : Go near it\n"+
+						  "To unlock a door        : Hit it!\n";
+			
+			MenuState.uFontSmall.drawString(100, 100, message);
 			drawCentered(MenuState.uFontSmall, gc.getHeight()-28, "Press enter to continue ...", gc);
 		}
 		else
