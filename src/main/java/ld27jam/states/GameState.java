@@ -70,6 +70,11 @@ public class GameState extends BasicGameState {
 		g.setColor(new Color(10, 10, 20));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
 		world.render(gc, sbg, g);
+		if (paused)
+		{
+			MenuState.drawCentered(MenuState.uFont, 200, "PAUSED", gc);
+			MenuState.drawCentered(MenuState.uFontSmall, 290, "Press ESC to resume", gc);
+		}
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
