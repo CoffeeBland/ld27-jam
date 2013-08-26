@@ -101,10 +101,10 @@ public class Dungeon {
  
 	public Vector2f wheresEmptyFrom(int x, int y) 
 	{
-		if(this.northFrom(x,y) == TileType.None) return new Vector2f(x,   y-1);
-		if(this.southFrom(x,y) == TileType.None) return new Vector2f(x,   y+1);
-		if(this.westFrom(x,y)  == TileType.None) return new Vector2f(x-1, y  );
-		if(this.eastFrom(x,y)  == TileType.None) return new Vector2f(x+1, y  );
+		if(this.northFrom(x,y) == TileType.None && this.southFrom(x,y) == TileType.Floor) return new Vector2f(x,   y-1);
+		if(this.southFrom(x,y) == TileType.None && this.northFrom(x,y) == TileType.Floor) return new Vector2f(x,   y+1);
+		if(this.westFrom(x,y)  == TileType.None && this.eastFrom(x,y) == TileType.Floor) return new Vector2f(x-1, y  );
+		if(this.eastFrom(x,y)  == TileType.None && this.westFrom(x,y) == TileType.Floor) return new Vector2f(x+1, y  );
 		return null;
 	}
 	
@@ -170,10 +170,14 @@ public class Dungeon {
 	};
 	public static TileType getWallType()
 	{
-		if (Math.random() < 0.75)
+		if (Math.random() < 0.75 || true)
 			return rockWalls[getRand(0, rockWalls.length - 1)];
 		else
 			return mossWalls[getRand(0, mossWalls.length - 1)];
+	}
+	public static TileType getMossWallType()
+	{
+		return mossWalls[getRand(0, mossWalls.length - 1)];
 	}
 	public static TileType getEndWallType()
 	{
@@ -210,8 +214,9 @@ public class Dungeon {
 				TileType tt;
 				switch (grid[x][y])
 				{
-					case CorridorFloor:
-						tt = getWallType();
+					case Floor3:
+					case Floor4:
+						tt = getMossWallType();
 						break;
 					case EndRoomFloor:
 						tt = getEndWallType();
@@ -262,7 +267,7 @@ public class Dungeon {
 
 	    while( x != x2 || y != y2) {
 	      this.grid[x][y] = TileType.CorridorFloor;
-	      if(x != x2 && Math.random() > 0.5) {
+	      if(x != x2) {
 	        x += h_mod;
 	      } else if(y != y2) {
 	        y += v_mod;
@@ -427,7 +432,7 @@ public class Dungeon {
 					Vector2f other_outer_exit = otherExit[1];
 					Vector2f this_orig = exit[0];
 					Vector2f this_exit = exit[1];
-					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y)) {
+					if(isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y)) {
 						// We can now do a corridor here
 						drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
 			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.Door;

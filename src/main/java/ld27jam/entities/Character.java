@@ -237,7 +237,7 @@ public class Character extends Entity
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
-		//updateSanity(world, sbg);
+		updateSanity(world, sbg);
 		heartbeat();
 		updateAnim();
 		checkForInteraction(world);
