@@ -1,6 +1,5 @@
 package ld27jam.entities;
 
-import java.io.EOFException;
 import java.util.*;
 
 import org.newdawn.slick.geom.Vector2f;
@@ -176,6 +175,10 @@ public class Dungeon {
 		else
 			return mossWalls[getRand(0, mossWalls.length - 1)];
 	}
+	public static TileType getEndWallType()
+	{
+		return TileType.EndRoomWall;
+	}
 	
 	private static TileType[] floors = new TileType[] 
 	{
@@ -204,8 +207,20 @@ public class Dungeon {
 	    {
 			for (int y = 0; y < grid[x].length; y++) 
 			{
-				TileType tt = grid[x][y] == TileType.CorridorFloor ? getWallType() : getWallType(); 
-				if(grid[x][y].canWalkOn) 
+				TileType tt;
+				switch (grid[x][y])
+				{
+					case CorridorFloor:
+						tt = getWallType();
+						break;
+					case EndRoomFloor:
+						tt = getEndWallType();
+						break;
+					default:
+						tt = getWallType();
+						break;
+				}
+				if(grid[x][y].canWalkOn || grid[x][y] == TileType.Door || grid[x][y] == TileType.LockedDoor) 
 				{
 		          if(northFrom(x,y) == TileType.None)     grid[x  ][y-1]   = tt;
 		          if(southFrom(x,y) == TileType.None)     grid[x  ][y+1]   = tt;
@@ -258,11 +273,11 @@ public class Dungeon {
 
 	public TileType[][] drawRoom(TileType[][] containerGrid, int xStart, int yStart, RoomTemplate tmpl)
 	{
-		/*for (int x = 0; x < tmpl.getWidth(); x++) {
+		for (int x = 0; x < tmpl.getWidth(); x++) {
 			for (int y = 0; y < tmpl.getHeight(); y++) {
 				containerGrid[xStart + x][yStart + y] = tmpl.getTileAtCell(x, y);
 			}
-		}*/
+		}
 		return containerGrid;
 	}
 	
@@ -298,9 +313,9 @@ public class Dungeon {
 	    	ArrayList<RoomTemplate> rooms = new ArrayList<RoomTemplate>();
 	        int room_for_x = this.xsize;
 	        
-	        while( room_for_x > widest_width ) 
+	        while(room_for_x > widest_width ) 
 	        {
-	        	RoomTemplate a_room;
+	        	RoomTemplate a_room = null;
 	        	if (y > this.ysize/2-20 && y < this.ysize/2+20 && room_for_x > this.xsize/2-20 && room_for_x < this.xsize/2+20 && startingPointSet == false)
 	        	{
 	        		a_room = RoomTemplate.getStartingRoom();
@@ -308,8 +323,8 @@ public class Dungeon {
 	        	}
 	        	else
 	        		a_room = templates[getRand(0, templates.length-1)];
-	        	rooms.add(a_room);
-	        	room_for_x -= (a_room.getWidth() + spacing + 1);
+		        rooms.add(a_room);
+		        room_for_x -= (a_room.getWidth() + spacing + 1);
 	        }
 
 	        // tallest height just for this row
@@ -373,6 +388,26 @@ public class Dungeon {
 	        y += spacing + 1;
 	    }// end loop rows
 	    
+ 		// Place final room
+ 		int finalRoomSide = getRand(0, 3);
+ 		int finalRoomOffset = getRand(0, 85);
+		
+ 		switch (finalRoomSide) {
+			case 0://north
+				drawRoom(this.grid, finalRoomOffset, 15, RoomTemplate.getFinishingRoom());
+				break;
+			case 1:// east
+				drawRoom(this.grid, this.xsize/3-16, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+			case 2:// south
+				drawRoom(this.grid, finalRoomOffset, this.ysize/3-16, RoomTemplate.getFinishingRoom());
+				break;
+			case 3:// west
+				drawRoom(this.grid, 15, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				break;
+ 		}
+	    
+	    // Connections
 	    ArrayList<Vector2f[]> usable_room_exit_pairs = new ArrayList<Vector2f[]>();
 	    ArrayList<Vector2f> used_exits = new ArrayList<Vector2f>();
 	    for (Vector2f exit : room_exits) {
@@ -395,8 +430,8 @@ public class Dungeon {
 					if( isClearFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y)) {
 						// We can now do a corridor here
 						drawCorridorFromTo((int)this_exit.x, (int)this_exit.y, (int)other_outer_exit.x, (int)other_outer_exit.y);
-			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.CorridorFloor;
-			            this.grid[(int)other_orig.x][(int)other_orig.y] = TileType.CorridorFloor;
+			            this.grid[(int)this_orig.x][(int)this_orig.y] = TileType.Door;
+			            this.grid[(int)other_orig.x][(int)other_orig.y] = TileType.Door;
 			            used_exits.add(this_orig);
 			            used_exits.add(other_orig);
 			            break;
@@ -404,7 +439,8 @@ public class Dungeon {
 				}
 			}
 		}
-	    
+
+ 		int supersize = 3;
 	    TileType[][] smallDungeon = new TileType[this.xsize+30*2][this.ysize+30*2];
 	    // fill new dungeon
 	    for (int fx = 0; fx < smallDungeon.length; fx++) 
@@ -414,6 +450,7 @@ public class Dungeon {
  				smallDungeon[fx][fy] = TileType.None;
  			}
  		}
+	    
 	    // copy current dungeon
 	    for (int fx = 0; fx < this.grid.length; fx++) {
 			for (int fy = 0; fy < this.grid[fx].length; fy++) {
@@ -426,8 +463,8 @@ public class Dungeon {
 		}
 	    this.grid = smallDungeon;
 	    // x3 room + space for final room
-	    this.xsize = this.xsize*3 + 30*6;
-	    this.ysize = this.ysize*3 + 30*6;
+	    this.xsize = this.xsize*supersize + 60 * supersize;
+	    this.ysize = this.ysize*supersize + 60 * supersize;
 	    this.grid = new TileType[this.xsize][this.ysize];
 	    // fill dungeon with white space
  		for (int fx = 0; fx < this.grid.length; fx++) 
@@ -437,40 +474,60 @@ public class Dungeon {
  				this.grid[fx][fy] = TileType.None;
  			}
  		}
- 		// place final room
- 		int finalRoomSide = getRand(0, 3);
- 		int finalRoomOffset = getRand(0, 85);
- 		switch (finalRoomSide) {
-			case 0://north
-				drawRoom(smallDungeon, finalRoomOffset, 15, RoomTemplate.getFinishingRoom());
-				break;
-			case 1:// east
-				drawRoom(smallDungeon, this.xsize/3-16, finalRoomOffset, RoomTemplate.getFinishingRoom());
-				break;
-			case 2:// south
-				drawRoom(smallDungeon, finalRoomOffset, this.ysize/3-16, RoomTemplate.getFinishingRoom());
-				break;
-			case 3:// west
-				drawRoom(smallDungeon, 15, finalRoomOffset, RoomTemplate.getFinishingRoom());
-				break;
-		}
  		
  		// Supersize the grid
- 		for (int x2 = 0; x2 < smallDungeon.length-30*2; x2++) 
+ 		for (int x2 = 0; x2 < smallDungeon.length; x2++) 
 	    {
-			for (int y2 = 0; y2 < smallDungeon[x2].length-30*2; y2++) 
+			for (int y2 = 0; y2 < smallDungeon[x2].length; y2++) 
 			{
-				for (int x3 = 0; x3 < 3; x3++) 
+				// Super size
+				for (int x3 = 0; x3 < supersize; x3++) 
 				{
-					for (int y3 = 0; y3 < 3; y3++) 
+					for (int y3 = 0; y3 < supersize; y3++) 
 					{
 						// Here we can randomize few chests
-						if (smallDungeon[x2+30][y2+30].isFloor && Math.random() < 0.001)
-							this.grid[x2*3+x3][y2*3+y3] = TileType.ChestClosedSouth;
-						else if (smallDungeon[x2+30][y2+30] == TileType.Floor || smallDungeon[x2+30][y2+30] == TileType.CorridorFloor)
-							this.grid[x2*3+x3][y2*3+y3] = getFloorType();
-						else
-							this.grid[x2*3+x3][y2*3+y3] = smallDungeon[x2+30][y2+30];
+						boolean gotChest = false;
+						if (smallDungeon[x2][y2] == TileType.Floor)
+							if(Math.random() < 0.0005)
+							{
+								this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedSouth;
+								gotChest = true;
+							}
+						if (!gotChest)
+							if (smallDungeon[x2][y2] == TileType.Floor || 
+								smallDungeon[x2][y2] == TileType.CorridorFloor ||
+							    smallDungeon[x2][y2] == TileType.Door)
+								this.grid[x2*supersize+x3][y2*supersize+y3] = getFloorType();
+							else
+								this.grid[x2*supersize+x3][y2*supersize+y3] = smallDungeon[x2][y2];
+					}
+				}
+				// Apply doors
+				if (smallDungeon[x2][y2] == TileType.Door)
+				{
+					boolean west = smallDungeon[x2 - 1][y2] != TileType.None,
+							east = smallDungeon[x2 + 1][y2] != TileType.None,
+							south = smallDungeon[x2][y2 - 1] != TileType.None,
+							north = smallDungeon[x2][y2 + 1] != TileType.None;
+					
+					TileType type;
+					if (Math.random() < 0.5)
+						type = TileType.LockedDoor;
+					else
+						type = TileType.Door;
+					if (west && east && !south && !north)
+					{
+						type = TileType.valueOf(type.name() + "WE");
+						this.grid[x2*supersize+1][y2*supersize+0] = type;
+						this.grid[x2*supersize+1][y2*supersize+1] = type;
+						this.grid[x2*supersize+1][y2*supersize+2] = type;
+					}
+					else if (!west && !east && south && north)
+					{
+						type = TileType.valueOf(type.name() + "NS");
+						this.grid[x2*supersize+0][y2*supersize+1] = type;
+						this.grid[x2*supersize+1][y2*supersize+1] = type;
+						this.grid[x2*supersize+2][y2*supersize+1] = type;
 					}
 				}
 			}

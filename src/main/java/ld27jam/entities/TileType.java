@@ -3,14 +3,14 @@ package ld27jam.entities;
 public enum TileType 
 {
 	None(0, false, false),
-	StartingPoint(1, true, true),
+	StartingPoint(6, true, true),
 	
 	CorridorFloor(0, true, true),
 	Floor(0, true, true),
-	EndRoomFloor(0, true, true),
+	EndRoomFloor(7, true, true),
 	
 	CorridorWall(8, false, false, false),
-	EndRoomWall(12, false, false, false),
+	EndRoomWall(24, false, false, false),
 	
 	Floor1(0, true, true),
 	Floor2(1, true, true),
@@ -32,9 +32,14 @@ public enum TileType
 	RockMossWall5(22, false, false, false),
 	RockMossWall6(23, false, false, false),
 	
-	OpenedDoor(3, true, true),
-	Door(0, false, false),
-	LockedDoor(0, false, false),
+	OpenedDoorWE(9, true, true),
+	OpenedDoorNS(8, true, true),
+	Door(8, false, false),
+	DoorWE(26, false, false),
+	DoorNS(25, false, false),
+	LockedDoor(9, false, false),
+	LockedDoorWE(28, false, false),
+	LockedDoorNS(27, false, false),
 	
 	SpikeTrap(10, true, false),
 	SpikeTrapOpened(11, true, false),

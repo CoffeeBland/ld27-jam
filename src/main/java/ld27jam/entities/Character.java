@@ -175,6 +175,7 @@ public class Character extends Entity
 			front.getPosition().y += getSize().y;
 		for (Tile tile : world.getTilesInRegion(front))
 		{
+			Item key;
 			switch(tile.type)
 			{
 				case ChestClosedEast:
@@ -193,16 +194,39 @@ public class Character extends Entity
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedSouth);
 					world.inventory.items.add(new Item(ItemType.Key));
 					break;
-				case Door:
-					world.propagateTileChangeAt(tile.x, tile.y, TileType.Door, TileType.OpenedDoor);
+				case DoorWE:
+					world.propagateTileChangeAt(tile.x, tile.y, TileType.DoorWE, TileType.OpenedDoorWE);
 					break;
-				case LockedDoor:
-					boolean hasKey = false;
+				case DoorNS:
+					world.propagateTileChangeAt(tile.x, tile.y, TileType.DoorNS, TileType.OpenedDoorNS);
+					break;
+				case LockedDoorWE:
+					key = null;
 					for (Item item : world.inventory.items)
 						if (item.type == ItemType.Key)
-							hasKey = true;
-					if (hasKey)
-						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoor, TileType.OpenedDoor);
+						{
+							key = item;
+							break;
+						}
+					if (key != null)
+					{
+						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorWE, TileType.OpenedDoorWE);
+						world.inventory.items.remove(key);
+					}
+					break;
+				case LockedDoorNS:
+					key = null;
+					for (Item item : world.inventory.items)
+						if (item.type == ItemType.Key)
+						{
+							key = item;
+							break;
+						}
+					if (key != null)
+					{
+						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorNS, TileType.OpenedDoorNS);
+						world.inventory.items.remove(key);
+					}
 					break;
 				default:
 					break;
@@ -213,7 +237,7 @@ public class Character extends Entity
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
-		updateSanity(world, sbg);
+		//updateSanity(world, sbg);
 		heartbeat();
 		updateAnim();
 		checkForInteraction(world);

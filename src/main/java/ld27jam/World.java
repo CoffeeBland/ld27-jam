@@ -6,6 +6,8 @@ import java.util.Set;
 import ld27jam.entities.Entity;
 import ld27jam.entities.Hourglass;
 import ld27jam.entities.Inventory;
+import ld27jam.entities.Item;
+import ld27jam.entities.ItemType;
 import ld27jam.entities.Tile;
 import ld27jam.entities.TileType;
 import ld27jam.res.ImageSheet;
@@ -114,18 +116,19 @@ public class World
 		int ysize = gd.level.getHeight();
 		Vector2f startingPoint = null;
 		grid = gd.level.dungeon.grid;
-		for	(int x = 0; x < xsize; x++)
+		for	(int x = 0; x < xsize && startingPoint == null; x++)
 		{
-			for (int y = 0; y < ysize; y++) 
+			for (int y = 0; y < ysize && startingPoint == null; y++) 
 			{
 				if (grid[x][y] == TileType.StartingPoint)
-					startingPoint = new Vector2f(x, y);
+					startingPoint = new Vector2f(x + 1, y + 1);
 			}
 		}
 		gd.level.dungeon = null;
 		character = new Character(startingPoint);
 		add(character);
 		character.init(this);
+		inventory.items.add(new Item(ItemType.Key));
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
 	{
@@ -162,31 +165,52 @@ public class World
 				TileType tile = grid[x][y];
 				if (tile != null && tile != TileType.None)
 				{
+					float a = 1.5f - blackness * blackness * blackness;
 					if (tile.isFloor)
 					{
 						tileSheet.setFrameX(tile.tileId);
-						tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
-						tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
-						tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						tileSheet.getColor().a = 1.2f - blackness * blackness * blackness;
+						if (tile == TileType.EndRoomFloor)
+						{
+							tileSheet.getColor().r = 1;
+							tileSheet.getColor().g = 1;
+							tileSheet.getColor().b = 1;
+						}
+						else
+						{
+							tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
+							tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
+							tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
+						}
+						tileSheet.getColor().a = a;
+							
 						tileSheet.render(tilePosScreen);
 					}
 					else
 					{
 						wallSheet.setFrameX(tile.tileId);
-						wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
-						wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
-						wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
+						if (tile == TileType.EndRoomWall)
+						{
+							wallSheet.getColor().r = 1;
+							wallSheet.getColor().g = 1;
+							wallSheet.getColor().b = 1;
+						}
+						else
+						{
+							wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
+							wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
+							wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
+						}
+						
 						if (!tile.alwaysShow)
 						{
 							float distX = (tilePosScreen.x - characterPosDecal.x) / 2,
 								  distY = tilePosScreen.y - characterPosDecal.y;
 							if (distY < 0)
 								distY *= distY;
-							wallSheet.getColor().a = ((distX * distX + distY * distY) - 100) / 10000;
+							wallSheet.getColor().a = Math.min(((distX * distX + distY * distY) - 100) / 10000, a);
 						}
 						else
-							wallSheet.getColor().a = 1.2f - blackness * blackness * blackness;
+							wallSheet.getColor().a = a;
 						tilePosScreen.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
 						wallSheet.render(tilePosScreen);
 					}

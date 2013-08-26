@@ -80,23 +80,23 @@ public class RoomTemplate {
 								"   ffffff   \n" +
 								"  ffffffff  \n" +
 								" ffffffffff \n" +
-								"fffffffffff+\n" +
-								"+ffffSffffff\n" +
-								"fffffffffff \n" +
+								" ffffffffff+\n" +
+								"+ffffSfffff \n" +
+								" ffffffffff \n" +
 								" fffffffff  \n" +
 								"  fffffff   \n" +
 								"   fffff    \n" +
-								"    f+f     \n");
+								"     +      \n");
 	}
 	
 	public static RoomTemplate getFinishingRoom()
 	{
-		return new RoomTemplate(" ee   ee \n" +
-								" eee+eee \n" +
+		return new RoomTemplate(" +     + \n" +
+								" ee   ee \n" +
 								"  eeeee  \n" +
-								"  +eee+  \n" +
 								"  eeeee  \n" +
-								" eee+eee \n" +
-								" ee   ee ");
+								"  eeeee  \n" +
+								" ee   ee \n" +
+								" +     + ");
 	}
 }
