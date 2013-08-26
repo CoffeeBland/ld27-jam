@@ -77,14 +77,12 @@ public class WinState extends BasicGameState
 			sbg.addState(new GameState());
 		loadingThread = null;
 		
-		try { Sounds.startMusic("res/audio/gameover.mid", true); } 
+		try { Sounds.startMusic("res/audio/gameover.mid", false); } 
 		catch (Exception e) { e.printStackTrace(); }
 	}
 	@Override
 	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException
 	{
-		try { Sounds.stopMusic(); } 
-		catch (Exception e) { e.printStackTrace(); }
 	}
 	
 	@Override

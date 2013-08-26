@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ld27jam.entities.Entity;
+import ld27jam.entities.Ghoul;
 import ld27jam.entities.Hourglass;
 import ld27jam.entities.Inventory;
 import ld27jam.entities.Item;
@@ -39,7 +40,7 @@ public class World
 	public Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
-	private Vector2f revealDecal = new Vector2f(0, 16);
+	public Vector2f revealDecal = new Vector2f(0, 16), endPoint = null, lastDeath = null;
 	
 	public float getShake()
 	{
@@ -116,14 +117,21 @@ public class World
 		int ysize = gd.level.getHeight();
 		Vector2f startingPoint = null;
 		grid = gd.level.dungeon.grid;
+		
+		// Set init
 		for	(int x = 0; x < xsize && startingPoint == null; x++)
-		{
 			for (int y = 0; y < ysize && startingPoint == null; y++) 
-			{
 				if (grid[x][y] == TileType.StartingPoint)
 					startingPoint = new Vector2f(x + 1, y + 1);
-			}
-		}
+		
+		// Set end
+		for	(int x = 0; x < xsize && endPoint == null; x++)
+			for (int y = 0; y < ysize && endPoint == null; y++) 
+				if (grid[x][y] == TileType.End)
+					endPoint = new Vector2f(x + 1, y + 1);
+		while (endPoint == null)
+			System.out.println("GENERATION FAILURE");
+		
 		gd.level.dungeon = null;
 		character = new Character(startingPoint);
 		add(character);
@@ -149,7 +157,7 @@ public class World
 			 projection++)
 		{
 			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1));
-				 x >= 0 && y < grid[x].length; 
+				 x >= 0  && y < grid[x].length; 
 				 y++, x--)
 			{
 				// Do not draw stuff outside the camera

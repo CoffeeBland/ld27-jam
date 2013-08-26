@@ -109,7 +109,7 @@ public class GameLevel
 										"  ffff ffff ");
 		
 		this.dungeon = new Dungeon();
-		this.dungeon.createDungeon(80, 80, templates);
+		this.dungeon.createDungeon(100, 100, templates);
 	}
 	
 	public int getHeight() 

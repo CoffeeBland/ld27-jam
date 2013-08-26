@@ -36,7 +36,7 @@ public class Sounds
 			sequence = sequences.get(pRef);
 		else
 		{
-			sequence = MidiSystem.getSequence(new File("res/audio/ambient.mid"));
+			sequence = MidiSystem.getSequence(new File(pRef));
 			sequences.put(pRef, sequence);
 		}
 	    
@@ -51,10 +51,12 @@ public class Sounds
 	    	sequencer.setLoopCount(0);
 	    
 	    // Start playing
+	    sequencer.setTickPosition(0);
 	    sequencer.start();
 	}
 	public static void stopMusic() throws Exception
 	{
 		sequencer.stop();
+	    sequencer.close();
 	}
 }

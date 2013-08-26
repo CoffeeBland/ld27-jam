@@ -41,8 +41,7 @@ public class LoadingState extends BasicGameState
 						  "to the next level!\n\nTowards the surface!";
 			else if (showingIntroStep == 2)
 				message = "But beware!\n\n"+
-						  "There will be traps, and locked door,\n"+
-						  "and even monsters!\n\n"+
+						  "There will be traps, and locked doors,\n\n"+
 						  "To move use             : W A S D\n"+
 						  "To paude the game press : ESC\n"+
 						  "To loot a chest         : Go near it\n"+

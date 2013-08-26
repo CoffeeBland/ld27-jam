@@ -30,7 +30,7 @@ public class Character extends Entity
 	public float maxSanity = 9.9999f;
 	public float sanity = maxSanity;
 	public int toNextHeartbeat;
-	public int invincibility;
+	public int invincibility, drain;
 	public ImageSheet stillSheet, walkingSheet;
 	
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
@@ -40,16 +40,28 @@ public class Character extends Entity
 		if (invincibility <= 0)
 		{
 			sanity -= hitSanity;
-			world.setShake(10, 15);
-			invincibility = 30;
-			move(knockback, world);
-			try
+			if (hitSanity > 0)
 			{
-				if (STATIC == null)
-					STATIC = Sounds.get("res/audio/Static.ogg");
-				STATIC.play(1, 0.75f);
+				world.setShake(10, 15);
+				invincibility = 30;
+				move(knockback, world);
+				try
+				{
+					if (STATIC == null)
+						STATIC = Sounds.get("res/audio/Static.ogg");
+					STATIC.play(1, 0.75f);
+				}
+				catch(SlickException ex){}
 			}
-			catch(SlickException ex){}
+		}
+	}
+	public void drainSanity(float hitSanity, World world)
+	{
+		sanity -= hitSanity;
+		if (hitSanity > 0)
+		{
+			drain = (int) (hitSanity * 1200);
+			world.setShake(hitSanity * 200, 5);
 		}
 	}
 	public void updateAnim(GameContainer gc)
@@ -98,7 +110,7 @@ public class Character extends Entity
 		}
 	}
 	
-	public void gameover(StateBasedGame sbg)
+	public void gameover(StateBasedGame sbg, World world)
 	{
 		HEARTBEAT.play(0.5f, 1f);
 		HEARTBEAT.play(0.75f, 1f);
@@ -108,6 +120,7 @@ public class Character extends Entity
 		HEARTBEAT.play(1.75f, 1f);
 		HEARTBEAT.play(2f, 1f);
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
+		world.lastDeath = getPosition();
 	}
 	public void nextLevel(StateBasedGame sbg)
 	{
@@ -122,17 +135,17 @@ public class Character extends Entity
 			toNextHeartbeat = (int)(sanity * 5) + 20;
 			if (HEARTBEAT == null)
 				HEARTBEAT = Sounds.get("res/audio/Heartbeat.ogg");
-			HEARTBEAT.play(-0.05f * sanity + 1.25f, 1f - sanity * 0.05f);
+			HEARTBEAT.play(-0.1f * sanity + 1.75f, 1f - sanity * 0.05f);
 		}
 	}
-	public void updateSanity(World world, StateBasedGame sbg)
+	public void updateSanity(World world, StateBasedGame sbg) throws SlickException
 	{
 		sanity = Math.max(0, Math.min(maxSanity, sanity));
 		sanity -= 1f / (world.gd.level.timeStageDurations[(int) Math.floor(9.9999f - sanity)] * 60f);
 		
 		// Gameover check
 		if (sanity <= 0.0001f)
-			gameover(sbg);
+			gameover(sbg, world);
 		else
 		{
 			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
@@ -141,11 +154,18 @@ public class Character extends Entity
 				invincibility--;
 				sanityRatio *= Math.random();
 			}
+			if (drain > 0)
+			{
+				sanityRatio *= 1 - Math.random() * (drain * drain) / 1500;
+				drain--;
+			}
 			lightMoment += 0.005f;
 			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
 			lightColor.r = sanityRatio * 0.4f + 0.6f;
-			lightColor.g = sanityRatio * 0.95f;
-			lightColor.b = sanityRatio * 0.4f + 0.35f;
+			
+			float dist = Math.max(0, 1 - world.endPoint.distance(getPosition()) / 50);
+			lightColor.g = sanityRatio * 0.95f + dist / 2;
+			lightColor.b = sanityRatio * 0.4f + 0.35f + dist;
 			lightBase = sanityRatio * 100 + 200;
 		}
 	}

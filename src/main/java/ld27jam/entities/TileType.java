@@ -20,6 +20,11 @@ public enum TileType
 	Floor5(4, true, true),
 	Floor6(5, true, true),
 	
+	TileFloor1(10, true, true),
+	TileFloor2(11, true, true),
+	TileFloor3(12, true, true),
+	TileFloor4(13, true, true),
+	
 	RockWall1(12, false, false, false),
 	RockWall2(13, false, false, false),
 	RockWall3(14, false, false, false),

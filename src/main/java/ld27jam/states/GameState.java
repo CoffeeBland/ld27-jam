@@ -2,6 +2,7 @@ package ld27jam.states;
 
 import ld27jam.GameDirector;
 import ld27jam.World;
+import ld27jam.entities.Ghoul;
 import ld27jam.entities.TileType;
 import ld27jam.input.InputController;
 
@@ -56,6 +57,16 @@ public class GameState extends BasicGameState {
 		world.character.init(world);
 		world.character.setPosition(startingPoint);
 		world.spatialMap.update(world.character);
+		
+		if (world.lastDeath != null)
+			try 
+			{
+				world.add(new Ghoul(world.lastDeath));
+			} 
+			catch (SlickException e)
+			{
+				e.printStackTrace();
+			}
 	}
 
 	@Override

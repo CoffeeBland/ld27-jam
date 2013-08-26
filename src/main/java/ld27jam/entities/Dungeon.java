@@ -193,23 +193,30 @@ public class Dungeon {
 		TileType.Floor5,
 		TileType.Floor6,
 	};
+	private static TileType[] tileFloors = new TileType[] 
+			{
+				TileType.TileFloor1,
+				TileType.TileFloor2,
+				TileType.TileFloor3,
+				TileType.TileFloor4,
+			};
 	public static TileType getFloorType()
 	{
-		if (Math.random() < 0.80)
-		{
-			return floors[getRand(0, 1)];
-		}
-		else if (Math.random() < 0.80)
-		{
-			return floors[getRand(2, 3)];
-		}
-		else
-			return floors[getRand(4, floors.length-1)];
+		return tileFloors[getRand(0, tileFloors.length-1)];
 	}
 	public static TileType getCorridorFloorType()
 	{
-		if (Math.random() < 0.95)
-			return getFloorType();
+		if (Math.random() < 0.97)
+			if (Math.random() < 0.80)
+			{
+				return floors[getRand(0, 1)];
+			}
+			else if (Math.random() < 0.80)
+			{
+				return floors[getRand(2, 3)];
+			}
+			else
+				return floors[getRand(4, floors.length-1)];
 		else
 			return TileType.SpikeTrap;
 	}
@@ -287,8 +294,8 @@ public class Dungeon {
 
 	public TileType[][] drawRoom(TileType[][] containerGrid, int xStart, int yStart, RoomTemplate tmpl)
 	{
-		for (int x = 0; x < tmpl.getWidth(); x++) {
-			for (int y = 0; y < tmpl.getHeight(); y++) {
+		for (int x = 0; x < tmpl.getWidth() && x + xStart < containerGrid.length; x++) {
+			for (int y = 0; y < tmpl.getHeight() && y + yStart < containerGrid[x].length; y++) {
 				containerGrid[xStart + x][yStart + y] = tmpl.getTileAtCell(x, y);
 			}
 		}
@@ -404,7 +411,7 @@ public class Dungeon {
 	    
  		// Place final room
  		int finalRoomSide = getRand(0, 3);
- 		int finalRoomOffset = getRand(0, 85);
+ 		int finalRoomOffset = getRand(0, 60);
 		RoomTemplate endRoom = RoomTemplate.getFinishingRoom();
  		
  		switch (finalRoomSide) {
