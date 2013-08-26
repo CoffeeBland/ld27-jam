@@ -1,8 +1,6 @@
 package ld27jam.entities;
 
 import ld27jam.World;
-import ld27jam.input.ControlEvent;
-import ld27jam.input.KeyMapping;
 import ld27jam.res.AnimatedSprite;
 import ld27jam.res.ImageSheet;
 import ld27jam.res.Sounds;
@@ -14,6 +12,7 @@ import ld27jam.states.WinState;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Vector2f;
@@ -53,16 +52,16 @@ public class Character extends Entity
 			catch(SlickException ex){}
 		}
 	}
-	public void updateAnim()
+	public void updateAnim(GameContainer gc)
 	{
 		isMovingDiagonally = true;
 		imageSheet = walkingSheet;
 		
 		// Up
-		if (KeyMapping.Up.isDown())
-			if (KeyMapping.Left.isDown())
+		if (gc.getInput().isKeyDown(Input.KEY_W) || gc.getInput().isKeyDown(Input.KEY_UP))
+			if (gc.getInput().isKeyDown(Input.KEY_A) || gc.getInput().isKeyDown(Input.KEY_LEFT))
 				imageSheet.setFrameY(animUpLeft);
-			else if (KeyMapping.Right.isDown())
+			else if (gc.getInput().isKeyDown(Input.KEY_D) || gc.getInput().isKeyDown(Input.KEY_RIGHT))
 				imageSheet.setFrameY(animUpRight);
 			else
 			{
@@ -70,10 +69,10 @@ public class Character extends Entity
 				isMovingDiagonally = false;
 			}
 		// Down
-		else if (KeyMapping.Down.isDown())
-			if (KeyMapping.Left.isDown())
+		else if (gc.getInput().isKeyDown(Input.KEY_S) || gc.getInput().isKeyDown(Input.KEY_DOWN))
+			if (gc.getInput().isKeyDown(Input.KEY_A) || gc.getInput().isKeyDown(Input.KEY_LEFT))
 				imageSheet.setFrameY(animDownLeft);
-			else if (KeyMapping.Right.isDown())
+			else if (gc.getInput().isKeyDown(Input.KEY_D) || gc.getInput().isKeyDown(Input.KEY_RIGHT))
 				imageSheet.setFrameY(animDownRight);
 			else
 			{
@@ -81,13 +80,13 @@ public class Character extends Entity
 				isMovingDiagonally = false;
 			}
 		// Left
-		else if (KeyMapping.Left.isDown())
+		else if (gc.getInput().isKeyDown(Input.KEY_A) || gc.getInput().isKeyDown(Input.KEY_LEFT))
 		{
 			imageSheet.setFrameY(animLeft);
 			isMovingDiagonally = false;
 		}
 		// Right
-		else if (KeyMapping.Right.isDown())
+		else if (gc.getInput().isKeyDown(Input.KEY_D) || gc.getInput().isKeyDown(Input.KEY_RIGHT))
 		{
 			imageSheet.setFrameY(animRight);
 			isMovingDiagonally = false;
@@ -109,7 +108,6 @@ public class Character extends Entity
 		HEARTBEAT.play(1.75f, 1f);
 		HEARTBEAT.play(2f, 1f);
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
-		disposeOfEvents();
 	}
 	public void nextLevel(StateBasedGame sbg)
 	{
@@ -151,7 +149,7 @@ public class Character extends Entity
 			lightBase = sanityRatio * 100 + 200;
 		}
 	}
-	public void checkForInteraction(World world, StateBasedGame sbg)
+	public void checkForInteraction(World world, StateBasedGame sbg, GameContainer gc)
 	{
 		for (Tile tile : world.getTilesInRegion(this))
 		{
@@ -175,22 +173,22 @@ public class Character extends Entity
 		}
 		
 		AABB front = new Region(getPosition().copy(), getSize());
-		if (KeyMapping.Left.isDown())
+		if (gc.getInput().isKeyDown(Input.KEY_A) || gc.getInput().isKeyDown(Input.KEY_LEFT))
 		{
 			front.getPosition().x -= getSize().x;
 			front.getPosition().y += getSize().y;
 		}
-		if (KeyMapping.Right.isDown())
+		if (gc.getInput().isKeyDown(Input.KEY_D) || gc.getInput().isKeyDown(Input.KEY_RIGHT))
 		{
 			front.getPosition().x += getSize().x;
 			front.getPosition().y -= getSize().y;
 		}
-		if (KeyMapping.Up.isDown())
+		if (gc.getInput().isKeyDown(Input.KEY_W) || gc.getInput().isKeyDown(Input.KEY_UP))
 		{
 			front.getPosition().x -= getSize().x;
 			front.getPosition().y -= getSize().y;
 		}
-		if (KeyMapping.Down.isDown())
+		if (gc.getInput().isKeyDown(Input.KEY_S) || gc.getInput().isKeyDown(Input.KEY_DOWN))
 		{
 			front.getPosition().x += getSize().x;
 			front.getPosition().y += getSize().y;
@@ -256,14 +254,50 @@ public class Character extends Entity
 			}
 		}
 	}
+	public void checkForInput(GameContainer gc, World world)
+	{
+		if (gc.getInput().isKeyDown(Input.KEY_A) || gc.getInput().isKeyDown(Input.KEY_LEFT))
+		{
+			if (isMovingDiagonally)
+				move(new Vector2f(-speed * 0.6f, speed * 0.6f), world);
+			else
+				move(new Vector2f(-speed, speed), world);
+			world.spatialMap.update(this);
+		}
+		if (gc.getInput().isKeyDown(Input.KEY_D) || gc.getInput().isKeyDown(Input.KEY_RIGHT))
+		{
+			if (isMovingDiagonally)
+				move(new Vector2f(speed * 0.6f, -speed * 0.6f), world);
+			else
+				move(new Vector2f(speed, -speed), world);
+			world.spatialMap.update(this);
+		}
+		if (gc.getInput().isKeyDown(Input.KEY_W) || gc.getInput().isKeyDown(Input.KEY_UP))
+		{
+			if (isMovingDiagonally)
+				move(new Vector2f(-speed * 0.6f, -speed * 0.6f), world);
+			else
+				move(new Vector2f(-speed, -speed), world);
+			world.spatialMap.update(this);
+		}
+		if (gc.getInput().isKeyDown(Input.KEY_S) || gc.getInput().isKeyDown(Input.KEY_DOWN))
+		{
+			if (isMovingDiagonally)
+				move(new Vector2f(speed * 0.6f, speed * 0.6f), world);
+			else
+				move(new Vector2f(speed, speed), world);
+			world.spatialMap.update(this);
+		}
+	}
 	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta, World world) throws SlickException
 	{
 		updateSanity(world, sbg);
 		heartbeat();
-		updateAnim();
-		checkForInteraction(world, sbg);
+		updateAnim(gc);
+		checkForInteraction(world, sbg, gc);
+		checkForInput(gc, world);
 		
 		super.update(gc, sbg, delta, world);
 	}
@@ -275,108 +309,8 @@ public class Character extends Entity
 			super.render(gc, sbg, g, camera, color);
 	}
 	
-	ControlEvent left, right, up, down;
-	
 	public void init (final World world)
-	{
-		final Character character = this;
-		left = new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				if (isMovingDiagonally)
-					move(new Vector2f(-speed * 0.6f, speed * 0.6f), world);
-				else
-					move(new Vector2f(-speed, speed), world);
-				world.spatialMap.update(character);
-			}
-		};
-		right = new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				if (isMovingDiagonally)
-					move(new Vector2f(speed * 0.6f, -speed * 0.6f), world);
-				else
-					move(new Vector2f(speed, -speed), world);
-				world.spatialMap.update(character);
-			}
-		};
-		up = new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				if (isMovingDiagonally)
-					move(new Vector2f(-speed * 0.6f, -speed * 0.6f), world);
-				else
-					move(new Vector2f(-speed, -speed), world);
-				world.spatialMap.update(character);
-			}
-		};
-		down = new ControlEvent()
-		{
-			@Override
-			public void keyDown() 
-			{
-			}
-			@Override
-			public void keyUp()
-			{
-			}
-			@Override
-			public void keyIsDown() 
-			{
-				if (isMovingDiagonally)
-					move(new Vector2f(speed * 0.6f, speed * 0.6f), world);
-				else
-					move(new Vector2f(speed, speed), world);
-				world.spatialMap.update(character);
-			}
-		};
-		KeyMapping.Left.subscribe(left);
-		KeyMapping.Right.subscribe(right);
-		KeyMapping.Up.subscribe(up);
-		KeyMapping.Down.subscribe(down);
-	}
-	
-	public void disposeOfEvents()
-	{
-		if (left != null)
-			KeyMapping.Left.unsubscribe(left);
-		if (right != null)
-			KeyMapping.Right.unsubscribe(right);
-		if (up != null)
-			KeyMapping.Up.unsubscribe(up);
-		if (down != null)
-			KeyMapping.Down.unsubscribe(down);
-	}
+	{}
 	
 	public Character(Vector2f position) throws SlickException
 	{

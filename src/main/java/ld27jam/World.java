@@ -205,8 +205,6 @@ public class World
 						{
 							float distX = (tilePosScreen.x - characterPosDecal.x) / 2,
 								  distY = tilePosScreen.y - characterPosDecal.y;
-							if (distY < 0)
-								distY *= distY;
 							wallSheet.getColor().a = Math.min(((distX * distX + distY * distY) - 100) / 10000, a);
 						}
 						else

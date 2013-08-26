@@ -195,16 +195,23 @@ public class Dungeon {
 	};
 	public static TileType getFloorType()
 	{
-		if (Math.random() < 0.75)
+		if (Math.random() < 0.80)
 		{
 			return floors[getRand(0, 1)];
 		}
-		else if (Math.random() < 0.75)
+		else if (Math.random() < 0.80)
 		{
 			return floors[getRand(2, 3)];
 		}
 		else
 			return floors[getRand(4, floors.length-1)];
+	}
+	public static TileType getCorridorFloorType()
+	{
+		if (Math.random() < 0.95)
+			return getFloorType();
+		else
+			return TileType.SpikeTrap;
 	}
 	
 	private void surroundEveryFloorWithWall()
@@ -472,10 +479,7 @@ public class Dungeon {
 	    for (int fx = 0; fx < this.grid.length; fx++) {
 			for (int fy = 0; fy < this.grid[fx].length; fy++) {
 				// Here we can randomize few traps
-				if (getTileType(fx, fy) == TileType.CorridorFloor && Math.random() < 0.04)
-					smallDungeon[fx+30][fy+30] = TileType.SpikeTrap;
-				else
-					smallDungeon[fx+30][fy+30] = getTileType(fx, fy);
+				smallDungeon[fx+30][fy+30] = getTileType(fx, fy);
 			}
 		}
 	    this.grid = smallDungeon;
@@ -520,9 +524,10 @@ public class Dungeon {
 							}
 						if (!gotChest)
 							if (smallDungeon[x2][y2] == TileType.Floor || 
-								smallDungeon[x2][y2] == TileType.CorridorFloor ||
 							    smallDungeon[x2][y2] == TileType.Door)
 								this.grid[x2*supersize+x3][y2*supersize+y3] = getFloorType();
+							else if (smallDungeon[x2][y2] == TileType.CorridorFloor)
+								this.grid[x2*supersize+x3][y2*supersize+y3] = getCorridorFloorType();
 							else
 								this.grid[x2*supersize+x3][y2*supersize+y3] = smallDungeon[x2][y2];
 					}

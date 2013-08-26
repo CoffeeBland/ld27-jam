@@ -59,12 +59,12 @@ public class MenuState extends BasicGameState {
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
 	{
 		String title = "10 seconds to insanity";
-		uFont.drawString((gc.getWidth()/2)-(uFont.getWidth(title)/2), 50, title);
+		uFont.drawString((gc.getWidth()/2)-(uFont.getWidth(title)/2), gc.getHeight() / 2 - 256, title);
 		String credits = "A game by Guillaume, Frederic and Myriam";
 		uFontSmall.drawString((gc.getWidth()/2)-(uFontSmall.getWidth(credits)/2), gc.getHeight()-28, credits);
 		
-		drawCentered(!playSelected ? uFontSmallGray : uFontSmall, 320, "Play", gc);
-		drawCentered(playSelected ? uFontSmallGray : uFontSmall, 380, "Exit", gc);
+		drawCentered(!playSelected ? uFontSmallGray : uFontSmall, gc.getHeight() / 2 - 18, "Play", gc);
+		drawCentered(playSelected ? uFontSmallGray : uFontSmall, gc.getHeight() / 2 + 18, "Exit", gc);
 	}
 	
 	public static void drawCentered(UnicodeFont font, int y, String text, GameContainer gc) 

@@ -46,7 +46,8 @@ public class LoadingState extends BasicGameState
 						  "To move use             : W A S D\n"+
 						  "To paude the game press : ESC\n"+
 						  "To loot a chest         : Go near it\n"+
-						  "To unlock a door        : Hit it!\n";
+						  "To unlock a door        : Hit it!\n" +
+						  "To toggle fullscreen    : Left alt + enter";
 			
 			MenuState.uFontSmall.drawString(100, 100, message);
 			drawCentered(MenuState.uFontSmall, gc.getHeight()-28, "Press enter to continue ...", gc);

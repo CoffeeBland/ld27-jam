@@ -35,6 +35,8 @@ public class GameOverState extends BasicGameState {
 	{
 		if (key == Input.KEY_ESCAPE)
 			exitGame();
+		if (key == Input.KEY_ENTER)
+			retry();
 	}
 
 	@Override
@@ -43,7 +45,7 @@ public class GameOverState extends BasicGameState {
 		// Game over
 		uFont.drawString(gc.getWidth()/2-(uFont.getWidth("GAME OVER")/2), gc.getHeight()/2-25, "GAME OVER");
 		// Info
-		String text = "Press escape to try again...";
+		String text = "Press enter to try again, escape to exit...";
 		uFontSmall.drawString(gc.getWidth()/2-(uFontSmall.getWidth(text)/2), gc.getHeight()/2+125, text);
 	}
 
@@ -63,12 +65,20 @@ public class GameOverState extends BasicGameState {
 		Sounds.get("res/audio/StaticOver.ogg").stop();
 	}
 
-	public void exitGame()
+	public void retry()
 	{
 		if (System.currentTimeMillis() - this.started > 2000)
 		{
 			((GameState)sbg.getState(GameState.ID)).reinit();
 			sbg.enterState(GameState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
+		}
+	}
+	public void exitGame()
+	{
+		if (System.currentTimeMillis() - this.started > 2000)
+		{
+			((GameState)sbg.getState(GameState.ID)).reinit();
+			sbg.enterState(MenuState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
 		}
 	}
 

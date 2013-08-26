@@ -9,7 +9,7 @@ public class GameLevel
 	public int difficulty;
 	public int timeStage;
 	public int timeLeftToStage;
-	public int[] timeStageDurations = {1, 2, 4, 6, 8, 11, 14, 17, 20, 30};
+	public int[] timeStageDurations = {1, 3, 5, 7, 10, 14, 19, 25, 30, 45};
 	public Dungeon dungeon;
 	
 	public GameLevel(int level)
@@ -49,14 +49,14 @@ public class GameLevel
 										"     +     ");
 				
 		templates[4] = new RoomTemplate(" +           + \n" +
-										" ff         ff \n" +
-										"+fff       fff+\n" +
-										" fffff   fffff \n" +
+										" f           f \n" +
+										"+fffffffffffff+\n" +
+										"  ffff   fffff \n" +
 										"   fffffffff   \n" +
 										"   ffffffff   \n" +
 										"   fffffffff   \n" +
 										" fffff   fffff \n" +
-										"+fff       fff+\n" +
+										"+fffffffffffff+\n" +
 										" ff         ff \n" +
 										" +           + ");
 		templates[5] = new RoomTemplate("   +   \n" +
@@ -109,7 +109,7 @@ public class GameLevel
 										"  ffff ffff ");
 		
 		this.dungeon = new Dungeon();
-		this.dungeon.createDungeon(100, 100, templates);
+		this.dungeon.createDungeon(80, 80, templates);
 	}
 	
 	public int getHeight() 
