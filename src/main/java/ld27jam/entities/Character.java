@@ -9,6 +9,7 @@ import ld27jam.res.Sounds;
 import ld27jam.spatialData.AABB;
 import ld27jam.spatialData.Region;
 import ld27jam.states.GameOverState;
+import ld27jam.states.WinState;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -110,9 +111,9 @@ public class Character extends Entity
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
 		disposeOfEvents();
 	}
-	public void nextLevel(World world)
+	public void nextLevel(StateBasedGame sbg)
 	{
-		
+		sbg.enterState(WinState.ID, new FadeOutTransition(Color.white, 500), new FadeInTransition(Color.white, 500));
 	}
 	public void heartbeat() throws SlickException
 	{
@@ -150,7 +151,7 @@ public class Character extends Entity
 			lightBase = sanityRatio * 100 + 200;
 		}
 	}
-	public void checkForInteraction(World world)
+	public void checkForInteraction(World world, StateBasedGame sbg)
 	{
 		for (Tile tile : world.getTilesInRegion(this))
 		{
@@ -164,9 +165,9 @@ public class Character extends Entity
 					hitSanity(0.5f, world, new Vector2f());
 					break;
 				case End:
-					sanity = Math.min(maxSanity, sanity + 0.25f);
+					sanity = Math.min(maxSanity, sanity + 0.05f);
 					if (sanity >= maxSanity)
-						nextLevel(world);
+						nextLevel(sbg);
 					break;
 				default:
 					break;
@@ -175,13 +176,25 @@ public class Character extends Entity
 		
 		AABB front = new Region(getPosition().copy(), getSize());
 		if (KeyMapping.Left.isDown())
+		{
 			front.getPosition().x -= getSize().x;
-		if (KeyMapping.Right.isDown())
-			front.getPosition().x += getSize().x;
-		if (KeyMapping.Up.isDown())
-			front.getPosition().y -= getSize().y;
-		if (KeyMapping.Down.isDown())
 			front.getPosition().y += getSize().y;
+		}
+		if (KeyMapping.Right.isDown())
+		{
+			front.getPosition().x += getSize().x;
+			front.getPosition().y -= getSize().y;
+		}
+		if (KeyMapping.Up.isDown())
+		{
+			front.getPosition().x -= getSize().x;
+			front.getPosition().y -= getSize().y;
+		}
+		if (KeyMapping.Down.isDown())
+		{
+			front.getPosition().x += getSize().x;
+			front.getPosition().y += getSize().y;
+		}
 		for (Tile tile : world.getTilesInRegion(front))
 		{
 			Item key;
@@ -221,6 +234,7 @@ public class Character extends Entity
 					{
 						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorWE, TileType.OpenedDoorWE);
 						world.inventory.items.remove(key);
+						return;
 					}
 					break;
 				case LockedDoorNS:
@@ -229,12 +243,12 @@ public class Character extends Entity
 						if (item.type == ItemType.Key)
 						{
 							key = item;
-							break;
 						}
 					if (key != null)
 					{
 						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorNS, TileType.OpenedDoorNS);
 						world.inventory.items.remove(key);
+						return;
 					}
 					break;
 				default:
@@ -249,7 +263,7 @@ public class Character extends Entity
 		updateSanity(world, sbg);
 		heartbeat();
 		updateAnim();
-		checkForInteraction(world);
+		checkForInteraction(world, sbg);
 		
 		super.update(gc, sbg, delta, world);
 	}

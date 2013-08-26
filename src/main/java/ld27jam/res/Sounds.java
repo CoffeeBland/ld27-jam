@@ -53,4 +53,8 @@ public class Sounds
 	    // Start playing
 	    sequencer.start();
 	}
+	public static void stopMusic() throws Exception
+	{
+		sequencer.stop();
+	}
 }

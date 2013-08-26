@@ -50,12 +50,12 @@ public class GameOverState extends BasicGameState {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
-		Sounds.get("res/audio/StaticOver.ogg").loop(1, 0.75f);
 	}
 	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException
 	{
+		Sounds.get("res/audio/StaticOver.ogg").loop(1, 0.75f);
 	}
 	@Override
 	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException

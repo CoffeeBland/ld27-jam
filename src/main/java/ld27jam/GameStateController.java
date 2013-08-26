@@ -22,7 +22,7 @@ public class GameStateController extends StateBasedGame {
     	addState(new MenuState());
     	addState(new LoadingState());
     	addState(new GameOverState());
-    	addState(new GameWinState());
+    	addState(new WinState());
         enterState(LogoState.ID);
         
 		try 

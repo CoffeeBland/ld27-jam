@@ -505,7 +505,7 @@ public class Dungeon {
 						// Here we can randomize few chests
 						boolean gotChest = false;
 						if (smallDungeon[x2][y2] == TileType.Floor)
-							if(Math.random() < 0.00075)
+							if(Math.random() < 0.001)
 							{
 								double rnd = Math.random();
 								if (rnd < 0.75)
