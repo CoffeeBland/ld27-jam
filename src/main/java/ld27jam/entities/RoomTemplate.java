@@ -43,6 +43,8 @@ public class RoomTemplate {
 				return TileType.Floor;
 			case 'e':
 				return TileType.EndRoomFloor;
+			case 'E':
+				return TileType.End;
 			case '+':
 				return TileType.Door;
 			case 'S':
@@ -91,12 +93,14 @@ public class RoomTemplate {
 	
 	public static RoomTemplate getFinishingRoom()
 	{
-		return new RoomTemplate(" +     + \n" +
+		return new RoomTemplate("         \n" +
+								" +     + \n" +
 								" ee   ee \n" +
 								"  eeeee  \n" +
-								"  eeeee  \n" +
+								"  eeEee  \n" +
 								"  eeeee  \n" +
 								" ee   ee \n" +
-								" +     + ");
+								" +     + \n" +
+								"         ");
 	}
 }

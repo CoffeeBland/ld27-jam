@@ -33,9 +33,9 @@ public class World
 	
 	private Set<Entity> entities = new HashSet<Entity>();
 	public SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
-	private TileType[][] grid;
+	public TileType[][] grid;
 	private ImageSheet tileSheet, wallSheet;
-	private Character character;
+	public Character character;
 	public Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
@@ -188,7 +188,7 @@ public class World
 					else
 					{
 						wallSheet.setFrameX(tile.tileId);
-						if (tile == TileType.EndRoomWall)
+						if (tile == TileType.EndRoomWall || tile == TileType.End)
 						{
 							wallSheet.getColor().r = 1;
 							wallSheet.getColor().g = 1;

@@ -101,10 +101,10 @@ public class Dungeon {
  
 	public Vector2f wheresEmptyFrom(int x, int y) 
 	{
-		if(this.northFrom(x,y) == TileType.None && this.southFrom(x,y) == TileType.Floor) return new Vector2f(x,   y-1);
-		if(this.southFrom(x,y) == TileType.None && this.northFrom(x,y) == TileType.Floor) return new Vector2f(x,   y+1);
-		if(this.westFrom(x,y)  == TileType.None && this.eastFrom(x,y) == TileType.Floor) return new Vector2f(x-1, y  );
-		if(this.eastFrom(x,y)  == TileType.None && this.westFrom(x,y) == TileType.Floor) return new Vector2f(x+1, y  );
+		if(this.northFrom(x,y) == TileType.None && this.southFrom(x,y).isFloor && this.southFrom(x, y).canWalkOn) return new Vector2f(x,   y-1);
+		if(this.southFrom(x,y) == TileType.None && this.northFrom(x,y).isFloor && this.northFrom(x, y).canWalkOn) return new Vector2f(x,   y+1);
+		if(this.westFrom(x,y)  == TileType.None && this.eastFrom(x,y).isFloor && this.eastFrom(x, y).canWalkOn) return new Vector2f(x-1, y  );
+		if(this.eastFrom(x,y)  == TileType.None && this.westFrom(x,y).isFloor && this.westFrom(x, y).canWalkOn) return new Vector2f(x+1, y  );
 		return null;
 	}
 	
@@ -170,7 +170,7 @@ public class Dungeon {
 	};
 	public static TileType getWallType()
 	{
-		if (Math.random() < 0.75 || true)
+		if (Math.random() < 0.9)
 			return rockWalls[getRand(0, rockWalls.length - 1)];
 		else
 			return mossWalls[getRand(0, mossWalls.length - 1)];
@@ -199,10 +199,12 @@ public class Dungeon {
 		{
 			return floors[getRand(0, 1)];
 		}
-		else
+		else if (Math.random() < 0.75)
 		{
-			return floors[getRand(2, floors.length-1)];
+			return floors[getRand(2, 3)];
 		}
+		else
+			return floors[getRand(4, floors.length-1)];
 	}
 	
 	private void surroundEveryFloorWithWall()
@@ -396,22 +398,27 @@ public class Dungeon {
  		// Place final room
  		int finalRoomSide = getRand(0, 3);
  		int finalRoomOffset = getRand(0, 85);
-		
+		RoomTemplate endRoom = RoomTemplate.getFinishingRoom();
+ 		
  		switch (finalRoomSide) {
 			case 0://north
-				drawRoom(this.grid, finalRoomOffset, 15, RoomTemplate.getFinishingRoom());
+				endRoom.setExitsOffset(new Vector2f(finalRoomOffset, 15));
+				drawRoom(this.grid, finalRoomOffset, 15, endRoom);
 				break;
 			case 1:// east
-				drawRoom(this.grid, this.xsize/3-16, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				endRoom.setExitsOffset(new Vector2f(this.xsize/3-16, finalRoomOffset));
+				drawRoom(this.grid, this.xsize/3-16, finalRoomOffset, endRoom);
 				break;
 			case 2:// south
-				drawRoom(this.grid, finalRoomOffset, this.ysize/3-16, RoomTemplate.getFinishingRoom());
+				endRoom.setExitsOffset(new Vector2f(finalRoomOffset, this.ysize/3-16));
+				drawRoom(this.grid, finalRoomOffset, this.ysize/3-16, endRoom);
 				break;
 			case 3:// west
-				drawRoom(this.grid, 15, finalRoomOffset, RoomTemplate.getFinishingRoom());
+				endRoom.setExitsOffset(new Vector2f(15, finalRoomOffset));
+				drawRoom(this.grid, 15, finalRoomOffset, endRoom);
 				break;
  		}
-	    
+ 		
 	    // Connections
 	    ArrayList<Vector2f[]> usable_room_exit_pairs = new ArrayList<Vector2f[]>();
 	    ArrayList<Vector2f> used_exits = new ArrayList<Vector2f>();
@@ -421,6 +428,11 @@ public class Dungeon {
 		}
 	 
 	    Collections.shuffle(usable_room_exit_pairs, new Random(oldseed));
+	     
+	    for (Vector2f exit : endRoom.exits()) {
+	    	Vector2f wef = wheresEmptyFrom((int)exit.x, (int)exit.y);
+			if (wef != null) usable_room_exit_pairs.add(new Vector2f[] {exit, wef});
+		}
 	    
 	    for (Vector2f[] exit : usable_room_exit_pairs) 
 	    {
@@ -493,9 +505,17 @@ public class Dungeon {
 						// Here we can randomize few chests
 						boolean gotChest = false;
 						if (smallDungeon[x2][y2] == TileType.Floor)
-							if(Math.random() < 0.0005)
+							if(Math.random() < 0.00075)
 							{
-								this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedSouth;
+								double rnd = Math.random();
+								if (rnd < 0.75)
+									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedSouth;
+								else if (rnd < 0.5)
+									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedNorth;
+								else if (rnd < 0.25)
+									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedEast;
+								else
+									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedWest;
 								gotChest = true;
 							}
 						if (!gotChest)

@@ -43,28 +43,19 @@ public class GameOverState extends BasicGameState {
 		// Game over
 		uFont.drawString(gc.getWidth()/2-(uFont.getWidth("GAME OVER")/2), gc.getHeight()/2-25, "GAME OVER");
 		// Info
-		uFontSmall.drawString(gc.getWidth()/2-(uFontSmall.getWidth("Press escape...")/2), gc.getHeight()/2+125, "Press escape to continue...");
+		String text = "Press escape to try again...";
+		uFontSmall.drawString(gc.getWidth()/2-(uFontSmall.getWidth(text)/2), gc.getHeight()/2+125, text);
 	}
 
-	float pitch = 0.5f, volume = 0.4f;
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
-		if (!Sounds.get("res/audio/StaticOver.ogg").playing())
-		{
-			Sounds.get("res/audio/StaticOver.ogg").play(pitch, volume);
-			if (pitch < 0.5f)
-				pitch += 0.1f;
-			if (volume < 1)
-				volume += 0.2f;
-		}
+		Sounds.get("res/audio/StaticOver.ogg").loop(1, 0.75f);
 	}
 	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException
 	{
-		pitch = 0.5f;
-		volume = 0.1f;
 	}
 	@Override
 	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException
@@ -75,7 +66,10 @@ public class GameOverState extends BasicGameState {
 	public void exitGame()
 	{
 		if (System.currentTimeMillis() - this.started > 2000)
-			sbg.enterState(MenuState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
+		{
+			((GameState)sbg.getState(GameState.ID)).reinit();
+			sbg.enterState(GameState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
+		}
 	}
 
 	@Override

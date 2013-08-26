@@ -110,6 +110,10 @@ public class Character extends Entity
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.black, 500), new FadeInTransition(Color.black, 800));
 		disposeOfEvents();
 	}
+	public void nextLevel(World world)
+	{
+		
+	}
 	public void heartbeat() throws SlickException
 	{
 		if (toNextHeartbeat > 0)
@@ -158,6 +162,11 @@ public class Character extends Entity
 					break;
 				case SpikeTrapOpened:
 					hitSanity(0.5f, world, new Vector2f());
+					break;
+				case End:
+					sanity = Math.min(maxSanity, sanity + 0.25f);
+					if (sanity >= maxSanity)
+						nextLevel(world);
 					break;
 				default:
 					break;

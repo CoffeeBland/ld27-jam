@@ -8,6 +8,7 @@ public enum TileType
 	CorridorFloor(0, true, true),
 	Floor(0, true, true),
 	EndRoomFloor(7, true, true),
+	End(29, true, false),
 	
 	CorridorWall(8, false, false, false),
 	EndRoomWall(24, false, false, false),

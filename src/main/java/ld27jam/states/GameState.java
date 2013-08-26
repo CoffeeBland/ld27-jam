@@ -2,6 +2,7 @@ package ld27jam.states;
 
 import ld27jam.GameDirector;
 import ld27jam.World;
+import ld27jam.entities.TileType;
 import ld27jam.input.InputController;
 
 import org.newdawn.slick.Color;
@@ -9,6 +10,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
@@ -36,6 +38,24 @@ public class GameState extends BasicGameState {
 			InputController.init(gc); 
 		else
 			isReinit = true;
+	}
+	public void reinit()
+	{
+		world.character.sanity = world.character.maxSanity;
+		world.character.invincibility = 0;
+		world.setShake(10, 60);
+		Vector2f startingPoint = null;
+		for	(int x = 0; x < world.grid.length && startingPoint == null; x++)
+		{
+			for (int y = 0; y < world.grid[0].length && startingPoint == null; y++) 
+			{
+				if (world.grid[x][y] == TileType.StartingPoint)
+					startingPoint = new Vector2f(x + 1, y + 1);
+			}
+		}
+		world.character.init(world);
+		world.character.setPosition(startingPoint);
+		world.spatialMap.update(world.character);
 	}
 
 	@Override
