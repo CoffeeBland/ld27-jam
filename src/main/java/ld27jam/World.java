@@ -74,8 +74,8 @@ public class World
 		    maxX = (int) Math.ceil(region.getRightX()),
 		    minY = (int) Math.floor(region.getPosition().y),
 		    maxY = (int) Math.ceil(region.getBottomY());
-		for (int x = minX; x < maxX; x++)
-			for (int y = minY; y < maxY; y++)
+		for (int x = minX; x < maxX && x > 0 && x < grid.length; x++)
+			for (int y = minY; y < maxY && y > 0 && y < grid[x].length; y++)
 				tiles.add(new Tile(grid[x][y], x, y));
 		return tiles;
 	}
