@@ -98,15 +98,18 @@ public class GameLevel
 										"    fffff   \n" +
 										"     fff    \n" +
 										"      +     ");
-		templates[8] = new RoomTemplate("      +      \n" +
-										"     fff    \n" +
-										"     fff    \n" +
-										"     fff    \n" +
-										"     fff    \n" +
-										"     fff    \n" +
-										"  fffffffff \n" +
-										" fffffffffff\n" +
-										"  ffff ffff ");
+		templates[8] = new RoomTemplate("     +     \n" +
+										"    fff    \n" +
+										"   fffff   \n" +
+										"    fff    \n" +
+										"    fff    \n" +
+										"    fff    \n" +
+										"    fff    \n" +
+										"  fffffff  \n" +
+										" fffffffff \n" +
+										" ffff ffff \n" +
+										"  fff fff  \n" +
+										"   +   +   ");
 		
 		this.dungeon = new Dungeon();
 		this.dungeon.createDungeon(100, 100, templates);

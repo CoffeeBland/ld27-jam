@@ -1,5 +1,9 @@
 package ld27jam.entities;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 import org.newdawn.slick.geom.Vector2f;
@@ -82,50 +86,78 @@ public class Dungeon {
 	
 	public void showDungeon() 
 	{
+		StringBuilder dungeon = new StringBuilder();
 		for (int y = 0; y < ysize-1; y++)
 		{
 			for (int x = 0; x < xsize-1; x++)
 			{
 				if (this.grid[x][y] == TileType.SpikeTrap)
-					System.out.print("x");
+					dungeon.append("x");
+				else if (this.grid[x][y] == TileType.EndRoomWall)
+					dungeon.append("e");
+				else if (this.grid[x][y] == TileType.End)
+					dungeon.append("E");
+				else if (this.grid[x][y].name().startsWith("Chest"))
+					dungeon.append("c");
+				else if (this.grid[x][y].name().startsWith("Door"))
+					dungeon.append("d");
+				else if (this.grid[x][y].name().startsWith("Locked"))
+					dungeon.append("l");
 				else if (!this.grid[x][y].canWalkOn && this.grid[x][y].isWall)
-					System.out.print("O");
+					dungeon.append("#");
 				else if (this.grid[x][y].canWalkOn)
-					System.out.print(".");
+					dungeon.append(".");
 				else
-					System.out.print(" ");
+				{
+					if (this.grid[x][y] != TileType.None)
+					System.out.println(this.grid[x][y].isWall);
+					dungeon.append(" ");
+				}
 			}
-			System.out.println();
+			dungeon.append("\n");
 		}
+		
+		try 
+		{
+          File file = new File("Map");
+          BufferedWriter output = new BufferedWriter(new FileWriter(file));
+          output.write(dungeon.toString());
+          output.close();
+	        
+		} 
+		catch ( IOException e ) 
+		{
+	           e.printStackTrace();
+	    }
 	}
  
 	public Vector2f wheresEmptyFrom(int x, int y) 
 	{
-		if(this.northFrom(x,y) == TileType.None && this.southFrom(x,y).isFloor && this.southFrom(x, y).canWalkOn) return new Vector2f(x,   y-1);
-		if(this.southFrom(x,y) == TileType.None && this.northFrom(x,y).isFloor && this.northFrom(x, y).canWalkOn) return new Vector2f(x,   y+1);
-		if(this.westFrom(x,y)  == TileType.None && this.eastFrom(x,y).isFloor && this.eastFrom(x, y).canWalkOn) return new Vector2f(x-1, y  );
-		if(this.eastFrom(x,y)  == TileType.None && this.westFrom(x,y).isFloor && this.westFrom(x, y).canWalkOn) return new Vector2f(x+1, y  );
+		if(this.northFrom(x,y) == TileType.None && this.southFrom(x, y) != null && this.southFrom(x,y).isFloor && this.southFrom(x, y).canWalkOn) return new Vector2f(x,   y-1);
+		if(this.southFrom(x,y) == TileType.None && this.northFrom(x, y) != null  && this.northFrom(x,y).isFloor && this.northFrom(x, y).canWalkOn) return new Vector2f(x,   y+1);
+		if(this.westFrom(x,y)  == TileType.None && this.eastFrom(x, y) != null  && this.eastFrom(x,y).isFloor && this.eastFrom(x, y).canWalkOn) return new Vector2f(x-1, y  );
+		if(this.eastFrom(x,y)  == TileType.None && this.westFrom(x, y) != null  && this.westFrom(x,y).isFloor && this.westFrom(x, y).canWalkOn) return new Vector2f(x+1, y  );
 		return null;
 	}
 	
 	private TileType eastFrom(int x, int y) 
 	{
-		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+		return (x + 1 > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.grid[x+1][y] : null);
 	}
 	private TileType westFrom(int x, int y) 
 	{
-		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+		return (x - 1 > 0 && y > 0 && x < this.xsize && y < this.ysize
 				? this.grid[x-1][y] : null);
 	}
 	private TileType northFrom(int x, int y) 
 	{
-		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+		return (x > 0 && y - 1 > 0 && x < this.xsize && y < this.ysize
 				? this.grid[x][y-1] : null);
 	}
 	private TileType southFrom(int x, int y) 
 	{
-		return (x > 0 && y > 0 && x < this.xsize && y < this.ysize
+		return (x > 0 && y > 0 && x < this.xsize && y + 1 < this.ysize
 				? this.grid[x][y+1] : null);
 	}
 	
@@ -252,7 +284,6 @@ public class Dungeon {
 		          if(northwestFrom(x,y) == TileType.None) grid[x-1][y-1]   = tt;
 		          if(southwestFrom(x,y) == TileType.None) grid[x-1][y+1]   = tt;
 		        }
-				// TODO else if door put wall
 			}
 		}
 	}
@@ -283,9 +314,9 @@ public class Dungeon {
 
 	    while( x != x2 || y != y2) {
 	      this.grid[x][y] = TileType.CorridorFloor;
-	      if(x != x2) {
+	      if(x != x2 && Math.random() < 0.3) {
 	        x += h_mod;
-	      } else if(y != y2) {
+	      } else if(y != y2 && Math.random() < 0.3) {
 	        y += v_mod;
 	      }
 	    }
@@ -306,7 +337,7 @@ public class Dungeon {
 	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
 		this.ysize = iny;
-		this.grid = new TileType[inx+1][iny+1];
+		this.grid = new TileType[inx][iny];
 		
 		int spacing = 3;
 		int tallest_height = 0; 
@@ -389,7 +420,7 @@ public class Dungeon {
 				{
 					for (int y_in_room = 0; y_in_room < row_room.getHeight(); y_in_room++) 
 					{
-						this.grid[Math.min(x + x_in_room, this.xsize)][Math.min(y + y_in_room + extra_y_offset, this.ysize)] = row_room.getTileAtCell(x_in_room, y_in_room);
+						this.grid[Math.min(x + x_in_room, this.xsize - 1)][Math.min(y + y_in_room + extra_y_offset, this.ysize - 1)] = row_room.getTileAtCell(x_in_room, y_in_room);
 					}
 				}
 				
@@ -410,26 +441,29 @@ public class Dungeon {
 	    }// end loop rows
 	    
  		// Place final room
- 		int finalRoomSide = getRand(0, 3);
- 		int finalRoomOffset = getRand(0, 60);
+ 		Vector2f endRoomPosition;
 		RoomTemplate endRoom = RoomTemplate.getFinishingRoom();
  		
- 		switch (finalRoomSide) {
+ 		switch (getRand(0, 3)) {
 			case 0://north
-				endRoom.setExitsOffset(new Vector2f(finalRoomOffset, 15));
-				drawRoom(this.grid, finalRoomOffset, 15, endRoom);
+				endRoomPosition = new Vector2f(3, 3);
+				endRoom.setExitsOffset(endRoomPosition);
+				drawRoom(this.grid, (int)endRoomPosition.x, (int)endRoomPosition.y, endRoom);
 				break;
 			case 1:// east
-				endRoom.setExitsOffset(new Vector2f(this.xsize/3-16, finalRoomOffset));
-				drawRoom(this.grid, this.xsize/3-16, finalRoomOffset, endRoom);
+				endRoomPosition = new Vector2f(this.grid.length - endRoom.getWidth() - 3, 0);
+				endRoom.setExitsOffset(endRoomPosition);
+				drawRoom(this.grid, (int)endRoomPosition.x, (int)endRoomPosition.y, endRoom);
 				break;
 			case 2:// south
-				endRoom.setExitsOffset(new Vector2f(finalRoomOffset, this.ysize/3-16));
-				drawRoom(this.grid, finalRoomOffset, this.ysize/3-16, endRoom);
+				endRoomPosition = new Vector2f(0, this.grid[0].length - endRoom.getHeight() - 3);
+				endRoom.setExitsOffset(endRoomPosition);
+				drawRoom(this.grid, (int)endRoomPosition.x, (int)endRoomPosition.y, endRoom);
 				break;
 			case 3:// west
-				endRoom.setExitsOffset(new Vector2f(15, finalRoomOffset));
-				drawRoom(this.grid, 15, finalRoomOffset, endRoom);
+				endRoomPosition = new Vector2f(this.grid.length - endRoom.getWidth() - 3, this.grid[0].length - endRoom.getHeight() - 3);
+				endRoom.setExitsOffset(endRoomPosition);
+				drawRoom(this.grid, (int)endRoomPosition.x, (int)endRoomPosition.y, endRoom);
 				break;
  		}
  		
@@ -471,8 +505,8 @@ public class Dungeon {
 			}
 		}
 
- 		int supersize = 3;
-	    TileType[][] smallDungeon = new TileType[this.xsize+30*2][this.ysize+30*2];
+ 		int supersize = 3, decal = 1;
+	    TileType[][] smallDungeon = new TileType[this.xsize][this.ysize];
 	    // fill new dungeon
 	    for (int fx = 0; fx < smallDungeon.length; fx++) 
  		{
@@ -486,14 +520,15 @@ public class Dungeon {
 	    for (int fx = 0; fx < this.grid.length; fx++) {
 			for (int fy = 0; fy < this.grid[fx].length; fy++) {
 				// Here we can randomize few traps
-				smallDungeon[fx+30][fy+30] = getTileType(fx, fy);
+				smallDungeon[fx][fy] = getTileType(fx, fy);
 			}
 		}
-	    this.grid = smallDungeon;
+
 	    // x3 room + space for final room
-	    this.xsize = this.xsize*supersize + 60 * supersize;
-	    this.ysize = this.ysize*supersize + 60 * supersize;
-	    this.grid = new TileType[this.xsize][this.ysize];
+	    this.xsize = this.xsize*supersize + decal * 4;
+	    this.ysize = this.ysize*supersize + decal * 4;
+	    
+	    this.grid = new TileType[this.xsize + decal * 4][this.ysize + decal * 4];
 	    // fill dungeon with white space
  		for (int fx = 0; fx < this.grid.length; fx++) 
  		{
@@ -516,36 +551,36 @@ public class Dungeon {
 						// Here we can randomize few chests
 						boolean gotChest = false;
 						if (smallDungeon[x2][y2] == TileType.Floor)
-							if(Math.random() < 0.001)
+							if(Math.random() < 0.002)
 							{
 								double rnd = Math.random();
 								if (rnd < 0.75)
-									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedSouth;
+									this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = TileType.ChestClosedSouth;
 								else if (rnd < 0.5)
-									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedNorth;
+									this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = TileType.ChestClosedNorth;
 								else if (rnd < 0.25)
-									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedEast;
+									this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = TileType.ChestClosedEast;
 								else
-									this.grid[x2*supersize+x3][y2*supersize+y3] = TileType.ChestClosedWest;
+									this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = TileType.ChestClosedWest;
 								gotChest = true;
 							}
 						if (!gotChest)
 							if (smallDungeon[x2][y2] == TileType.Floor || 
 							    smallDungeon[x2][y2] == TileType.Door)
-								this.grid[x2*supersize+x3][y2*supersize+y3] = getFloorType();
+								this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = getFloorType();
 							else if (smallDungeon[x2][y2] == TileType.CorridorFloor)
-								this.grid[x2*supersize+x3][y2*supersize+y3] = getCorridorFloorType();
+								this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = getCorridorFloorType();
 							else
-								this.grid[x2*supersize+x3][y2*supersize+y3] = smallDungeon[x2][y2];
+								this.grid[x2*supersize+x3 + decal][y2*supersize+y3 + decal] = smallDungeon[x2][y2];
 					}
 				}
 				// Apply doors
 				if (smallDungeon[x2][y2] == TileType.Door)
 				{
-					boolean west = smallDungeon[x2 - 1][y2] != TileType.None,
-							east = smallDungeon[x2 + 1][y2] != TileType.None,
-							south = smallDungeon[x2][y2 - 1] != TileType.None,
-							north = smallDungeon[x2][y2 + 1] != TileType.None;
+					boolean west = x2 - 1 > 0 && smallDungeon[x2 - 1][y2] != TileType.None,
+							east = x2 + 1 < smallDungeon.length && smallDungeon[x2 + 1][y2] != TileType.None,
+							south = y2 - 1 > 0 && smallDungeon[x2][y2 - 1] != TileType.None,
+							north = y2 + 1 < smallDungeon[x2].length && smallDungeon[x2][y2 + 1] != TileType.None;
 					
 					TileType type;
 					if (Math.random() < 0.5)
@@ -555,22 +590,21 @@ public class Dungeon {
 					if (west && east && !south && !north)
 					{
 						type = TileType.valueOf(type.name() + "WE");
-						this.grid[x2*supersize+1][y2*supersize+0] = type;
-						this.grid[x2*supersize+1][y2*supersize+1] = type;
-						this.grid[x2*supersize+1][y2*supersize+2] = type;
+						for (int repeat = 0; repeat < supersize; repeat++)
+							this.grid[x2*supersize + (int)Math.floor(supersize/2) + decal][y2*supersize+repeat + decal] = type;
 					}
 					else if (!west && !east && south && north)
 					{
 						type = TileType.valueOf(type.name() + "NS");
-						this.grid[x2*supersize+0][y2*supersize+1] = type;
-						this.grid[x2*supersize+1][y2*supersize+1] = type;
-						this.grid[x2*supersize+2][y2*supersize+1] = type;
+						for (int repeat = 0; repeat < supersize; repeat++)
+							this.grid[x2*supersize+repeat + decal][y2*supersize + (int)Math.floor(supersize/2) + decal] = type;
 					}
 				}
 			}
 		}
  		
  		surroundEveryFloorWithWall();
+ 		showDungeon();
 	}
 
 }
