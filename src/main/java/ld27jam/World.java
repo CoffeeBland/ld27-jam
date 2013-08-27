@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ld27jam.entities.Entity;
-import ld27jam.entities.Ghoul;
 import ld27jam.entities.Hourglass;
 import ld27jam.entities.Inventory;
 import ld27jam.entities.Item;
