@@ -32,7 +32,7 @@ public class Character extends Entity
 	public int toNextHeartbeat;
 	public int invincibility, drain;
 	public ImageSheet stillSheet, walkingSheet;
-	public float interactionSoundsVolume = 0.30f;
+	public float interactionSoundsVolume = 0.35f;
 	
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
 

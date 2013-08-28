@@ -333,7 +333,6 @@ public class Dungeon {
 		return containerGrid;
 	}
 	
-	// and here's the one generating the whole map
 	public void createDungeon(int inx, int iny, RoomTemplate[] templates){
 		this.xsize = inx;
 		this.ysize = iny;
@@ -606,5 +605,4 @@ public class Dungeon {
  		surroundEveryFloorWithWall();
  		showDungeon();
 	}
-
 }

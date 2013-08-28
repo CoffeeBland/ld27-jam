@@ -40,6 +40,7 @@ public class World
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
 	public Vector2f revealDecal = new Vector2f(0, 16), endPoint = null, lastDeath = null;
+	private float tileMinColorR = 20f / 255f, tileMinColorG = 20f / 255f, tileMinColorB = 30f/255f;
 	
 	public float getShake()
 	{
@@ -150,9 +151,10 @@ public class World
 		Vector2f characterPos = World.getScreenCoordinates(character.getPosition()).sub(camera),
 				 characterPosDecal = characterPos.copy().add(revealDecal);
 		
-		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1;
+		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1,
+			gridMax = grid.length + grid[0].length;
 		for (int projection = (int)Math.floor(camera.y / SCREEN_HALF_TILE.y) - 1; 
-			 projection < grid.length + grid[0].length && projection < projectionHeight; 
+			 projection < gridMax && projection < projectionHeight; 
 			 projection++)
 		{
 			for (int x = Math.min(projection, grid.length - 1), y = Math.max(0, projection - (grid.length - 1));
@@ -168,52 +170,28 @@ public class World
 					continue;
 
 				float blackness = tilePosScreen.distance(characterPos) / character.lightBase + character.lightVariation;
+				float rColor = Math.max(tileMinColorR, character.lightColor.r - blackness),
+					  gColor = Math.max(tileMinColorG, character.lightColor.g - blackness),
+					  bColor = Math.max(tileMinColorB, character.lightColor.b - blackness);
 				// Tile
 				TileType tile = grid[x][y];
 				if (tile != null && tile != TileType.None)
 				{
 					float a = 1.5f - blackness * blackness * blackness;
-					a = 1;
 					if (tile.isFloor)
 					{
-						tileSheet.setFrameX(tile.tileId);
-						if (tile == TileType.EndRoomFloor)
-						{
-							tileSheet.getColor().r = 1;
-							tileSheet.getColor().g = 1;
-							tileSheet.getColor().b = 1;
-						}
-						else
-						{
-							tileSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
-							tileSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
-							tileSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						}
+						setTileColor(tileSheet, tile, blackness);
 						tileSheet.getColor().a = a;
-							
 						tileSheet.render(tilePosScreen);
 					}
 					else
 					{
-						wallSheet.setFrameX(tile.tileId);
-						if (tile == TileType.EndRoomWall || tile == TileType.End)
-						{
-							wallSheet.getColor().r = 1;
-							wallSheet.getColor().g = 1;
-							wallSheet.getColor().b = 1;
-						}
-						else
-						{
-							wallSheet.getColor().r = Math.max(20f / 255f, character.lightColor.r - blackness);
-							wallSheet.getColor().g = Math.max(20f / 255f, character.lightColor.g - blackness);
-							wallSheet.getColor().b = Math.max(30f / 255f, character.lightColor.b - blackness);
-						}
-						
+						setTileColor(wallSheet, tile, blackness);
 						if (!tile.alwaysShow)
 						{
 							float distX = (tilePosScreen.x - characterPosDecal.x) / 2,
 								  distY = tilePosScreen.y - characterPosDecal.y;
-							wallSheet.getColor().a = Math.min(((distX * distX + distY * distY) - 100) / 10000, a);
+							wallSheet.getColor().a = Math.min(((distX * distX + distY * distY) - 100) / 12000, a);
 						}
 						else
 							wallSheet.getColor().a = a;
@@ -224,7 +202,6 @@ public class World
 				
 				region.getPosition().x = x;
 				region.getPosition().y = y;
-
 				// Entities
 				for (Entity entity : spatialMap.get(region))
 				{
@@ -234,9 +211,9 @@ public class World
 						region.getPosition().y < bottomRight.y &&
 						region.getBottomY() >= bottomRight.y)
 					{
-						Color color = new Color(Math.max(20f / 255f, character.lightColor.r - blackness),
-												Math.max(20f / 255f, character.lightColor.g - blackness),
-												Math.max(30f / 255f, character.lightColor.b - blackness));
+						Color color = new Color(Math.max(tileMinColorR, character.lightColor.r - blackness),
+												Math.max(tileMinColorG, character.lightColor.g - blackness),
+												Math.max(tileMinColorB, character.lightColor.b - blackness));
 						entity.render(gc, sbg, g, camera, color);
 					}
 				}
@@ -259,6 +236,23 @@ public class World
 		
 		for (Entity entity : entities)
 			entity.update(gc, sbg, delta, this);
+	}
+	
+	public void setTileColor(ImageSheet sheet, TileType tile, float blackness)
+	{
+		sheet.setFrameX(tile.tileId);
+		if (tile != TileType.EndRoomFloor && tile != TileType.End && tile != TileType.EndRoomWall)
+		{
+			sheet.getColor().r = Math.max(tileMinColorR, character.lightColor.r - blackness);
+			sheet.getColor().g = Math.max(tileMinColorG, character.lightColor.g - blackness);
+			sheet.getColor().b = Math.max(tileMinColorB, character.lightColor.b - blackness);
+		}
+		else
+		{
+			sheet.getColor().r = 1;
+			sheet.getColor().g = 1;
+			sheet.getColor().b = 1;
+		}
 	}
 	
 	public void load(int level)
