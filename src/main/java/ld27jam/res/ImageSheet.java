@@ -37,6 +37,7 @@ public class ImageSheet
 	public void setFrameX(int pFrameX)
 	{
 		mFrameX = pFrameX % getFrameAmountX();
+		mIsNewFrame = true;
 	}
 	
 	private int mFrameY = 0;
@@ -57,6 +58,12 @@ public class ImageSheet
 	public void setColor(Color pColor)
 	{
 		mColor = pColor;
+	}
+	
+	private boolean mIsNewFrame = false;
+	public boolean isNewFrame()
+	{
+		return mIsNewFrame;
 	}
 	
 	private static ImageSheet SHEET_IN_USE = null;
@@ -117,6 +124,7 @@ public class ImageSheet
 	
 	public void update()
 	{
+		mIsNewFrame = false;
 	}
 	
 	public ImageSheet(ImageSheetDef pDef)

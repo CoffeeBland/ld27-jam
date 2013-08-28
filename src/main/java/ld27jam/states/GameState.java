@@ -78,7 +78,7 @@ public class GameState extends BasicGameState {
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
 	{
-		g.setColor(new Color(10, 10, 20));
+		g.setColor(new Color(0, 0, 0));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
 		world.render(gc, sbg, g);
 		if (paused)
@@ -100,11 +100,6 @@ public class GameState extends BasicGameState {
 	public void exitGame()
 	{
 		sbg.enterState(GameOverState.ID, new FadeOutTransition(Color.white, 700), new FadeInTransition(Color.white));
-	}
-
-	@Override
-	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException 
-	{
 	}
 
 	public World getWorld()

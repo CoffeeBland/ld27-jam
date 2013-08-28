@@ -173,6 +173,7 @@ public class World
 				if (tile != null && tile != TileType.None)
 				{
 					float a = 1.5f - blackness * blackness * blackness;
+					a = 1;
 					if (tile.isFloor)
 					{
 						tileSheet.setFrameX(tile.tileId);

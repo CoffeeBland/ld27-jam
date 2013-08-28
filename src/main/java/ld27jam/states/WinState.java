@@ -73,16 +73,18 @@ public class WinState extends BasicGameState
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException
 	{
+		Sounds.stopMainMusic();
 		if (sbg.getState(GameState.ID) == null)
 			sbg.addState(new GameState());
 		loadingThread = null;
 		
-		try { Sounds.startMusic("res/audio/gameover.mid", false); } 
+		try { Sounds.startMusic("res/audio/GameOver.mid", false); } 
 		catch (Exception e) { e.printStackTrace(); }
 	}
 	@Override
 	public void leave(GameContainer gc, StateBasedGame sbg) throws SlickException
 	{
+		Sounds.startMainMusic();
 	}
 	
 	@Override

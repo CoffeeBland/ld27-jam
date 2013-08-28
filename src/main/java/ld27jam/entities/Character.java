@@ -32,10 +32,11 @@ public class Character extends Entity
 	public int toNextHeartbeat;
 	public int invincibility, drain;
 	public ImageSheet stillSheet, walkingSheet;
+	public float interactionSoundsVolume = 0.30f;
 	
 	public int animUp = 5, animUpLeft = 6, animLeft = 7, animDownLeft = 0, animDown = 1, animDownRight = 2, animRight = 3, animUpRight = 4;
 
-	public void hitSanity(float hitSanity, World world, Vector2f knockback)
+	public void hitSanity(float hitSanity, World world, Vector2f knockback) throws SlickException
 	{
 		if (invincibility <= 0)
 		{
@@ -108,6 +109,20 @@ public class Character extends Entity
 			imageSheet = stillSheet;
 			stillSheet.setFrameY(walkingSheet.getFrameY());
 		}
+		if (imageSheet == walkingSheet && imageSheet.isNewFrame() && (imageSheet.getFrameX() == 2 || imageSheet.getFrameX() == 5))
+		{
+			try 
+			{
+				float pitch = (float) ((Math.random() - 0.5) * 0.25f + 1f);
+				if (imageSheet.getFrameX() == 2)
+					pitch += 0.20f;
+				Sounds.get("res/audio/Step.ogg").play(pitch, 0.35f);
+			} 
+			catch (SlickException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void gameover(StateBasedGame sbg, World world)
@@ -124,6 +139,13 @@ public class Character extends Entity
 	}
 	public void nextLevel(StateBasedGame sbg)
 	{
+		HEARTBEAT.play(0.5f, 1f);
+		HEARTBEAT.play(0.75f, 1f);
+		HEARTBEAT.play(1f, 1f);
+		HEARTBEAT.play(1.25f, 1f);
+		HEARTBEAT.play(1.5f, 1f);
+		HEARTBEAT.play(1.75f, 1f);
+		HEARTBEAT.play(2f, 1f);
 		sbg.enterState(WinState.ID, new FadeOutTransition(Color.white, 500), new FadeInTransition(Color.white, 500));
 	}
 	public void heartbeat() throws SlickException
@@ -135,7 +157,7 @@ public class Character extends Entity
 			toNextHeartbeat = (int)(sanity * 5) + 20;
 			if (HEARTBEAT == null)
 				HEARTBEAT = Sounds.get("res/audio/Heartbeat.ogg");
-			HEARTBEAT.play(-0.1f * sanity + 1.75f, 1f - sanity * 0.05f);
+			HEARTBEAT.play(-0.1f * sanity + 1.75f, 1.25f - sanity * 0.05f);
 		}
 	}
 	public void updateSanity(World world, StateBasedGame sbg) throws SlickException
@@ -159,8 +181,8 @@ public class Character extends Entity
 				sanityRatio *= 1 - Math.random() * (drain * drain) / 1500;
 				drain--;
 			}
-			lightMoment += 0.005f;
-			lightVariation = (float) Math.sin(lightMoment) * 0.05f;
+			lightMoment += 0.4f;
+			lightVariation = (float) Math.sin(lightMoment) * 0.01f;
 			lightColor.r = sanityRatio * 0.4f + 0.6f;
 			
 			float dist = Math.max(0, 1 - world.endPoint.distance(getPosition()) / 50);
@@ -169,7 +191,7 @@ public class Character extends Entity
 			lightBase = sanityRatio * 100 + 200;
 		}
 	}
-	public void checkForInteraction(World world, StateBasedGame sbg, GameContainer gc)
+	public void checkForInteraction(World world, StateBasedGame sbg, GameContainer gc) throws SlickException
 	{
 		for (Tile tile : world.getTilesInRegion(this))
 		{
@@ -183,7 +205,7 @@ public class Character extends Entity
 					hitSanity(0.5f, world, new Vector2f());
 					break;
 				case End:
-					sanity = Math.min(maxSanity, sanity + 0.05f);
+					sanity = Math.min(maxSanity, sanity + 0.03f);
 					if (sanity >= maxSanity)
 						nextLevel(sbg);
 					break;
@@ -221,24 +243,48 @@ public class Character extends Entity
 				case ChestClosedEast:
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedEast);
 					world.inventory.items.add(new Item(ItemType.Key));
+					try
+					{ Sounds.get("res/audio/Chest.ogg").play(1, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case ChestClosedWest:
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedWest);
 					world.inventory.items.add(new Item(ItemType.Key));
+					try
+					{ Sounds.get("res/audio/Chest.ogg").play(1, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case ChestClosedNorth:
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedNorth);
 					world.inventory.items.add(new Item(ItemType.Key));
+					try
+					{ Sounds.get("res/audio/Chest.ogg").play(1, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case ChestClosedSouth:
 					world.changeTileTypeAt(tile.x, tile.y, TileType.ChestOpenedSouth);
 					world.inventory.items.add(new Item(ItemType.Key));
+					try
+					{ Sounds.get("res/audio/Chest.ogg").play(1, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case DoorWE:
 					world.propagateTileChangeAt(tile.x, tile.y, TileType.DoorWE, TileType.OpenedDoorWE);
+					try
+					{ Sounds.get("res/audio/Door.ogg").play(0.9f, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case DoorNS:
 					world.propagateTileChangeAt(tile.x, tile.y, TileType.DoorNS, TileType.OpenedDoorNS);
+					try
+					{ Sounds.get("res/audio/Door.ogg").play(0.9f, interactionSoundsVolume); }
+					catch (Exception ex)
+					{ ex.printStackTrace(); }
 					break;
 				case LockedDoorWE:
 					key = null;
@@ -252,6 +298,10 @@ public class Character extends Entity
 					{
 						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorWE, TileType.OpenedDoorWE);
 						world.inventory.items.remove(key);
+						try
+						{ Sounds.get("res/audio/DoorMetal.ogg").play(0.75f, interactionSoundsVolume); }
+						catch (Exception ex)
+						{ ex.printStackTrace(); }
 						return;
 					}
 					break;
@@ -261,11 +311,16 @@ public class Character extends Entity
 						if (item.type == ItemType.Key)
 						{
 							key = item;
+							break;
 						}
 					if (key != null)
 					{
 						world.propagateTileChangeAt(tile.x, tile.y, TileType.LockedDoorNS, TileType.OpenedDoorNS);
 						world.inventory.items.remove(key);
+						try
+						{ Sounds.get("res/audio/DoorMetal.ogg").play(0.75f, interactionSoundsVolume); }
+						catch (Exception ex)
+						{ ex.printStackTrace(); }
 						return;
 					}
 					break;
@@ -334,9 +389,9 @@ public class Character extends Entity
 	
 	public Character(Vector2f position) throws SlickException
 	{
-		super(position, new Vector2f(0.8f, 0.8f), true, new Vector2f(-14, -64), null);
+		super(position, new Vector2f(0.5f, 0.5f), true, new Vector2f(-14, -64), null);
 		
-		stillSheet = new ImageSheet("res/sprites/CharacterStill.png",64, 80);
+		stillSheet = new AnimatedSprite("res/sprites/CharacterStill.png",64, 80, 12);
 		walkingSheet = new AnimatedSprite("res/sprites/CharacterWalk.png", 64, 80, 5);
 		
 		imageSheet = stillSheet;

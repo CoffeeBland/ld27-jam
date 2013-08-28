@@ -1,6 +1,8 @@
 package ld27jam.res;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,6 +10,7 @@ import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Sequencer;
 
+import org.newdawn.easyogg.OggClip;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 
@@ -58,5 +61,24 @@ public class Sounds
 	{
 		sequencer.stop();
 	    sequencer.close();
+	}
+	
+	private static OggClip mainMusic;
+	public static void startMainMusic()
+	{
+		try
+		{
+			if(mainMusic == null)
+				mainMusic = new OggClip(new FileInputStream("res/audio/HorrorAmbient.ogg"));
+			mainMusic.loop();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	public static void stopMainMusic()
+	{
+		mainMusic.stop();
 	}
 }
