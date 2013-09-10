@@ -24,9 +24,10 @@ public class Character extends Entity
 {
 	public static Sound HEARTBEAT, STATIC;
 	
-	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0, speed = 0.12f;
+	public float lightVariation = 0.1f, lightBase = 300, lightMoment = 0;
 	public Color lightColor = new Color(255, 230, 180);
 	public boolean isMovingDiagonally;
+	public float speed = 0.12f;
 	public float maxSanity = 9.9999f;
 	public float sanity = maxSanity;
 	public int toNextHeartbeat;
@@ -170,7 +171,7 @@ public class Character extends Entity
 			gameover(sbg, world);
 		else
 		{
-			float sanityRatio = ((30 - Math.min(maxSanity /  sanity, 50)) / 30);
+			float sanityRatio = ((20 - Math.min(maxSanity /  sanity, 20)) / 20);
 			if (invincibility > 0)
 			{
 				invincibility--;
@@ -181,14 +182,16 @@ public class Character extends Entity
 				sanityRatio *= 1 - Math.random() * (drain * drain) / 1500;
 				drain--;
 			}
+			float dist = Math.max(0, 1 - world.endPoint.distance(getPosition()) / 50);
+			
 			lightMoment += 0.4f;
 			lightVariation = (float) Math.sin(lightMoment) * 0.01f;
-			lightColor.r = sanityRatio * 0.4f + 0.6f;
 			
-			float dist = Math.max(0, 1 - world.endPoint.distance(getPosition()) / 50);
-			lightColor.g = sanityRatio * 0.95f + dist / 2;
-			lightColor.b = sanityRatio * 0.4f + 0.35f + dist;
-			lightBase = sanityRatio * 100 + 200;
+			lightColor.r = sanityRatio * 0.7f + 0.3f;
+			lightColor.g = sanityRatio * 0.85f + 0.1f + dist / 2;
+			lightColor.b = sanityRatio * 0.5f + 0.25f + dist;
+			
+			lightBase = sanityRatio * 8 + 15;
 		}
 	}
 	public void checkForInteraction(World world, StateBasedGame sbg, GameContainer gc) throws SlickException
@@ -384,8 +387,15 @@ public class Character extends Entity
 			super.render(gc, sbg, g, camera, color);
 	}
 	
-	public void init (final World world)
-	{}
+	public void init (final World world, StateBasedGame sbg)
+	{
+		try
+		{
+			updateSanity(world, sbg);
+		}
+		catch (Exception ex){}
+		sanity = maxSanity;
+	}
 	
 	public Character(Vector2f position) throws SlickException
 	{

@@ -77,29 +77,28 @@ public class RoomTemplate {
 	
 	public static RoomTemplate getStartingRoom()
 	{
-		return new RoomTemplate("      +     \n" +
-								"    ffff    \n" +
-								"   ffffff   \n" +
-								"  ffffffff  \n" +
-								" ffffffffff \n" +
-								" ffffffffff+\n" +
-								"+ffffSfffff \n" +
-								" ffffffffff \n" +
-								" fffffffff  \n" +
-								"  fffffff   \n" +
-								"   fffff    \n" +
-								"     +      \n");
+		return new RoomTemplate("     +     \n" +
+								"   fffff   \n" +
+								"    fff    \n" +
+								" f fffff f \n" +
+								" fffffffff \n" +
+								"+ffffSffff+\n" +
+								" fffffffff \n" +
+								" f fffff f \n" +
+								"    fff    \n" +
+								"   fffff   \n" +
+								"     +     \n");
 	}
 	
 	public static RoomTemplate getFinishingRoom()
 	{
 		return new RoomTemplate("         \n" +
 								" +     + \n" +
-								" ee   ee \n" +
+								"+ee   ee+\n" +
 								"  eeeee  \n" +
 								"  eeEee  \n" +
 								"  eeeee  \n" +
-								" ee   ee \n" +
+								"+ee   ee+\n" +
 								" +     + \n" +
 								"         ");
 	}

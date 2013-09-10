@@ -54,7 +54,7 @@ public class GameState extends BasicGameState {
 					startingPoint = new Vector2f(x + 1, y + 1);
 			}
 		}
-		world.character.init(world);
+		world.character.init(world, sbg);
 		world.character.setPosition(startingPoint);
 		world.spatialMap.update(world.character);
 		
@@ -75,12 +75,14 @@ public class GameState extends BasicGameState {
 		if (key == Input.KEY_ESCAPE)
 			paused = !paused;
 	}
-
+	double elapsedAvg = 0;
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException 
 	{
-		g.setColor(new Color(0, 0, 0));
+		g.setColor(world.backColor.scaleCopy(0.6f));
 		g.fillRect(0, 0, gc.getWidth(), gc.getWidth());
+		
 		world.render(gc, sbg, g);
+		
 		if (paused)
 		{
 			MenuState.drawCentered(MenuState.uFont, 200, "PAUSED", gc);

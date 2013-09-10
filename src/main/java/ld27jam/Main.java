@@ -16,12 +16,13 @@ public class Main {
 			gsc = new GameStateController("LD27 10 seconds to insanity - Kiasaki - Dagothig");
 			app = new AppGameContainer(gsc);
 			if (!fullscreen){
-				app.setDisplayMode(800,600, false);
+				app.setDisplayMode(800, 600, false);
 			}else{
 				app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
 			}
+			app.setResizable(true);
 			app.setForceExit(true);
-	        app.setShowFPS(false);
+	        //app.setShowFPS(false);
 	        app.setTargetFrameRate(60);
 			app.setIcons(new String[]{"res/icons/icon16.png", "res/icons/icon32.png"});
 	        app.start();    

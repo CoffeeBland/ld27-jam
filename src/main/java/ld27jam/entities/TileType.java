@@ -73,6 +73,6 @@ public enum TileType
 	}
 	private TileType(Integer tileId, boolean canWalkOn, boolean isFloor, boolean isWall)
 	{
-		this(tileId, canWalkOn, isFloor, isFloor, true);
+		this(tileId, canWalkOn, isFloor, isWall, true);
 	}
 }

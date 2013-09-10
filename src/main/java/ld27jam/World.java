@@ -34,13 +34,16 @@ public class World
 	private Set<Entity> entities = new HashSet<Entity>();
 	public SpatialMap<Entity> spatialMap = new SpatialMap<Entity>();
 	public TileType[][] grid;
+	public Color[][] lightingGrid;
+	
 	private ImageSheet tileSheet, wallSheet;
 	public Character character;
 	public Inventory inventory = new Inventory();
 	private Hourglass hourglass = new Hourglass();
 	private float shakeIntensity, shakeDuration, shake;
 	public Vector2f revealDecal = new Vector2f(0, 16), endPoint = null, lastDeath = null;
-	private float tileMinColorR = 20f / 255f, tileMinColorG = 20f / 255f, tileMinColorB = 30f/255f;
+	public Color minColor = new Color(20, 20, 30);
+	public Color backColor = minColor.scaleCopy(0.6f);
 	
 	public float getShake()
 	{
@@ -100,6 +103,50 @@ public class World
 		if (y + 1 < grid[x].length)
 			propagateTileChangeAt(x, y + 1, oldType, newType);
 	}
+	public void putLightAt(int x, int y, Color color, int colorRange)
+	{
+		propagateLightAt(x, y, color, x, y, colorRange * colorRange);
+	}
+	public void propagateLightAt(int x, int y, Color color, int originX, int originY, int colorRangeSquared)
+	{
+		Color diminishedColor = new Color(color);
+		int distX = x - originX, distY = y - originY;
+		float scale = (float)((colorRangeSquared * 3 - (distX * distX + distY * distY)) / (float)(colorRangeSquared * 3));
+		diminishedColor.a = color.a * scale;
+		if (diminishedColor.a <= 0)
+			return;
+		scale = (float) Math.pow(scale, 5);
+		diminishedColor.r = color.r * scale;
+		diminishedColor.g = color.g * scale;
+		diminishedColor.b = color.b * scale;
+		
+		if (lightingGrid[x][y] == null)
+			lightingGrid[x][y] = 
+			diminishedColor;
+		else if (lightingGrid[x][y].a >= diminishedColor.a &&
+				 lightingGrid[x][y].r >= diminishedColor.r &&
+				 lightingGrid[x][y].g >= diminishedColor.g &&
+				 lightingGrid[x][y].b >= diminishedColor.b)
+			return;
+		else
+		{
+			lightingGrid[x][y].r = Math.max(lightingGrid[x][y].r, diminishedColor.r);
+			lightingGrid[x][y].g = Math.max(lightingGrid[x][y].g, diminishedColor.g);
+			lightingGrid[x][y].b = Math.max(lightingGrid[x][y].b, diminishedColor.b);
+			lightingGrid[x][y].a = Math.max(lightingGrid[x][y].a, diminishedColor.a);
+		}
+		if (!grid[x][y].alwaysShow)
+			return;
+
+		if (x > 0)
+			propagateLightAt(x - 1, y, color, originX, originY, colorRangeSquared);
+		if (y > 0)
+			propagateLightAt(x, y - 1, color, originX, originY, colorRangeSquared);
+		if (x - 1 < lightingGrid.length)
+			propagateLightAt(x + 1, y, color, originX, originY, colorRangeSquared);
+		if (y - 1 < lightingGrid[x].length)
+			propagateLightAt(x, y + 1, color, originX, originY, colorRangeSquared);
+	}
 	
 	public static Vector2f getScreenCoordinates(Vector2f mapCoordinates)
 	{
@@ -117,13 +164,22 @@ public class World
 		int ysize = gd.level.getHeight();
 		Vector2f startingPoint = null;
 		grid = gd.level.dungeon.grid;
+		lightingGrid = new Color[grid.length][grid[0].length];
 		
 		// Set init
 		for	(int x = 0; x < xsize && startingPoint == null; x++)
 			for (int y = 0; y < ysize && startingPoint == null; y++) 
 				if (grid[x][y] == TileType.StartingPoint)
 					startingPoint = new Vector2f(x + 1, y + 1);
-		
+		/*
+		for (int x = (int) (startingPoint.x - 50); x < startingPoint.x + 50; x += 5)
+			for (int y = (int) (startingPoint.y - 50); y < startingPoint.y + 50; y += 5)
+			{
+				putLightAt(x, y, new Color((float)Math.random(), (float)Math.random(), (float)Math.random()), 5);
+			}
+		for (int i = -3; i < 3; i++)
+			changeTileTypeAt((int)startingPoint.x - 3, (int)startingPoint.y + i, TileType.ChestClosedEast);
+		*/
 		// Set end
 		for	(int x = 0; x < xsize && endPoint == null; x++)
 			for (int y = 0; y < ysize && endPoint == null; y++) 
@@ -135,7 +191,7 @@ public class World
 		gd.level.dungeon = null;
 		character = new Character(startingPoint);
 		add(character);
-		character.init(this);
+		character.init(this, sbg);
 		inventory.items.add(new Item(ItemType.Key));
 	}
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException
@@ -153,6 +209,7 @@ public class World
 		
 		int projectionHeight = (int)Math.ceil((camera.y + WALL_HEIGHT + gc.getHeight()) / SCREEN_HALF_TILE.y) + 1,
 			gridMax = grid.length + grid[0].length;
+			
 		for (int projection = (int)Math.floor(camera.y / SCREEN_HALF_TILE.y) - 1; 
 			 projection < gridMax && projection < projectionHeight; 
 			 projection++)
@@ -168,61 +225,80 @@ public class World
 					break;
 				if (tilePosScreen.x > gc.getWidth() + SCREEN_TILE_SIZE.x)
 					continue;
-
-				float blackness = tilePosScreen.distance(characterPos) / character.lightBase + character.lightVariation;
-				float rColor = Math.max(tileMinColorR, character.lightColor.r - blackness),
-					  gColor = Math.max(tileMinColorG, character.lightColor.g - blackness),
-					  bColor = Math.max(tileMinColorB, character.lightColor.b - blackness);
+				
+				float blackness = tilePos.distance(character.getPosition()) / character.lightBase + character.lightVariation;
+				float cR = Math.max(backColor.r, character.lightColor.r - blackness),
+					  cG = Math.max(backColor.g, character.lightColor.g - blackness),
+					  cB = Math.max(backColor.b, character.lightColor.b - blackness),
+					  cA = (float) (1.1f - Math.pow(blackness, 3));
+				Color colAtTile = lightingGrid[x][y];
+				if (colAtTile != null)
+				{
+					cR = Math.max(cR, colAtTile.r);
+					cG = Math.max(cG, colAtTile.g);
+					cB = Math.max(cB, colAtTile.b);
+					cA = Math.max(cA, colAtTile.a);
+				}
+				
+				if (cA <= 0)
+					continue;
+				
 				// Tile
 				TileType tile = grid[x][y];
 				if (tile != null && tile != TileType.None)
-				{
-					float a = 1.5f - blackness * blackness * blackness;
-					if (tile.isFloor)
-					{
-						setTileColor(tileSheet, tile, blackness);
-						tileSheet.getColor().a = a;
-						tileSheet.render(tilePosScreen);
-					}
-					else
-					{
-						setTileColor(wallSheet, tile, blackness);
-						if (!tile.alwaysShow)
-						{
-							float distX = (tilePosScreen.x - characterPosDecal.x) / 2,
-								  distY = tilePosScreen.y - characterPosDecal.y;
-							wallSheet.getColor().a = Math.min(((distX * distX + distY * distY) - 100) / 12000, a);
-						}
-						else
-							wallSheet.getColor().a = a;
-						tilePosScreen.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
-						wallSheet.render(tilePosScreen);
-					}
-				}
-				
+					renderTile(tile, tilePosScreen, characterPosDecal, cR, cG, cB, cA);
+					
 				region.getPosition().x = x;
 				region.getPosition().y = y;
+				
 				// Entities
-				for (Entity entity : spatialMap.get(region))
-				{
-					Vector2f bottomRight = entity.getBottomRightPoint();
-					if (region.getPosition().x < bottomRight.x &&
-						region.getRightX() >= bottomRight.x &&
-						region.getPosition().y < bottomRight.y &&
-						region.getBottomY() >= bottomRight.y)
-					{
-						Color color = new Color(Math.max(tileMinColorR, character.lightColor.r - blackness),
-												Math.max(tileMinColorG, character.lightColor.g - blackness),
-												Math.max(tileMinColorB, character.lightColor.b - blackness));
-						entity.render(gc, sbg, g, camera, color);
-					}
-				}
+				renderEntities(gc, sbg, g, region, camera, cR, cG, cB, cA);
 			}
 		}
 		
 		hourglass.render(gc, character.sanity / character.maxSanity);
 		inventory.render();
 	}
+	public void renderTile(TileType tile, Vector2f pos, Vector2f characterPosDecal, float cR, float cG, float cB, float cA)
+	{
+		if (tile.isFloor)
+		{
+			setTileColor(tileSheet, tile, cR, cG, cB, cA);
+			tileSheet.render(pos);
+		}
+		else
+		{
+			if (!tile.alwaysShow)
+			{
+				float distX = (pos.x - characterPosDecal.x) / 2,
+					  distY = pos.y - characterPosDecal.y;
+				setTileColor(wallSheet, tile, cR, cG, cB, Math.min(((distX * distX + distY * distY) - 100) / 12000, cA));
+			}
+			else
+				setTileColor(wallSheet, tile, cR, cG, cB, cA);
+			pos.y -= WALL_HEIGHT - SCREEN_TILE_SIZE.y;
+			wallSheet.render(pos);
+		}
+	}
+	public void renderEntities(GameContainer gc, StateBasedGame sbg, Graphics g, AABB region, Vector2f camera, float cR, float cG, float cB, float cA) throws SlickException
+	{
+		for (Entity entity : spatialMap.get(region))
+		{
+			Vector2f bottomRight = entity.getBottomRightPoint();
+			if (region.getPosition().x < bottomRight.x &&
+				region.getRightX() >= bottomRight.x &&
+				region.getPosition().y < bottomRight.y &&
+				region.getBottomY() >= bottomRight.y)
+			{
+				entity.imageSheet.getColor().r = cR;
+				entity.imageSheet.getColor().g = cG;
+				entity.imageSheet.getColor().b = cB;
+				entity.imageSheet.getColor().a = cA;
+				entity.render(gc, sbg, g, camera);
+			}
+		}
+	}
+	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException 
 	{
 		if (shakeDuration > 0)
@@ -238,21 +314,13 @@ public class World
 			entity.update(gc, sbg, delta, this);
 	}
 	
-	public void setTileColor(ImageSheet sheet, TileType tile, float blackness)
+	public void setTileColor(ImageSheet sheet, TileType tile, float cR, float cG, float cB, float cA)
 	{
 		sheet.setFrameX(tile.tileId);
-		if (tile != TileType.EndRoomFloor && tile != TileType.End && tile != TileType.EndRoomWall)
-		{
-			sheet.getColor().r = Math.max(tileMinColorR, character.lightColor.r - blackness);
-			sheet.getColor().g = Math.max(tileMinColorG, character.lightColor.g - blackness);
-			sheet.getColor().b = Math.max(tileMinColorB, character.lightColor.b - blackness);
-		}
-		else
-		{
-			sheet.getColor().r = 1;
-			sheet.getColor().g = 1;
-			sheet.getColor().b = 1;
-		}
+		sheet.getColor().r = cR;
+		sheet.getColor().g = cG;
+		sheet.getColor().b = cB;
+		sheet.getColor().a = cA;
 	}
 	
 	public void load(int level)
